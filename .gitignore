@@ -22,3 +22,6 @@ Thumbs.db
 *.log
 .env
 .env.local
+build/
+dist/
+*.egg-info/
