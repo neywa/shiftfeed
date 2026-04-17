@@ -7,7 +7,7 @@ load_dotenv()
 
 from supabase import Client, create_client
 
-from models import Article
+from scraper.models import Article
 
 _logger = logging.getLogger(__name__)
 
