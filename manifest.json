@@ -1,11 +1,11 @@
 {
-    "name": "OpenShift News Aggregator",
-    "short_name": "OCP News",
+    "name": "ShiftFeed",
+    "short_name": "ShiftFeed",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#1a1a1a",
     "theme_color": "#EE0000",
-    "description": "All OpenShift news in one place",
+    "description": "OpenShift community news and intelligence",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

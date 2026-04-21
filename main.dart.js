@@ -88782,7 +88782,7 @@ A.MU.prototype={
 K(a){return A.ayL(new A.acD(),t.hQ)}}
 A.acD.prototype={
 $3(a,b,c){var s=null,r="monospace"
-return new A.pv(B.Gc,"OpenShift News Aggregator",A.qN(B.Bh,B.a9,B.cs,A.ayE(s,B.dz,s,s,s,s,s,s,s,s,s,B.Sb,B.nU,s,s,s,s,s,s,new A.cn(A.ej(4),B.o),s,B.BE,s),B.DB,B.ay,r,B.k,s),A.qN(B.Bg,B.l,B.cr,A.ayE(s,B.dA,s,s,s,s,s,s,s,s,s,B.Uu,B.nU,s,s,s,s,s,s,new A.cn(A.ej(4),B.o),s,B.BD,s),B.DA,B.aH,r,B.bO,s),b.a,s)},
+return new A.pv(B.Gc,"ShiftFeed",A.qN(B.Bh,B.a9,B.cs,A.ayE(s,B.dz,s,s,s,s,s,s,s,s,s,B.Sb,B.nU,s,s,s,s,s,s,new A.cn(A.ej(4),B.o),s,B.BE,s),B.DB,B.ay,r,B.k,s),A.qN(B.Bg,B.l,B.cr,A.ayE(s,B.dA,s,s,s,s,s,s,s,s,s,B.Uu,B.nU,s,s,s,s,s,s,new A.cn(A.ej(4),B.o),s,B.BD,s),B.DA,B.aH,r,B.bO,s),b.a,s)},
 $S:567}
 A.jo.prototype={}
 A.a0f.prototype={
@@ -88886,17 +88886,17 @@ for(;;)switch(s){case 0:s=2
 return A.p(A.I3(A.cN(a,0,null),B.hK),$async$yq)
 case 2:return A.w(null,r)}})
 return A.x($async$yq,r)},
-K(a0){var s,r,q,p,o,n,m,l,k,j,i,h,g=null,f=A.O(a0),e=f.ax.k3,d=new A.cn(A.ej(14),new A.aO(f.ch,1,B.u,-1)),c=new A.a_E(f,e),b=A.aCB(g,g,g,B.VU),a=A.ej(16)
+K(a0){var s,r,q,p,o,n,m,l,k,j,i,h,g=null,f=A.O(a0),e=f.ax.k3,d=new A.cn(A.ej(14),new A.aO(f.ch,1,B.u,-1)),c=new A.a_E(f,e),b=A.aCB(g,g,g,B.VV),a=A.ej(16)
 a=A.a1W(a,new A.tB(A.aFQ(g,g,new A.xs("assets/icon.png",g,g)),g,g,g,80,80,g,B.eZ,g,B.BU,B.a4,B.dR,!1,g))
 s=f.ok
 r=s.f
-r=A.bw("OpenShift News Aggregator",g,g,g,r==null?g:r.ao8(B.c8),g,g)
+r=A.bw("ShiftFeed",g,g,g,r==null?g:r.ao8(B.c8),g,g)
 q=s.Q
 p=q==null
 o=A.bw("v1.0.0",g,g,g,p?g:q.c0(e.pk(0.6)),g,g)
 s=s.z
 n=t.p
-s=A.a1x(new A.bA(B.nX,A.dO(A.c([a,B.ec,r,B.iA,o,B.cf,A.bw("All OpenShift news in one place",g,g,g,s==null?g:s.c0(e.pk(0.8)),B.fz,g)],n),B.M,B.F,B.a0),g),g,0,d)
+s=A.a1x(new A.bA(B.nX,A.dO(A.c([a,B.ec,r,B.iA,o,B.cf,A.bw("OpenShift Community Intelligence",g,g,g,s==null?g:s.c0(e.pk(0.8)),B.fz,g)],n),B.M,B.F,B.a0),g),g,0,d)
 o=c.$1("Sources")
 r=A.c([],n)
 for(m=0;m<5;++m)r.push(A.azr(B.kz,g,A.bw(B.Hq[m],g,g,g,g,g,g)))
@@ -89004,7 +89004,7 @@ l=n.ay===B.cE?B.oG:B.ky
 q=n.c
 q.toString
 p=t.p
-s=A.aCB(A.c([r,B.cy,A.p8(m,m,A.eW(l,A.O(q).ax.a===B.l?B.ae:B.D,m,20),m,m,new A.aqb(n),m,m,m),A.ayL(new A.aqc(n),t.hQ),A.zn(m,A.d3(B.a4,B.Gt,B.t,m,B.BT,28,m,m,28),B.aA,!1,m,m,m,m,m,m,m,m,m,m,m,m,m,m,n.gRN(),m,m,m,m,m,m),B.zY],p),new A.Ny(A.dO(A.c([A.d3(m,m,B.t,B.aG,m,1,m,m,m),n.a7s()],p),B.M,B.F,B.bk),B.Qe,m),s,B.VV)
+s=A.aCB(A.c([r,B.cy,A.p8(m,m,A.eW(l,A.O(q).ax.a===B.l?B.ae:B.D,m,20),m,m,new A.aqb(n),m,m,m),A.ayL(new A.aqc(n),t.hQ),A.zn(m,A.d3(B.a4,B.Gt,B.t,m,B.BT,28,m,m,28),B.aA,!1,m,m,m,m,m,m,m,m,m,m,m,m,m,m,n.gRN(),m,m,m,m,m,m),B.zY],p),new A.Ny(A.dO(A.c([A.d3(m,m,B.t,B.aG,m,1,m,m,m),n.a7s()],p),B.M,B.F,B.bk),B.Qe,m),s,B.VT)
 l=n.c
 l.toString
 l=A.O(l).ax.a===B.l?B.cr:B.cs
@@ -89064,11 +89064,11 @@ s.toString
 s=A.O(s).ax.a===B.l?B.aH:B.ay
 r=g.c
 r.toString
-q=A.bw("OPENSHIFT NEWS",f,f,f,A.bQ(f,f,A.O(r).ax.a===B.l?B.k:B.bO,f,f,f,f,f,f,f,f,13,f,f,B.hB,f,f,!0,f,2,f,f,f,f,f,f),f,f)
+q=A.bw("SHIFTFEED",f,f,f,A.bQ(f,f,A.O(r).ax.a===B.l?B.k:B.bO,f,f,f,f,f,f,f,f,13,f,f,B.hB,f,f,!0,f,2,f,f,f,f,f,f),f,f)
 r=g.c
 r.toString
 p=t.p
-q=A.dO(A.c([q,B.iA,A.bw("Precision Intelligence",f,f,f,A.bQ(f,f,A.O(r).ax.a===B.l?B.D:B.aj,f,f,f,f,f,f,f,f,11,f,f,f,f,f,!0,f,f,f,f,f,f,f,f),f,f)],p),B.bb,B.F,B.a0)
+q=A.dO(A.c([q,B.iA,A.bw("OpenShift Community Intelligence",f,f,f,A.bQ(f,f,A.O(r).ax.a===B.l?B.D:B.aj,f,f,f,f,f,f,f,f,11,f,f,f,f,f,!0,f,f,f,f,f,f,f,f),f,f)],p),B.bb,B.F,B.a0)
 r=g.c
 r.toString
 o=A.KG(A.O(r).ax.a===B.l?B.aH:B.ay,1)
@@ -97346,8 +97346,8 @@ B.QD=new A.k4(3,"hide")
 B.Zy=new A.k4(4,"remove")
 B.QE=new A.k4(5,"timeout")
 B.QF=new A.uT(null,null,null,null,null,null,null,null,null,null,null,null,null,null)
-B.VT=new A.k8("Coming soon",null,null,null,null,null,null,null,null)
-B.A4=new A.qz(B.VT,null,null,null,null,null,null,null,null,null,null,null,null,B.hn,!1,null,null,null,B.Y,null)
+B.VU=new A.k8("Coming soon",null,null,null,null,null,null,null,null)
+B.A4=new A.qz(B.VU,null,null,null,null,null,null,null,null,null,null,null,null,B.hn,!1,null,null,null,B.Y,null)
 B.A5=new A.Cy(0,"permissive")
 B.QG=new A.Cy(1,"normal")
 B.QH=new A.Cy(2,"forced")
@@ -97719,8 +97719,8 @@ B.UL=new A.n(!0,B.m,null,".AppleSystemUIFont",null,null,null,null,null,null,null
 B.RR=new A.n(!0,B.m,null,".AppleSystemUIFont",null,null,null,null,null,null,null,null,null,null,null,null,null,B.f,null,null,null,"blackRedwoodCity labelSmall",null,null,null,null)
 B.VR=new A.dI(B.TD,B.SB,B.TE,B.U5,B.Sg,B.So,B.SU,B.U_,B.T5,B.Ur,B.RK,B.S1,B.Uo,B.UL,B.RR)
 B.At=new A.k8("Clear search",null,null,null,null,null,null,null,null)
-B.VU=new A.k8("About",null,null,null,null,null,null,null,null)
-B.VV=new A.k8("OPENSHIFT NEWS",null,null,null,null,null,null,null,null)
+B.VT=new A.k8("SHIFTFEED",null,null,null,null,null,null,null,null)
+B.VV=new A.k8("About",null,null,null,null,null,null,null,null)
 B.VW=new A.Db(0,"system")
 B.VX=new A.Db(1,"light")
 B.dh=new A.Db(2,"dark")
