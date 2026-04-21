@@ -29,3 +29,23 @@ class SupabaseClient:
             print(f"Saved: {article.title}")
         except Exception:
             _logger.exception("Failed to upsert article")
+
+    def upsert_cve_alert(
+        self, cve_id: str, title: str, article_url: str
+    ) -> None:
+        try:
+            (
+                self._client.table("cve_alerts")
+                .upsert(
+                    {
+                        "cve_id": cve_id,
+                        "title": title,
+                        "article_url": article_url,
+                    },
+                    on_conflict="cve_id",
+                )
+                .execute()
+            )
+            print(f"CVE Alert: {cve_id}")
+        except Exception:
+            _logger.exception("Failed to upsert CVE alert %s", cve_id)

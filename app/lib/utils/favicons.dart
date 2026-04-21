@@ -9,6 +9,7 @@ const _faviconMap = {
   'Hacker News':
       'https://icons.duckduckgo.com/ip3/news.ycombinator.com.ico',
   'Reddit r/openshift': 'https://icons.duckduckgo.com/ip3/reddit.com.ico',
+  'GitHub Releases': 'https://icons.duckduckgo.com/ip3/github.com.ico',
 };
 
 String faviconUrl(String source) => _faviconMap[source] ?? _defaultFavicon;

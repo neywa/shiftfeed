@@ -15,6 +15,8 @@ import 'about_screen.dart';
 import 'article_detail_screen.dart';
 
 const double _desktopBreakpoint = 900;
+const Color _kReleaseGreen = Color(0xFF00AA44);
+const Color _kSecurityOrange = Color(0xFFFF6600);
 
 enum ViewMode { grid, list }
 
@@ -48,6 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Article> _filteredArticles = [];
   List<String> _sources = [];
   String? _selectedSource;
+  String? _tagFilter;
   String _searchQuery = '';
   bool _isLoading = true;
   int _offset = 0;
@@ -91,6 +94,11 @@ class _HomeScreenState extends State<HomeScreen> {
     return _articles.first.publishedAt ?? _articles.first.createdAt;
   }
 
+  List<Article> get _latestReleases => _articles
+      .where((a) => a.tags.contains('release'))
+      .take(3)
+      .toList();
+
   void _onScroll() {
     if (!_scrollController.hasClients) return;
     final position = _scrollController.position;
@@ -124,6 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
       limit: _pageSize,
       offset: _offset,
       source: _selectedSource,
+      tag: _tagFilter,
     );
 
     if (!mounted) return;
@@ -137,13 +146,21 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   List<Article> _applyFilter(List<Article> source) {
+    var filtered = List.of(source);
+    if (_tagFilter != null) {
+      filtered = filtered
+          .where((a) => a.tags.contains(_tagFilter!))
+          .toList();
+    }
     final q = _searchQuery.trim().toLowerCase();
-    if (q.isEmpty) return List.of(source);
-    return source.where((a) {
-      final title = a.title.toLowerCase();
-      final summary = a.summary?.toLowerCase() ?? '';
-      return title.contains(q) || summary.contains(q);
-    }).toList();
+    if (q.isNotEmpty) {
+      filtered = filtered.where((a) {
+        final title = a.title.toLowerCase();
+        final summary = a.summary?.toLowerCase() ?? '';
+        return title.contains(q) || summary.contains(q);
+      }).toList();
+    }
+    return filtered;
   }
 
   void _filterArticles() {
@@ -156,8 +173,20 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _onSourceSelected(String? source) {
-    if (source == _selectedSource) return;
-    setState(() => _selectedSource = source);
+    if (source == _selectedSource && _tagFilter == null) return;
+    setState(() {
+      _selectedSource = source;
+      _tagFilter = null;
+    });
+    _loadArticles(reset: true);
+  }
+
+  void _onTagSelected(String tag) {
+    if (_tagFilter == tag) return;
+    setState(() {
+      _tagFilter = tag;
+      _selectedSource = null;
+    });
     _loadArticles(reset: true);
   }
 
@@ -309,7 +338,23 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildMobileFilterChips() {
     final chips = <Widget>[
-      _mobileChip('ALL', _selectedSource == null, () => _onSourceSelected(null)),
+      _mobileChip(
+        'ALL',
+        _selectedSource == null && _tagFilter == null,
+        () => _onSourceSelected(null),
+      ),
+      _mobileChip(
+        'RELEASES',
+        _tagFilter == 'release',
+        () => _onTagSelected('release'),
+        selectedColor: _kReleaseGreen,
+      ),
+      _mobileChip(
+        'SECURITY',
+        _tagFilter == 'security',
+        () => _onTagSelected('security'),
+        selectedColor: _kSecurityOrange,
+      ),
       for (final s in _sources)
         _mobileChip(
           s.toUpperCase(),
@@ -331,9 +376,15 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _mobileChip(String label, bool selected, VoidCallback onTap) {
+  Widget _mobileChip(
+    String label,
+    bool selected,
+    VoidCallback onTap, {
+    Color? selectedColor,
+  }) {
+    final activeColor = selectedColor ?? kRed;
     return Material(
-      color: selected ? kRed : _surface2,
+      color: selected ? activeColor : _surface2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
         side: BorderSide(
@@ -907,6 +958,24 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (_latestReleases.isNotEmpty) ...[
+              Text(
+                'LATEST RELEASES',
+                style: TextStyle(
+                  fontSize: 10,
+                  color: _textMuted,
+                  letterSpacing: 2,
+                ),
+              ),
+              const SizedBox(height: 12),
+              for (final release in _latestReleases) ...[
+                _latestReleaseRow(release),
+                const SizedBox(height: 10),
+              ],
+              const SizedBox(height: 12),
+              Divider(color: _border),
+              const SizedBox(height: 24),
+            ],
             Text(
               "TODAY'S TOP SOURCES",
               style: TextStyle(
@@ -944,6 +1013,42 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 24),
             _systemStatusCard(),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _latestReleaseRow(Article article) {
+    final when = article.publishedAt ?? article.createdAt;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => _onArticleTap(article, desktop: true),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 2),
+          child: Row(
+            children: [
+              const Icon(
+                Icons.rocket_launch,
+                size: 12,
+                color: _kReleaseGreen,
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  article.title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 11, color: _textPrimary),
+                ),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                timeago.format(when),
+                style: TextStyle(fontSize: 10, color: _textMuted),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -6,6 +6,10 @@ import '../models/article.dart';
 import '../theme/app_theme.dart';
 import '../utils/favicons.dart';
 
+const _kReleaseGreen = Color(0xFF00AA44);
+const _kSecurityOrange = Color(0xFFFF6600);
+const _kGitHubGreen = Color(0xFF238636);
+
 class ArticleCard extends StatelessWidget {
   final Article article;
   final VoidCallback onTap;
@@ -17,6 +21,89 @@ class ArticleCard extends StatelessWidget {
     required this.onTap,
     this.compact = false,
   });
+
+  bool get _isRelease => article.tags.contains('release');
+  bool get _isSecurity =>
+      article.tags.contains('security') || article.tags.contains('cve');
+
+  Color _accentColor() {
+    if (_isSecurity) return _kSecurityOrange;
+    if (_isRelease) return _kReleaseGreen;
+    return kRed;
+  }
+
+  Color _tagColor(String tag) {
+    if (tag == 'release') return _kReleaseGreen;
+    if (tag == 'security' || tag == 'cve') return _kSecurityOrange;
+    return kRed;
+  }
+
+  Widget _buildSourceIcon(Color border) {
+    if (article.source == 'GitHub Releases') {
+      return Container(
+        width: 20,
+        height: 20,
+        decoration: BoxDecoration(
+          color: _kGitHubGreen,
+          borderRadius: BorderRadius.circular(4),
+        ),
+        alignment: Alignment.center,
+        child: const Icon(
+          Icons.rocket_launch,
+          size: 12,
+          color: Colors.white,
+        ),
+      );
+    }
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(4),
+      child: CachedNetworkImage(
+        imageUrl: faviconUrl(article.source),
+        width: 20,
+        height: 20,
+        placeholder: (context, url) => Container(
+          width: 20,
+          height: 20,
+          color: border,
+        ),
+        errorWidget: (context, url, error) => Container(
+          width: 20,
+          height: 20,
+          color: border,
+        ),
+      ),
+    );
+  }
+
+  Widget? _buildBadge() {
+    if (_isSecurity) {
+      return _badge(label: 'SECURITY', color: _kSecurityOrange);
+    }
+    if (_isRelease) {
+      return _badge(label: 'RELEASE', color: _kReleaseGreen);
+    }
+    return null;
+  }
+
+  Widget _badge({required String label, required Color color}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        border: Border.all(color: color, width: 0.5),
+        borderRadius: BorderRadius.circular(3),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 9,
+          color: color,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 1.0,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +120,7 @@ class ArticleCard extends StatelessWidget {
         article.summary != null &&
         article.summary!.isNotEmpty;
     final titleMaxLines = compact ? 1 : 2;
+    final badge = _buildBadge();
 
     return Material(
       color: theme.cardColor,
@@ -47,7 +135,7 @@ class ArticleCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Container(width: 3, color: kRed),
+              Container(width: 3, color: _accentColor()),
               Expanded(
                 child: Padding(
                   padding: EdgeInsets.symmetric(
@@ -60,24 +148,7 @@ class ArticleCard extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(4),
-                            child: CachedNetworkImage(
-                              imageUrl: faviconUrl(article.source),
-                              width: 20,
-                              height: 20,
-                              placeholder: (context, url) => Container(
-                                width: 20,
-                                height: 20,
-                                color: border,
-                              ),
-                              errorWidget: (context, url, error) => Container(
-                                width: 20,
-                                height: 20,
-                                color: border,
-                              ),
-                            ),
-                          ),
+                          _buildSourceIcon(border),
                           const SizedBox(width: 8),
                           Flexible(
                             child: Text(
@@ -91,13 +162,14 @@ class ArticleCard extends StatelessWidget {
                               ),
                             ),
                           ),
+                          if (badge != null) ...[
+                            const SizedBox(width: 6),
+                            badge,
+                          ],
                           const Spacer(),
                           Text(
                             timeago.format(when),
-                            style: TextStyle(
-                              color: muted,
-                              fontSize: 11,
-                            ),
+                            style: TextStyle(color: muted, fontSize: 11),
                           ),
                         ],
                       ),
@@ -135,8 +207,8 @@ class ArticleCard extends StatelessWidget {
                               if (i > 0) const SizedBox(width: 12),
                               Text(
                                 '#${visibleTags[i]}',
-                                style: const TextStyle(
-                                  color: kRed,
+                                style: TextStyle(
+                                  color: _tagColor(visibleTags[i]),
                                   fontSize: 11,
                                   fontWeight: FontWeight.w600,
                                 ),
