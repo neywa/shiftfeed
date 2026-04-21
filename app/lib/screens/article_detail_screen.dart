@@ -1,5 +1,4 @@
-import 'dart:io';
-
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:url_launcher/url_launcher.dart';
@@ -30,12 +29,15 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
   bool _isLoading = true;
   WebViewController? _controller;
 
-  bool get _webViewSupported => Platform.isAndroid || Platform.isIOS;
+  bool get _supportsWebView =>
+      !kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.android ||
+          defaultTargetPlatform == TargetPlatform.iOS);
 
   @override
   void initState() {
     super.initState();
-    if (_webViewSupported) {
+    if (_supportsWebView) {
       _controller = WebViewController()
         ..setJavaScriptMode(JavaScriptMode.unrestricted)
         ..setNavigationDelegate(
@@ -77,7 +79,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
           ),
         ],
       ),
-      body: _webViewSupported ? _buildWebView() : _buildFallback(theme),
+      body: _supportsWebView ? _buildWebView() : _buildFallback(theme),
     );
   }
 
