@@ -43,3 +43,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Supabase credentials — injected via --dart-define on web/CI, loaded
+# locally from this file for mobile/desktop builds
+assets/.env

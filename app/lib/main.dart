@@ -4,13 +4,22 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'screens/home_screen.dart';
 
+const _supabaseUrl = String.fromEnvironment('SUPABASE_URL');
+const _supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: 'assets/.env');
-  await Supabase.initialize(
-    url: dotenv.env['SUPABASE_URL']!,
-    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
-  );
+
+  if (_supabaseUrl.isNotEmpty && _supabaseAnonKey.isNotEmpty) {
+    await Supabase.initialize(url: _supabaseUrl, anonKey: _supabaseAnonKey);
+  } else {
+    await dotenv.load(fileName: 'assets/.env');
+    await Supabase.initialize(
+      url: dotenv.env['SUPABASE_URL']!,
+      anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
+    );
+  }
+
   runApp(const MyApp());
 }
 

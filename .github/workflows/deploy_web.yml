@@ -31,18 +31,12 @@ jobs:
         working-directory: app
         run: flutter pub get
 
-      - name: Write Supabase .env
-        working-directory: app
-        run: |
-          mkdir -p assets
-          cat > assets/.env <<EOF
-          SUPABASE_URL=${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
-          EOF
-
       - name: Build web
         working-directory: app
-        run: flutter build web --release
+        run: |
+          flutter build web --release \
+            --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
+            --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
