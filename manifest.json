@@ -1,11 +1,11 @@
 {
-    "name": "ona",
-    "short_name": "ona",
+    "name": "OpenShift News",
+    "short_name": "OCP News",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#1a1a1a",
+    "theme_color": "#EE0000",
+    "description": "All OpenShift news in one place",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
