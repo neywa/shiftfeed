@@ -161,7 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('OpenShift News'),
+            const Text('OpenShift News Aggregator'),
             Text(
               '${_filteredArticles.length} articles',
               style: theme.textTheme.bodySmall?.copyWith(

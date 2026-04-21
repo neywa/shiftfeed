@@ -32,24 +32,24 @@ RSS_SOURCES: list[RSSSource] = [
         "tags": ["blog", "developer"],
     },
     {
-        "url": "https://cloud.redhat.com/blog/feed",
-        "source": "OpenShift Blog",
-        "tags": ["blog", "openshift"],
-    },
-    {
         "url": "https://kubernetes.io/feed.xml",
         "source": "Kubernetes Blog",
         "tags": ["blog", "kubernetes"],
     },
     {
-        "url": "https://www.reddit.com/r/openshift/.rss",
-        "source": "Reddit r/openshift",
-        "tags": ["community", "reddit"],
+        "url": "https://www.cncf.io/feed/",
+        "source": "CNCF Blog",
+        "tags": ["blog", "cncf", "kubernetes"],
     },
     {
         "url": "https://hnrss.org/newest?q=openshift",
         "source": "Hacker News",
         "tags": ["community", "hackernews"],
+    },
+    {
+        "url": "https://hnrss.org/newest?q=kubernetes+openshift",
+        "source": "Hacker News",
+        "tags": ["community", "hackernews", "kubernetes"],
     },
 ]
 

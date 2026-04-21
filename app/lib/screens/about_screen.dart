@@ -7,9 +7,8 @@ class AboutScreen extends StatelessWidget {
   static const _sources = [
     'Red Hat Blog',
     'Red Hat Developer',
-    'OpenShift Blog',
     'Kubernetes Blog',
-    'Reddit r/openshift',
+    'CNCF Blog',
     'Hacker News',
   ];
 
@@ -73,7 +72,7 @@ class AboutScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'OpenShift News',
+                    'OpenShift News Aggregator',
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),

@@ -1,5 +1,5 @@
 {
-    "name": "OpenShift News",
+    "name": "OpenShift News Aggregator",
     "short_name": "OCP News",
     "start_url": ".",
     "display": "standalone",
