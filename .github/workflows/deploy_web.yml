@@ -31,6 +31,9 @@ jobs:
         working-directory: app
         run: flutter pub get
 
+      - name: Create empty .env placeholder
+        run: mkdir -p app/assets && touch app/assets/.env
+
       - name: Build web
         working-directory: app
         run: |
