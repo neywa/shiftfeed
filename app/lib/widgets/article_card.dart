@@ -159,7 +159,7 @@ class ArticleCard extends StatelessWidget {
         side: BorderSide(color: border, width: 0.5),
         borderRadius: BorderRadius.circular(8),
       ),
-      clipBehavior: Clip.antiAlias,
+      clipBehavior: Clip.none,
       child: InkWell(
         onTap: onTap,
         child: IntrinsicHeight(
