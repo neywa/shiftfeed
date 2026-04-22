@@ -79,7 +79,11 @@ class ArticleCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(4),
         ),
         alignment: Alignment.center,
-        child: const Icon(Icons.rocket_launch, size: 12, color: Colors.white),
+        child: const Icon(
+          Icons.rocket_launch,
+          size: 12,
+          color: Colors.white,
+        ),
       );
     }
     return ClipRRect(
@@ -89,8 +93,11 @@ class ArticleCard extends StatelessWidget {
         width: 20,
         height: 20,
         fit: BoxFit.contain,
-        errorBuilder: (context, error, stack) =>
-            Container(width: 20, height: 20, color: border),
+        errorBuilder: (context, error, stack) => Container(
+          width: 20,
+          height: 20,
+          color: border,
+        ),
       ),
     );
   }
@@ -140,8 +147,9 @@ class ArticleCard extends StatelessWidget {
     final when = article.publishedAt ?? article.createdAt;
     final maxTags = compact ? 2 : 3;
     final visibleTags = article.tags.take(maxTags).toList();
-    final hasSummary =
-        !compact && article.summary != null && article.summary!.isNotEmpty;
+    final hasSummary = !compact &&
+        article.summary != null &&
+        article.summary!.isNotEmpty;
     final titleMaxLines = compact ? 1 : 2;
     final badge = _buildBadge();
 
@@ -154,97 +162,102 @@ class ArticleCard extends StatelessWidget {
       clipBehavior: Clip.none,
       child: InkWell(
         onTap: onTap,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(width: 3, height: double.infinity, color: _accentColor()),
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(
-                  16,
-                  compact ? 10 : 16,
-                  16,
-                  compact ? 14 : 20,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
-                      children: [
-                        _buildSourceIcon(border),
-                        const SizedBox(width: 8),
-                        Flexible(
-                          child: Text(
-                            article.source.toUpperCase(),
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: secondary,
-                              fontSize: 11,
-                              letterSpacing: 1.5,
-                              fontWeight: FontWeight.w600,
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(width: 3, color: _accentColor()),
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    16,
+                    compact ? 10 : 16,
+                    16,
+                    compact ? 14 : 20,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        children: [
+                          _buildSourceIcon(border),
+                          const SizedBox(width: 8),
+                          Flexible(
+                            child: Text(
+                              article.source.toUpperCase(),
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: secondary,
+                                fontSize: 11,
+                                letterSpacing: 1.5,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
-                        ),
-                        if (badge != null) ...[const SizedBox(width: 6), badge],
-                        const Spacer(),
-                        Text(
-                          timeago.format(when),
-                          style: TextStyle(color: muted, fontSize: 11),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      article.title,
-                      maxLines: titleMaxLines,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: titleColor,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        height: 1.5,
-                        leadingDistribution: TextLeadingDistribution.even,
+                          if (badge != null) ...[
+                            const SizedBox(width: 6),
+                            badge,
+                          ],
+                          const Spacer(),
+                          Text(
+                            timeago.format(when),
+                            style: TextStyle(color: muted, fontSize: 11),
+                          ),
+                        ],
                       ),
-                    ),
-                    if (hasSummary) ...[
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 10),
                       Text(
-                        article.summary!,
-                        maxLines: 2,
+                        article.title,
+                        maxLines: titleMaxLines,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          color: secondary,
-                          fontSize: 13,
+                          color: titleColor,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
                           height: 1.5,
                           leadingDistribution: TextLeadingDistribution.even,
                         ),
                       ),
-                    ],
-                    if (visibleTags.isNotEmpty) ...[
-                      const SizedBox(height: 12),
-                      Wrap(
-                        runSpacing: 4,
-                        children: [
-                          for (int i = 0; i < visibleTags.length; i++) ...[
-                            if (i > 0) const SizedBox(width: 12),
-                            Text(
-                              '#${visibleTags[i]}',
-                              style: TextStyle(
-                                color: _tagColor(visibleTags[i]),
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
+                      if (hasSummary) ...[
+                        const SizedBox(height: 8),
+                        Text(
+                          article.summary!,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: secondary,
+                            fontSize: 13,
+                            height: 1.5,
+                            leadingDistribution: TextLeadingDistribution.even,
+                          ),
+                        ),
+                      ],
+                      if (visibleTags.isNotEmpty) ...[
+                        const SizedBox(height: 12),
+                        Wrap(
+                          runSpacing: 4,
+                          children: [
+                            for (int i = 0; i < visibleTags.length; i++) ...[
+                              if (i > 0) const SizedBox(width: 12),
+                              Text(
+                                '#${visibleTags[i]}',
+                                style: TextStyle(
+                                  color: _tagColor(visibleTags[i]),
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
-                            ),
+                            ],
                           ],
-                        ],
-                      ),
+                        ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -982,11 +982,11 @@ class _HomeScreenState extends State<HomeScreen> {
         controller: _scrollController,
         padding: const EdgeInsets.all(20),
         clipBehavior: Clip.none,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
+        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: 500,
+          mainAxisExtent: 236,
           crossAxisSpacing: 16,
           mainAxisSpacing: 16,
-          childAspectRatio: 2.2,
         ),
         itemCount: itemCount,
         itemBuilder: (context, index) {
