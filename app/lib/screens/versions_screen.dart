@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:url_launcher/url_launcher.dart';
 
@@ -318,11 +319,10 @@ class _VersionCard extends StatelessWidget {
                             ),
                             Text(
                               version.latestStable,
-                              style: TextStyle(
+                              style: GoogleFonts.ibmPlexMono(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
                                 color: textPrimary,
-                                fontFamily: 'monospace',
                               ),
                             ),
                           ],

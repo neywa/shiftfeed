@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 const kRed = Color(0xFFEE0000);
 const kBg = Color(0xFF0D0D0D);
@@ -45,18 +46,26 @@ ThemeData appTheme() => ThemeData(
   ),
   cardColor: kSurface,
   dividerColor: kBorder,
-  fontFamily: 'monospace',
-  appBarTheme: const AppBarTheme(
+  textTheme: GoogleFonts.ibmPlexSansTextTheme(
+    ThemeData.dark().textTheme,
+  ).copyWith(
+    labelSmall: GoogleFonts.ibmPlexMono(
+      color: kTextMuted,
+      fontSize: 10,
+      letterSpacing: 1.0,
+    ),
+  ),
+  appBarTheme: AppBarTheme(
     backgroundColor: kBg,
     elevation: 0,
     centerTitle: false,
-    titleTextStyle: TextStyle(
+    titleTextStyle: GoogleFonts.ibmPlexSans(
       color: kTextPrimary,
       fontSize: 14,
       fontWeight: FontWeight.w800,
       letterSpacing: 2.0,
     ),
-    iconTheme: IconThemeData(color: kTextSecondary),
+    iconTheme: const IconThemeData(color: kTextSecondary),
     systemOverlayStyle: SystemUiOverlayStyle.light,
   ),
   chipTheme: ChipThemeData(
@@ -84,18 +93,20 @@ ThemeData lightTheme() => ThemeData(
   ),
   cardColor: kLightSurface,
   dividerColor: kLightBorder,
-  fontFamily: 'monospace',
-  appBarTheme: const AppBarTheme(
+  textTheme: GoogleFonts.ibmPlexSansTextTheme(
+    ThemeData.light().textTheme,
+  ),
+  appBarTheme: AppBarTheme(
     backgroundColor: kLightBg,
     elevation: 0,
     centerTitle: false,
-    titleTextStyle: TextStyle(
+    titleTextStyle: GoogleFonts.ibmPlexSans(
       color: kLightTextPrimary,
       fontSize: 14,
       fontWeight: FontWeight.w800,
       letterSpacing: 2.0,
     ),
-    iconTheme: IconThemeData(color: kLightTextSecondary),
+    iconTheme: const IconThemeData(color: kLightTextSecondary),
     systemOverlayStyle: SystemUiOverlayStyle.dark,
   ),
   chipTheme: ChipThemeData(

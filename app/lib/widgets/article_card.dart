@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 import '../models/article.dart';
@@ -209,11 +210,16 @@ class ArticleCard extends StatelessWidget {
                         article.title,
                         maxLines: titleMaxLines,
                         overflow: TextOverflow.ellipsis,
+                        strutStyle: const StrutStyle(
+                          forceStrutHeight: true,
+                          height: 1.4,
+                        ),
                         style: TextStyle(
                           color: titleColor,
-                          fontSize: 16,
+                          fontSize: 15,
                           fontWeight: FontWeight.w700,
-                          height: 1.3,
+                          height: 1.4,
+                          fontFamily: GoogleFonts.ibmPlexSans().fontFamily,
                         ),
                       ),
                       if (hasSummary) ...[
