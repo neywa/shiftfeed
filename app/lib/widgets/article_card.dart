@@ -170,9 +170,11 @@ class ArticleCard extends StatelessWidget {
               Container(width: 3, color: _accentColor()),
               Expanded(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: compact ? 10 : 16,
+                  padding: EdgeInsets.fromLTRB(
+                    16,
+                    compact ? 10 : 16,
+                    16,
+                    compact ? 14 : 20,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -212,13 +214,14 @@ class ArticleCard extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         strutStyle: const StrutStyle(
                           forceStrutHeight: true,
-                          height: 1.4,
+                          height: 1.5,
+                          leading: 0.2,
                         ),
                         style: TextStyle(
                           color: titleColor,
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
-                          height: 1.4,
+                          height: 1.5,
                           fontFamily: GoogleFonts.ibmPlexSans().fontFamily,
                         ),
                       ),
