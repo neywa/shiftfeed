@@ -648,27 +648,13 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'SOURCES',
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: _textMuted,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'last 7 days',
-                    style: TextStyle(
-                      fontSize: 9,
-                      color: _textMuted,
-                      letterSpacing: 1,
-                    ),
-                  ),
-                ],
+              child: Text(
+                'SOURCES',
+                style: TextStyle(
+                  fontSize: 10,
+                  color: _textMuted,
+                  letterSpacing: 2,
+                ),
               ),
             ),
           ),
@@ -792,14 +778,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     fontSize: 12,
                     color: selected ? _textPrimary : _textSecondary,
                   ),
-                ),
-              ),
-              Text(
-                '${_stableSourceCounts[source] ?? 0}',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: _textMuted,
-                  fontFamily: 'monospace',
                 ),
               ),
             ],
@@ -1192,7 +1170,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 24),
             ],
             Text(
-              "TODAY'S TOP SOURCES",
+              "THIS WEEK'S TOP SOURCES",
               style: TextStyle(
                 fontSize: 10,
                 color: _textMuted,
