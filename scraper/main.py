@@ -2,6 +2,7 @@ import sys
 import time
 from datetime import datetime, timezone
 
+from scraper.digest import DigestGenerator
 from scraper.fcm import FCMSender
 from scraper.notified_cache import NotifiedCache
 from scraper.sources.cve_tagger import enrich_with_cve_tags
@@ -118,6 +119,20 @@ def main() -> None:
         cache.mark_notified(article.url)
 
     print(f"Notified: {cve_count} CVEs, {release_count} releases")
+
+    print("Generating AI daily digest...")
+    digest_gen = DigestGenerator(client)
+    digest = digest_gen.generate()
+    if digest:
+        print("=== TODAY'S DIGEST ===")
+        print(digest)
+        print("=== END DIGEST ===")
+        fcm.send_to_topic(
+            topic="all",
+            title="🔴 ShiftFeed Daily Briefing",
+            body="Your OpenShift intelligence digest is ready. Tap to read.",
+            data={"type": "digest"},
+        )
 
     print(f"=== Scraper finished === {datetime.now(timezone.utc).isoformat()}")
 
