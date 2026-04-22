@@ -53,6 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Article> _articles = [];
   List<Article> _filteredArticles = [];
   List<String> _sources = [];
+  Map<String, int> _stableSourceCounts = {};
   List<OcpVersion> _ocpVersions = [];
   List<CveAlert> _cveAlerts = [];
   String? _selectedSource;
@@ -78,6 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _scrollController.addListener(_onScroll);
     _loadSources();
+    _loadSourceCounts();
     _loadOcpVersions();
     _loadCveAlerts();
     _loadArticles(reset: true);
@@ -90,12 +92,6 @@ class _HomeScreenState extends State<HomeScreen> {
     _searchController.dispose();
     super.dispose();
   }
-
-  Map<String, int> get _sourceCounts => Map.fromEntries(
-    _sources.map(
-      (s) => MapEntry(s, _articles.where((a) => a.source == s).length),
-    ),
-  );
 
   DateTime? get _lastUpdate {
     if (_articles.isEmpty) return null;
@@ -121,6 +117,12 @@ class _HomeScreenState extends State<HomeScreen> {
     final sources = await _repository.fetchSources();
     if (!mounted) return;
     setState(() => _sources = sources);
+  }
+
+  Future<void> _loadSourceCounts() async {
+    final counts = await _repository.fetchSourceCounts(days: 7);
+    if (!mounted) return;
+    setState(() => _stableSourceCounts = counts);
   }
 
   Future<void> _loadOcpVersions() async {
@@ -586,7 +588,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildLeftSidebar() {
-    final counts = _sourceCounts;
     return Container(
       width: 240,
       decoration: BoxDecoration(
@@ -642,13 +643,27 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(
-                'SOURCES',
-                style: TextStyle(
-                  fontSize: 10,
-                  color: _textMuted,
-                  letterSpacing: 2,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'SOURCES',
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: _textMuted,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'last 7 days',
+                    style: TextStyle(
+                      fontSize: 9,
+                      color: _textMuted,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -656,8 +671,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: ListView(
               padding: EdgeInsets.zero,
               children: [
-                for (final s in _sources)
-                  _sourceItem(s, counts[s] ?? 0),
+                for (final s in _sources) _sourceItem(s),
               ],
             ),
           ),
@@ -731,7 +745,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _sourceItem(String source, int count) {
+  Widget _sourceItem(String source) {
     final selected = _selectedSource == source;
     return Material(
       color: Colors.transparent,
@@ -776,8 +790,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               Text(
-                count.toString().padLeft(2, '0'),
-                style: TextStyle(fontSize: 12, color: _textMuted),
+                '${_stableSourceCounts[source] ?? 0}',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: _textMuted,
+                  fontFamily: 'monospace',
+                ),
               ),
             ],
           ),
@@ -1024,13 +1042,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildRightSidebar() {
-    final counts = _sourceCounts;
-    final top = counts.entries.toList()
+    final sortedSources = _stableSourceCounts.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
-    final topSources = top.take(4).toList();
-    final maxCount = topSources.isEmpty
-        ? 1
-        : topSources.first.value.clamp(1, 1 << 30);
+    final topSources = sortedSources.take(4).toList();
+    final maxCount = _stableSourceCounts.values
+        .fold(0, (a, b) => a > b ? a : b);
 
     return Container(
       width: 280,
@@ -1270,6 +1286,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _topSourceRow(String source, int count, int maxCount) {
+    final barFraction = maxCount > 0 ? count / maxCount : 0.0;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1291,7 +1308,6 @@ class _HomeScreenState extends State<HomeScreen> {
         const SizedBox(height: 6),
         LayoutBuilder(
           builder: (context, constraints) {
-            final ratio = count / maxCount;
             return Stack(
               children: [
                 Container(
@@ -1301,7 +1317,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 Container(
                   height: 2,
-                  width: constraints.maxWidth * ratio,
+                  width: constraints.maxWidth * barFraction,
                   color: kRed,
                 ),
               ],

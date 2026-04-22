@@ -94,6 +94,30 @@ class ArticleRepository {
     }
   }
 
+  Future<Map<String, int>> fetchSourceCounts({int days = 7}) async {
+    try {
+      final since = DateTime.now()
+          .subtract(Duration(days: days))
+          .toUtc()
+          .toIso8601String();
+      final response = await _client
+          .from('articles')
+          .select('source')
+          .gte('published_at', since);
+      final list = response as List;
+      final counts = <String, int>{};
+      for (final row in list) {
+        final source = (row as Map<String, dynamic>)['source'] as String;
+        counts[source] = (counts[source] ?? 0) + 1;
+      }
+      return counts;
+    } catch (e) {
+      // ignore: avoid_print
+      print('fetchSourceCounts error: $e');
+      return {};
+    }
+  }
+
   Future<List<String>> fetchSources() async {
     try {
       final response = await _client.from('articles').select('source');
