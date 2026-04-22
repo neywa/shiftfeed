@@ -36,7 +36,9 @@
       "Bash(keytool -printcert)",
       "Bash(python3 -c \"import yaml; print\\('pyyaml:', yaml.__version__\\)\")",
       "Bash(git log *)",
-      "Bash(git status *)"
+      "Bash(git status *)",
+      "Bash(curl -sL -o /home/roman/coding/shiftfeed/app/assets/favicons/hackernoon.png \"https://www.google.com/s2/favicons?domain=hackernoon.com&sz=64\")",
+      "Bash(python3 -c \"from datetime import date; print\\(date.today\\(\\).strftime\\('%A, %B %-d %Y'\\)\\)\")"
     ]
   }
 }
