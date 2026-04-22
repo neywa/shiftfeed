@@ -47,3 +47,8 @@ app.*.map.json
 # Supabase credentials — injected via --dart-define on web/CI, loaded
 # locally from this file for mobile/desktop builds
 assets/.env
+
+# Firebase config — contains client API keys. Provide via CI secret
+# at build time rather than committing.
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist

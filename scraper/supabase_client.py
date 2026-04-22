@@ -18,6 +18,10 @@ class SupabaseClient:
         key = os.environ["SUPABASE_SECRET_KEY"]
         self._client: Client = create_client(url, key)
 
+    @property
+    def client(self) -> Client:
+        return self._client
+
     def upsert_article(self, article: Article) -> None:
         try:
             row = article.to_dict()

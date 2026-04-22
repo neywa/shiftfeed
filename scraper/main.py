@@ -1,6 +1,8 @@
 import sys
 from datetime import datetime, timezone
 
+from scraper.fcm import FCMSender
+from scraper.notified_cache import NotifiedCache
 from scraper.sources.cve_tagger import enrich_with_cve_tags
 from scraper.sources.github_releases import fetch_github_releases
 from scraper.sources.rss import fetch_all_rss
@@ -42,6 +44,48 @@ def main() -> None:
                     title=article.title,
                     article_url=article.url,
                 )
+
+    fcm = FCMSender()
+    cache = NotifiedCache(client)
+
+    for article in all_articles:
+        if "cve" not in article.tags:
+            continue
+        if cache.is_notified(article.url):
+            continue
+
+        severity = None
+        for tag in article.tags:
+            if tag in ("critical", "important", "moderate"):
+                severity = tag
+                break
+
+        cve_id = next(
+            (t for t in article.tags if t.startswith("CVE-")),
+            "CVE",
+        )
+
+        fcm.send_cve_alert(
+            cve_id=cve_id,
+            title=article.title,
+            severity=severity or "unknown",
+            url=article.url,
+        )
+        cache.mark_notified(article.url)
+
+    for article in all_articles:
+        if "release" not in article.tags:
+            continue
+        if cache.is_notified(article.url):
+            continue
+
+        fcm.send_release_alert(
+            title=article.title,
+            url=article.url,
+        )
+        cache.mark_notified(article.url)
+
+    print("FCM notifications sent.")
 
     print(f"=== Scraper finished === {datetime.now(timezone.utc).isoformat()}")
 

@@ -18,7 +18,17 @@
       "Bash(python3 -c ' *)",
       "Bash(git rm *)",
       "Bash(flutter clean *)",
-      "Bash(git reset *)"
+      "Bash(git reset *)",
+      "Bash(git -C /home/roman/coding/ona remote -v)",
+      "Bash(python3 -c \"import google.auth\")",
+      "Bash(pip install *)",
+      "Bash(python3 -m pip install --user google-auth)",
+      "Read(//home/roman/**)",
+      "Bash(/home/roman/coding/shiftfeed/venv/bin/python -c \"import google.auth, httpx; print\\('ok'\\)\")",
+      "Bash(/home/roman/coding/shiftfeed/venv/bin/pip install *)",
+      "Bash(/home/roman/coding/shiftfeed/venv/bin/python --version)",
+      "Bash(/home/roman/coding/shiftfeed/venv/bin/python -m pip install google-auth)",
+      "Bash(./venv/bin/python -c ' *)"
     ]
   }
 }
