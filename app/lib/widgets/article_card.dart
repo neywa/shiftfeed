@@ -46,12 +46,21 @@ class ArticleCard extends StatelessWidget {
     return _kSecurityOrange;
   }
 
+  Color _sourceAccentColor(String source) {
+    switch (source) {
+      case 'HackerNoon':
+        return const Color(0xFF00FF00);
+      default:
+        return kRed;
+    }
+  }
+
   Color _accentColor() {
     final severity = _severity;
     if (severity != null) return _severityColor(severity);
     if (_isSecurity) return _kSecurityOrange;
     if (_isRelease) return _kReleaseGreen;
-    return kRed;
+    return _sourceAccentColor(article.source);
   }
 
   Color _tagColor(String tag) {

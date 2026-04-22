@@ -9,6 +9,7 @@ const _faviconMap = {
   'Hacker News': 'assets/favicons/hackernews.png',
   'Reddit r/openshift': 'assets/favicons/reddit.png',
   'GitHub Releases': 'assets/favicons/github.png',
+  'HackerNoon': 'assets/favicons/hackernoon.png',
 };
 
 String faviconAsset(String source) => _faviconMap[source] ?? _defaultFavicon;
