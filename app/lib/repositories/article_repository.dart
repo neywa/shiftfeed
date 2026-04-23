@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/article.dart';
@@ -204,15 +207,27 @@ class ArticleRepository {
     return noise.contains(tag.toLowerCase());
   }
 
+  static final Uri _scrapeRunsUrl = Uri.parse(
+    'https://api.github.com/repos/Neywa/shiftfeed/actions/workflows/scrape.yml/runs?per_page=1&status=success',
+  );
+
   Future<DateTime?> fetchLastScrapedAt() async {
     try {
-      final response = await _client
-          .from('articles')
-          .select('created_at')
-          .order('created_at', ascending: false)
-          .limit(1)
-          .single();
-      return DateTime.parse(response['created_at'] as String).toLocal();
+      final response = await http.get(
+        _scrapeRunsUrl,
+        headers: const {
+          'Accept': 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+      );
+      if (response.statusCode != 200) return null;
+      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      final runs = body['workflow_runs'] as List?;
+      if (runs == null || runs.isEmpty) return null;
+      final run = runs.first as Map<String, dynamic>;
+      final raw = (run['updated_at'] ?? run['run_started_at']) as String?;
+      if (raw == null) return null;
+      return DateTime.parse(raw).toLocal();
     } catch (e) {
       // ignore: avoid_print
       print('fetchLastScrapedAt error: $e');
