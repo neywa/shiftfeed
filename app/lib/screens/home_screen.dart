@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -64,6 +66,14 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _hasMore = true;
   int _bottomNavIndex = 0;
   ViewMode _viewMode = ViewMode.grid;
+
+  bool _isSearchMode = false;
+  List<Article> _searchResults = [];
+  bool _isSearching = false;
+  Timer? _searchDebounce;
+
+  List<Article> get _displayArticles =>
+      _isSearchMode ? _searchResults : _filteredArticles;
 
   bool get _isDark => Theme.of(context).brightness == Brightness.dark;
   Color get _surface => _isDark ? kSurface : kLightSurface;
@@ -162,12 +172,8 @@ class _HomeScreenState extends State<HomeScreen> {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _searchController.dispose();
+    _searchDebounce?.cancel();
     super.dispose();
-  }
-
-  DateTime? get _lastUpdate {
-    if (_articles.isEmpty) return null;
-    return _articles.first.publishedAt ?? _articles.first.createdAt;
   }
 
   List<Article> get _latestReleases => _articles
@@ -330,7 +336,35 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _onSearchChanged(String value) {
     setState(() => _searchQuery = value);
-    _filterArticles();
+
+    if (value.isEmpty) {
+      setState(() {
+        _isSearchMode = false;
+        _searchResults = [];
+        _isSearching = false;
+      });
+      _filterArticles();
+      return;
+    }
+
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 400), () {
+      _performSearch(value);
+    });
+  }
+
+  Future<void> _performSearch(String query) async {
+    if (query.isEmpty) return;
+    setState(() {
+      _isSearchMode = true;
+      _isSearching = true;
+    });
+    final results = await _repository.searchArticles(query: query);
+    if (!mounted) return;
+    setState(() {
+      _searchResults = results;
+      _isSearching = false;
+    });
   }
 
   void _onSourceSelected(String? source) {
@@ -628,27 +662,27 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildMobileList() {
-    if (_filteredArticles.isEmpty && _searchQuery.isNotEmpty) {
+    if (_isSearchMode && _isSearching) {
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         children: [
-          const SizedBox(height: 120),
+          const SizedBox(height: 160),
           Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.search_off, size: 56, color: _textMuted),
+                const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    color: kRed,
+                    strokeWidth: 2,
+                  ),
+                ),
                 const SizedBox(height: 12),
                 Text(
-                  'No results for "$_searchQuery"',
-                  style: TextStyle(color: _textSecondary),
-                ),
-                TextButton(
-                  onPressed: () {
-                    _searchController.clear();
-                    _onSearchChanged('');
-                  },
-                  child: const Text('Clear search'),
+                  'Searching...',
+                  style: TextStyle(fontSize: 12, color: _textMuted),
                 ),
               ],
             ),
@@ -657,7 +691,17 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
 
-    if (_filteredArticles.isEmpty && !_isLoading) {
+    if (_isSearchMode && !_isSearching && _searchResults.isEmpty) {
+      return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: [
+          const SizedBox(height: 120),
+          Center(child: _searchEmptyState()),
+        ],
+      );
+    }
+
+    if (!_isSearchMode && _filteredArticles.isEmpty && !_isLoading) {
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         children: [
@@ -684,21 +728,21 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
 
-    final showLoader = _isLoading;
-    final itemCount = _filteredArticles.length + (showLoader ? 1 : 0);
+    final showLoader = _isLoading && !_isSearchMode;
+    final itemCount = _displayArticles.length + (showLoader ? 1 : 0);
 
     return ListView.builder(
       controller: _scrollController,
       physics: const AlwaysScrollableScrollPhysics(),
       itemCount: itemCount,
       itemBuilder: (context, index) {
-        if (index >= _filteredArticles.length) {
+        if (index >= _displayArticles.length) {
           return const Padding(
             padding: EdgeInsets.symmetric(vertical: 24),
             child: _PollingIndicator(),
           );
         }
-        final article = _filteredArticles[index];
+        final article = _displayArticles[index];
         return Padding(
           padding: EdgeInsets.symmetric(
             horizontal: 12,
@@ -715,6 +759,44 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       },
     );
+  }
+
+  Widget _searchEmptyState() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(Icons.search_off, size: 48, color: _textMuted),
+        const SizedBox(height: 16),
+        Text(
+          'No results for "$_searchQuery"',
+          style: TextStyle(color: _textSecondary),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          _searchQuery.startsWith('#')
+              ? 'No articles found with tag $_searchQuery'
+              : 'Try a different search term or use #tag to search by tag',
+          style: TextStyle(fontSize: 11, color: _textMuted),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 16),
+        TextButton(
+          onPressed: _clearSearch,
+          child: const Text('Clear search'),
+        ),
+      ],
+    );
+  }
+
+  void _clearSearch() {
+    _searchController.clear();
+    _onSearchChanged('');
+    setState(() {
+      _isSearchMode = false;
+      _searchResults = [];
+      _tagFilter = null;
+    });
+    _filterArticles();
   }
 
   // ================= DESKTOP =================
@@ -806,32 +888,6 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: EdgeInsets.zero,
               children: [
                 for (final s in _sources) _sourceItem(s),
-              ],
-            ),
-          ),
-          Divider(color: _border, height: 1),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Row(
-              children: [
-                Container(
-                  width: 6,
-                  height: 6,
-                  decoration: const BoxDecoration(
-                    color: kStatusGreen,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Text(
-                    _lastUpdate != null
-                        ? 'Last update: ${timeago.format(_lastUpdate!)}'
-                        : 'Last update: n/a',
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 10, color: _textMuted),
-                  ),
-                ),
               ],
             ),
           ),
@@ -963,13 +1019,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 cursorColor: kRed,
                 textAlignVertical: TextAlignVertical.center,
                 decoration: InputDecoration(
-                  hintText: 'Search technical intelligence...',
+                  hintText: 'Search articles or #tag...',
                   hintStyle: TextStyle(color: _textMuted, fontSize: 13),
                   prefixIcon: Icon(
                     Icons.search,
                     color: _textMuted,
                     size: 18,
                   ),
+                  suffixIcon: _searchQuery.isEmpty
+                      ? null
+                      : IconButton(
+                          icon: Icon(
+                            Icons.clear,
+                            size: 16,
+                            color: _textMuted,
+                          ),
+                          onPressed: _clearSearch,
+                          tooltip: 'Clear search',
+                        ),
                   border: InputBorder.none,
                   isCollapsed: true,
                   contentPadding: const EdgeInsets.symmetric(vertical: 10),
@@ -1041,7 +1108,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Aggregated insights for SRE and DevOps operations.',
+                  _isSearchMode
+                      ? '${_searchResults.length} results'
+                      : '${_filteredArticles.length} articles',
                   style: TextStyle(color: _textSecondary, fontSize: 13),
                 ),
               ],
@@ -1080,34 +1149,38 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildDesktopGrid() {
-    if (_filteredArticles.isEmpty && _searchQuery.isNotEmpty) {
+    if (_isSearchMode && _isSearching) {
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.search_off, size: 56, color: _textMuted),
+            const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                color: kRed,
+                strokeWidth: 2,
+              ),
+            ),
             const SizedBox(height: 12),
             Text(
-              'No results for "$_searchQuery"',
-              style: TextStyle(color: _textSecondary),
-            ),
-            TextButton(
-              onPressed: () {
-                _searchController.clear();
-                _onSearchChanged('');
-              },
-              child: const Text('Clear search'),
+              'Searching...',
+              style: TextStyle(fontSize: 12, color: _textMuted),
             ),
           ],
         ),
       );
     }
 
-    if (_filteredArticles.isEmpty && _isLoading) {
+    if (_isSearchMode && !_isSearching && _searchResults.isEmpty) {
+      return Center(child: _searchEmptyState());
+    }
+
+    if (!_isSearchMode && _filteredArticles.isEmpty && _isLoading) {
       return const Center(child: _PollingIndicator());
     }
 
-    if (_filteredArticles.isEmpty) {
+    if (!_isSearchMode && _filteredArticles.isEmpty) {
       return Center(
         child: Text(
           'No articles yet',
@@ -1116,8 +1189,8 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
 
-    final showLoader = _isLoading;
-    final itemCount = _filteredArticles.length + (showLoader ? 1 : 0);
+    final showLoader = _isLoading && !_isSearchMode;
+    final itemCount = _displayArticles.length + (showLoader ? 1 : 0);
 
     if (_viewMode == ViewMode.grid) {
       return GridView.builder(
@@ -1132,10 +1205,10 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         itemCount: itemCount,
         itemBuilder: (context, index) {
-          if (index >= _filteredArticles.length) {
+          if (index >= _displayArticles.length) {
             return const Center(child: _PollingIndicator());
           }
-          final article = _filteredArticles[index];
+          final article = _displayArticles[index];
           return ArticleCard(
             article: article,
             onTap: () => _onArticleTap(article, desktop: true),
@@ -1152,13 +1225,13 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.all(20),
       itemCount: itemCount,
       itemBuilder: (context, index) {
-        if (index >= _filteredArticles.length) {
+        if (index >= _displayArticles.length) {
           return const Padding(
             padding: EdgeInsets.symmetric(vertical: 16),
             child: Center(child: _PollingIndicator()),
           );
         }
-        final article = _filteredArticles[index];
+        final article = _displayArticles[index];
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
           child: ArticleCard(
@@ -1365,19 +1438,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 spacing: 8,
                 runSpacing: 8,
                 children: _topTags.map((tag) {
-                  final isSelected = _tagFilter == tag;
+                  final isSelected = _searchQuery == '#$tag';
                   return GestureDetector(
                     onTap: () {
-                      setState(() {
-                        if (_tagFilter == tag) {
-                          _tagFilter = null;
-                          _selectedSource = null;
-                        } else {
-                          _tagFilter = tag;
-                          _selectedSource = null;
-                        }
-                      });
-                      _loadArticles(reset: true);
+                      final tagQuery = '#$tag';
+                      _searchController.text = tagQuery;
+                      _onSearchChanged(tagQuery);
+                      if (_scrollController.hasClients) {
+                        _scrollController.animateTo(
+                          0,
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeOut,
+                        );
+                      }
                     },
                     child: MouseRegion(
                       cursor: SystemMouseCursors.click,

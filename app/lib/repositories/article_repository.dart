@@ -39,6 +39,46 @@ class ArticleRepository {
     }
   }
 
+  Future<List<Article>> searchArticles({
+    required String query,
+    int limit = 50,
+  }) async {
+    try {
+      if (query.startsWith('#')) {
+        final tag = query.substring(1).toLowerCase().trim();
+        if (tag.isEmpty) return [];
+        final response = await _client
+            .from('articles')
+            .select()
+            .contains('tags', [tag])
+            .order('published_at', ascending: false)
+            .limit(limit);
+        return (response as List)
+            .map((row) => Article.fromJson(row as Map<String, dynamic>))
+            .toList();
+      }
+
+      final response = await _client
+          .from('articles')
+          .select()
+          .textSearch(
+            'search_vector',
+            query,
+            config: 'english',
+            type: TextSearchType.websearch,
+          )
+          .order('published_at', ascending: false)
+          .limit(limit);
+      return (response as List)
+          .map((row) => Article.fromJson(row as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      // ignore: avoid_print
+      print('searchArticles error: $e');
+      return [];
+    }
+  }
+
   Future<Digest?> fetchLatestDigest() async {
     try {
       final response = await _client
