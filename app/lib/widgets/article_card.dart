@@ -70,9 +70,29 @@ class ArticleCard extends StatelessWidget {
   }
 
   Color _tagColor(String tag) {
-    if (tag == 'release') return _kReleaseGreen;
-    if (tag == 'security' || tag == 'cve') return _kSecurityOrange;
-    return kRed;
+    final t = tag.toLowerCase();
+
+    // Security / CVE tags — orange
+    if (t == 'cve' || t == 'security' || t == 'advisory' ||
+        t.startsWith('cve-')) {
+      return const Color(0xFFFF6600);
+    }
+
+    // Severity tags — color coded
+    if (t == 'critical') return const Color(0xFFFF0000);
+    if (t == 'important') return const Color(0xFFFF6600);
+    if (t == 'moderate') return const Color(0xFFFFAA00);
+
+    // Release tags — green
+    if (t == 'release' || t == 'stable-channel') {
+      return const Color(0xFF00AA44);
+    }
+
+    // HackerNoon brand tag
+    if (t == 'hackernoon') return const Color(0xFF00CC00);
+
+    // Everything else — muted gray
+    return const Color(0xFF888888);
   }
 
   Widget _buildSourceIcon(Color border) {

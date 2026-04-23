@@ -29,17 +29,6 @@ const String _kOcpVersionsSource = 'OCP Versions';
 
 enum ViewMode { grid, list }
 
-const List<String> _popularTags = [
-  'Kubernetes',
-  'Security',
-  'OpenShift',
-  'CloudNative',
-  'SRE',
-  'DevOps',
-  'AI',
-  'Containers',
-];
-
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -61,6 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Map<String, int> _stableSourceCounts = {};
   List<OcpVersion> _ocpVersions = [];
   List<CveAlert> _cveAlerts = [];
+  List<String> _topTags = [];
   Map<String, bool> _bookmarkStates = {};
   String? _selectedSource;
   String? _tagFilter;
@@ -88,8 +78,15 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadSourceCounts();
     _loadOcpVersions();
     _loadCveAlerts();
+    _loadTopTags();
     _loadArticles(reset: true);
     _loadBookmarkStates();
+  }
+
+  Future<void> _loadTopTags() async {
+    final tags = await _repository.fetchTopTags(limit: 10, days: 30);
+    if (!mounted) return;
+    setState(() => _topTags = tags);
   }
 
   @override
@@ -237,6 +234,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _isLoading = false;
     });
     _filterArticles();
+    _loadSourceCounts();
   }
 
   List<Article> _applyFilter(List<Article> source) {
@@ -1261,10 +1259,21 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            for (final entry in topSources) ...[
-              _topSourceRow(entry.key, entry.value, maxCount),
-              const SizedBox(height: 12),
-            ],
+            if (_stableSourceCounts.isEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text(
+                  'Loading...',
+                  style: TextStyle(fontSize: 11, color: _textMuted),
+                ),
+              )
+            else
+              ...[
+                for (final entry in topSources) ...[
+                  _topSourceRow(entry.key, entry.value, maxCount),
+                  const SizedBox(height: 12),
+                ],
+              ],
             const SizedBox(height: 12),
             Divider(color: _border),
             const SizedBox(height: 24),
@@ -1277,13 +1286,63 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                for (final t in _popularTags) _popularTagChip(t),
-              ],
-            ),
+            if (_topTags.isEmpty)
+              Text(
+                'Loading...',
+                style: TextStyle(fontSize: 11, color: _textMuted),
+              )
+            else
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: _topTags.map((tag) {
+                  final isSelected = _tagFilter == tag;
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        if (_tagFilter == tag) {
+                          _tagFilter = null;
+                          _selectedSource = null;
+                        } else {
+                          _tagFilter = tag;
+                          _selectedSource = null;
+                        }
+                      });
+                      _loadArticles(reset: true);
+                    },
+                    child: MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? kRed.withValues(alpha: 0.15)
+                              : _surface2,
+                          border: Border.all(
+                            color: isSelected ? kRed : _border,
+                            width: isSelected ? 1 : 0.5,
+                          ),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          '#$tag',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: isSelected ? kRed : _textSecondary,
+                            letterSpacing: 0.5,
+                            fontWeight: isSelected
+                                ? FontWeight.w600
+                                : FontWeight.normal,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
             const SizedBox(height: 24),
             Divider(color: _border),
             const SizedBox(height: 24),
@@ -1423,61 +1482,49 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _topSourceRow(String source, int count, int maxCount) {
     final barFraction = maxCount > 0 ? count / maxCount : 0.0;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: () => _onSourceSelected(source),
+        behavior: HitTestBehavior.opaque,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Text(
-                source,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 12, color: _textPrimary),
-              ),
-            ),
-            Text(
-              '$count posts',
-              style: TextStyle(fontSize: 11, color: _textMuted),
-            ),
-          ],
-        ),
-        const SizedBox(height: 6),
-        LayoutBuilder(
-          builder: (context, constraints) {
-            return Stack(
+            Row(
               children: [
-                Container(
-                  height: 2,
-                  width: constraints.maxWidth,
-                  color: _border,
+                Expanded(
+                  child: Text(
+                    source,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 12, color: _textPrimary),
+                  ),
                 ),
-                Container(
-                  height: 2,
-                  width: constraints.maxWidth * barFraction,
-                  color: kRed,
+                Text(
+                  '$count posts',
+                  style: TextStyle(fontSize: 11, color: _textMuted),
                 ),
               ],
-            );
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget _popularTagChip(String tag) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: _surface2,
-        border: Border.all(color: _border),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        '#$tag',
-        style: TextStyle(
-          fontSize: 11,
-          color: _textSecondary,
-          letterSpacing: 0.5,
+            ),
+            const SizedBox(height: 6),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                return Stack(
+                  children: [
+                    Container(
+                      height: 2,
+                      width: constraints.maxWidth,
+                      color: _border,
+                    ),
+                    Container(
+                      height: 2,
+                      width: constraints.maxWidth * barFraction,
+                      color: kRed,
+                    ),
+                  ],
+                );
+              },
+            ),
+          ],
         ),
       ),
     );

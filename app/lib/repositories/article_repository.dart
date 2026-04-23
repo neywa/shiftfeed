@@ -118,6 +118,52 @@ class ArticleRepository {
     }
   }
 
+  Future<List<String>> fetchTopTags({int limit = 10, int days = 30}) async {
+    try {
+      final since = DateTime.now()
+          .subtract(Duration(days: days))
+          .toUtc()
+          .toIso8601String();
+      final response = await _client
+          .from('articles')
+          .select('tags')
+          .gte('published_at', since);
+
+      final list = response as List;
+      final tagCounts = <String, int>{};
+
+      for (final row in list) {
+        final tags = List<String>.from(
+          (row as Map<String, dynamic>)['tags'] ?? const [],
+        );
+        for (final tag in tags) {
+          if (_isNoisyTag(tag)) continue;
+          tagCounts[tag] = (tagCounts[tag] ?? 0) + 1;
+        }
+      }
+
+      final sorted = tagCounts.entries.toList()
+        ..sort((a, b) => b.value.compareTo(a.value));
+
+      return sorted.take(limit).map((e) => e.key).toList();
+    } catch (e) {
+      // ignore: avoid_print
+      print('fetchTopTags error: $e');
+      return [];
+    }
+  }
+
+  bool _isNoisyTag(String tag) {
+    const noise = {
+      'blog', 'community', 'hackernoon', 'reddit',
+      'stable-channel', 'rhsa', 'rhba', 'advisory',
+      'ocp-4.14', 'ocp-4.15', 'ocp-4.16', 'ocp-4.17',
+      'ocp-4.18', 'ocp-4.19', 'ocp-4.20', 'ocp-4.21',
+    };
+    if (tag.toUpperCase().startsWith('CVE-')) return true;
+    return noise.contains(tag.toLowerCase());
+  }
+
   Future<List<String>> fetchSources() async {
     try {
       final response = await _client.from('articles').select('source');
