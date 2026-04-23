@@ -4,12 +4,26 @@ import 'package:url_launcher/url_launcher.dart';
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
 
-  static const _sources = [
-    'Red Hat Blog',
-    'Red Hat Developer',
-    'Kubernetes Blog',
-    'CNCF Blog',
-    'Hacker News',
+  static const _sources = <_SourceItem>[
+    _SourceItem('Red Hat Blog', Icons.rss_feed),
+    _SourceItem('Red Hat Developer', Icons.rss_feed),
+    _SourceItem('Kubernetes Blog', Icons.rss_feed),
+    _SourceItem('CNCF Blog', Icons.rss_feed),
+    _SourceItem('Istio Blog', Icons.rss_feed),
+    _SourceItem('Hacker News (openshift, kubernetes)', Icons.rss_feed),
+    _SourceItem('HackerNoon (kubernetes, devops)', Icons.rss_feed),
+    _SourceItem(
+      'GitHub Releases — operator-sdk, ROSA, Argo CD, Tekton, Istio, Quay',
+      Icons.rocket_launch,
+    ),
+    _SourceItem(
+      'Red Hat Security Data API — OpenShift, Kubernetes, Podman, Quay, Istio, Service Mesh',
+      Icons.shield,
+    ),
+    _SourceItem(
+      'OpenShift stable channels (cincinnati-graph-data)',
+      Icons.layers,
+    ),
   ];
 
   static const _dataItems = <_DataItem>[
@@ -109,10 +123,10 @@ class AboutScreen extends StatelessWidget {
             clipBehavior: Clip.antiAlias,
             child: Column(
               children: [
-                for (final name in _sources)
+                for (final item in _sources)
                   ListTile(
-                    leading: const Icon(Icons.rss_feed),
-                    title: Text(name),
+                    leading: Icon(item.icon),
+                    title: Text(item.label),
                   ),
               ],
             ),
@@ -164,6 +178,12 @@ class AboutScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+class _SourceItem {
+  final String label;
+  final IconData icon;
+  const _SourceItem(this.label, this.icon);
 }
 
 class _DataItem {
