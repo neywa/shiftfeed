@@ -61,6 +61,11 @@ RSS_SOURCES: list[RSSSource] = [
         "source": "HackerNoon",
         "tags": ["blog", "devops", "hackernoon"],
     },
+    {
+        "url": "https://istio.io/feed.xml",
+        "source": "Istio Blog",
+        "tags": ["blog", "istio", "servicemesh"],
+    },
 ]
 
 
