@@ -29,6 +29,8 @@ const String _kOcpVersionsSource = 'OCP Versions';
 
 enum ViewMode { grid, list }
 
+enum _ScraperStatus { ok, delayed, issue, unknown }
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -52,6 +54,8 @@ class _HomeScreenState extends State<HomeScreen> {
   List<CveAlert> _cveAlerts = [];
   List<String> _topTags = [];
   Map<String, bool> _bookmarkStates = {};
+  DateTime? _lastScrapedAt;
+  _ScraperStatus _scraperStatus = _ScraperStatus.unknown;
   String? _selectedSource;
   String? _tagFilter;
   String _searchQuery = '';
@@ -79,6 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadOcpVersions();
     _loadCveAlerts();
     _loadTopTags();
+    _loadScraperStatus();
     _loadArticles(reset: true);
     _loadBookmarkStates();
   }
@@ -87,6 +92,69 @@ class _HomeScreenState extends State<HomeScreen> {
     final tags = await _repository.fetchTopTags(limit: 10, days: 30);
     if (!mounted) return;
     setState(() => _topTags = tags);
+  }
+
+  Future<void> _loadScraperStatus() async {
+    final last = await _repository.fetchLastScrapedAt();
+    if (!mounted) return;
+    if (last == null) {
+      setState(() {
+        _lastScrapedAt = null;
+        _scraperStatus = _ScraperStatus.unknown;
+      });
+      return;
+    }
+    final age = DateTime.now().difference(last);
+    setState(() {
+      _lastScrapedAt = last;
+      if (age.inHours < 2) {
+        _scraperStatus = _ScraperStatus.ok;
+      } else if (age.inHours < 4) {
+        _scraperStatus = _ScraperStatus.delayed;
+      } else {
+        _scraperStatus = _ScraperStatus.issue;
+      }
+    });
+  }
+
+  Color get _scraperStatusColor {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    switch (_scraperStatus) {
+      case _ScraperStatus.ok:
+        return isDark
+            ? const Color(0xFF00FF88)
+            : const Color(0xFF007A3D);
+      case _ScraperStatus.delayed:
+        return const Color(0xFFFFAA00);
+      case _ScraperStatus.issue:
+        return const Color(0xFFFF0000);
+      case _ScraperStatus.unknown:
+        return const Color(0xFF888888);
+    }
+  }
+
+  String get _scraperStatusLabel {
+    switch (_scraperStatus) {
+      case _ScraperStatus.ok:
+        return 'ALL SYSTEMS OPERATIONAL';
+      case _ScraperStatus.delayed:
+        return 'SCRAPER DELAYED';
+      case _ScraperStatus.issue:
+        return 'SCRAPER ISSUE';
+      case _ScraperStatus.unknown:
+        return 'STATUS UNKNOWN';
+    }
+  }
+
+  String get _scraperStatusDetail {
+    if (_lastScrapedAt == null) {
+      return 'Unable to determine last scrape time';
+    }
+    final age = DateTime.now().difference(_lastScrapedAt!);
+    if (age.inMinutes < 60) {
+      return 'Last scraped ${age.inMinutes}m ago · runs every 60 min';
+    }
+    return 'Last scraped ${age.inHours}h ago · runs every 60 min';
   }
 
   @override
@@ -235,6 +303,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
     _filterArticles();
     _loadSourceCounts();
+    _loadScraperStatus();
   }
 
   List<Article> _applyFilter(List<Article> source) {
@@ -1550,24 +1619,36 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           const SizedBox(height: 12),
-          const Row(
+          Row(
             children: [
-              _StatusDot(),
-              SizedBox(width: 8),
+              Container(
+                width: 6,
+                height: 6,
+                decoration: BoxDecoration(
+                  color: _scraperStatusColor,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 8),
               Text(
-                'ALL SYSTEMS OPERATIONAL',
+                _scraperStatusLabel,
                 style: TextStyle(
                   fontSize: 10,
                   letterSpacing: 1.5,
-                  color: kStatusGreen,
+                  color: _scraperStatusColor,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 8),
           Text(
-            'Scraper runs every 60 minutes via GitHub Actions',
-            style: TextStyle(fontSize: 11, color: _textMuted, height: 1.5),
+            _scraperStatusDetail,
+            style: TextStyle(
+              fontSize: 11,
+              color: _textMuted,
+              height: 1.5,
+            ),
           ),
         ],
       ),
@@ -1596,22 +1677,6 @@ class _PollingIndicator extends StatelessWidget {
         ),
         const SizedBox(height: 20),
       ],
-    );
-  }
-}
-
-class _StatusDot extends StatelessWidget {
-  const _StatusDot();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 6,
-      height: 6,
-      decoration: const BoxDecoration(
-        color: kStatusGreen,
-        shape: BoxShape.circle,
-      ),
     );
   }
 }

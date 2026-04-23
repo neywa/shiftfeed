@@ -209,7 +209,7 @@ class ArticleCard extends StatelessWidget {
                         children: [
                           _buildSourceIcon(border),
                           const SizedBox(width: 8),
-                          Flexible(
+                          Expanded(
                             child: Text(
                               article.source.toUpperCase(),
                               overflow: TextOverflow.ellipsis,
@@ -225,7 +225,7 @@ class ArticleCard extends StatelessWidget {
                             const SizedBox(width: 6),
                             badge,
                           ],
-                          const Spacer(),
+                          const SizedBox(width: 8),
                           Text(
                             timeago.format(when),
                             style: TextStyle(color: muted, fontSize: 11),

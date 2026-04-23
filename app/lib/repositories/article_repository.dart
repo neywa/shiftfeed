@@ -164,6 +164,22 @@ class ArticleRepository {
     return noise.contains(tag.toLowerCase());
   }
 
+  Future<DateTime?> fetchLastScrapedAt() async {
+    try {
+      final response = await _client
+          .from('articles')
+          .select('created_at')
+          .order('created_at', ascending: false)
+          .limit(1)
+          .single();
+      return DateTime.parse(response['created_at'] as String).toLocal();
+    } catch (e) {
+      // ignore: avoid_print
+      print('fetchLastScrapedAt error: $e');
+      return null;
+    }
+  }
+
   Future<List<String>> fetchSources() async {
     try {
       final response = await _client.from('articles').select('source');
