@@ -40,7 +40,16 @@
       "Bash(curl -sSL \"https://api.github.com/repos/quay/quay/releases?per_page=3\")",
       "Bash(python3 -c \"import json,sys; r=json.load\\(sys.stdin\\); [print\\(x['tag_name'], x['published_at'], 'draft='+str\\(x['draft']\\), 'prerelease='+str\\(x['prerelease']\\)\\) for x in r]\")",
       "Bash(curl -sSL \"https://api.github.com/repos/Neywa/shiftfeed/actions/workflows/scrape.yml/runs?per_page=1&status=success\")",
-      "Bash(python3 -c \"import json,sys; r=json.load\\(sys.stdin\\); run=r['workflow_runs'][0]; print\\('updated_at:', run['updated_at']\\); print\\('run_started_at:', run.get\\('run_started_at'\\)\\); print\\('conclusion:', run['conclusion']\\); print\\('status:', run['status']\\)\")"
+      "Bash(python3 -c \"import json,sys; r=json.load\\(sys.stdin\\); run=r['workflow_runs'][0]; print\\('updated_at:', run['updated_at']\\); print\\('run_started_at:', run.get\\('run_started_at'\\)\\); print\\('conclusion:', run['conclusion']\\); print\\('status:', run['status']\\)\")",
+      "Bash(magick assets/icon.png -resize 32x32 -strip web/favicon.png)",
+      "Bash(magick assets/icon.png -resize 1x1 txt:-)",
+      "Bash(magick assets/icon.png -gravity northwest -crop 10x10+0+0 -resize 1x1 txt:-)",
+      "Bash(magick assets/icon.png -resize 3x3! txt:-)",
+      "Bash(magick assets/icon.png -resize 192x192 -strip web/icons/Icon-192.png)",
+      "Bash(magick assets/icon.png -resize 512x512 -strip web/icons/Icon-512.png)",
+      "Bash(magick assets/icon.png -resize 154x154 -background white -gravity center -extent 192x192 -strip web/icons/Icon-maskable-192.png)",
+      "Bash(magick assets/icon.png -resize 410x410 -background white -gravity center -extent 512x512 -strip web/icons/Icon-maskable-512.png)",
+      "Bash(file web/icons/*.png)"
     ]
   }
 }
