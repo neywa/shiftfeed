@@ -30,7 +30,8 @@
       "Bash(python3 -c \"import yaml; print\\('pyyaml:', yaml.__version__\\)\")",
       "Bash(python3 -c \"from datetime import date; print\\(date.today\\(\\).strftime\\('%A, %B %-d %Y'\\)\\)\")",
       "Bash(unzip -p app/build/app/outputs/bundle/release/app-release.aab META-INF/UPLOAD.RSA)",
-      "Bash(keytool -printcert)"
+      "Bash(keytool -printcert)",
+      "Bash(git pull *)"
     ]
   }
 }
