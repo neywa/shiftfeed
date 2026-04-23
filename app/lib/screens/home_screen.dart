@@ -443,100 +443,31 @@ class _HomeScreenState extends State<HomeScreen> {
   // ================= MOBILE =================
 
   Widget _buildMobile(BuildContext context) {
+    final isFeed = _bottomNavIndex == 0;
     return Scaffold(
-      appBar: AppBar(
-        leading: Icon(Icons.menu, color: _textSecondary, size: 20),
-        title: const Text('ShiftFeed'),
-        actions: [
-          Icon(Icons.search, color: _textSecondary, size: 20),
-          const SizedBox(width: 8),
-          IconButton(
-            icon: Icon(
-              _viewMode == ViewMode.grid
-                  ? Icons.view_list_rounded
-                  : Icons.grid_view_rounded,
-              size: 20,
-              color: _textSecondary,
-            ),
-            onPressed: () => setState(
-              () => _viewMode =
-                  _viewMode == ViewMode.grid ? ViewMode.list : ViewMode.grid,
-            ),
+      appBar: isFeed ? _buildMobileAppBar() : null,
+      body: IndexedStack(
+        index: _bottomNavIndex,
+        children: [
+          RefreshIndicator(
+            onRefresh: () => _loadArticles(reset: true),
+            color: kRed,
+            backgroundColor: _surface,
+            child: _buildMobileList(),
           ),
-          IconButton(
-            icon: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Icon(Icons.auto_awesome, size: 20, color: _textSecondary),
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: Container(
-                    width: 6,
-                    height: 6,
-                    decoration: const BoxDecoration(
-                      color: kRed,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            onPressed: _openDigest,
-            tooltip: 'AI Briefing',
-          ),
-          Consumer<ThemeNotifier>(
-            builder: (context, notifier, _) => IconButton(
-              icon: Icon(
-                notifier.isDark ? Icons.light_mode : Icons.dark_mode,
-                size: 20,
-                color: _textSecondary,
-              ),
-              onPressed: notifier.toggle,
-            ),
-          ),
-          GestureDetector(
-            onTap: _openAbout,
-            child: Container(
-              width: 28,
-              height: 28,
-              decoration: const BoxDecoration(
-                color: kRed,
-                shape: BoxShape.circle,
-              ),
-              alignment: Alignment.center,
-              child: const Icon(
-                Icons.info_outline,
-                size: 16,
-                color: Colors.white,
-              ),
-            ),
-          ),
-          const SizedBox(width: 16),
+          const VersionsScreen(),
+          const BookmarksScreen(),
+          const AboutScreen(),
         ],
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(54),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(height: 1, color: kRed),
-              _buildMobileFilterChips(),
-            ],
-          ),
-        ),
       ),
-      body: RefreshIndicator(
-        onRefresh: () => _loadArticles(reset: true),
-        color: kRed,
-        backgroundColor: _surface,
-        child: _buildMobileList(),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _openSubmit,
-        backgroundColor: kRed,
-        tooltip: 'Submit a link',
-        child: const Icon(Icons.add_link, color: Colors.white),
-      ),
+      floatingActionButton: isFeed
+          ? FloatingActionButton(
+              onPressed: _openSubmit,
+              backgroundColor: kRed,
+              tooltip: 'Submit a link',
+              child: const Icon(Icons.add_link, color: Colors.white),
+            )
+          : null,
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: _surface,
         type: BottomNavigationBarType.fixed,
@@ -547,27 +478,18 @@ class _HomeScreenState extends State<HomeScreen> {
         selectedLabelStyle: const TextStyle(fontSize: 10, letterSpacing: 1.0),
         unselectedLabelStyle: const TextStyle(fontSize: 10, letterSpacing: 1.0),
         onTap: (i) {
-          if (i == 3) {
-            _openAbout();
+          if (i < 0 || i > 3) {
+            _comingSoon();
             return;
           }
-          if (i == 2) {
-            _openBookmarks();
-            return;
-          }
-          if (i == 1) {
-            _openVersions();
-            return;
-          }
+          setState(() => _bottomNavIndex = i);
           if (i == 0) {
-            setState(() => _bottomNavIndex = 0);
-            return;
+            _loadBookmarkStates();
           }
-          _comingSoon();
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.rss_feed), label: 'Feed'),
-          BottomNavigationBarItem(icon: Icon(Icons.terminal), label: 'Sources'),
+          BottomNavigationBarItem(icon: Icon(Icons.terminal), label: 'Versions'),
           BottomNavigationBarItem(
             icon: Icon(Icons.bookmark_outline),
             label: 'Saved',
@@ -577,6 +499,82 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Settings',
           ),
         ],
+      ),
+    );
+  }
+
+  PreferredSizeWidget _buildMobileAppBar() {
+    return AppBar(
+      automaticallyImplyLeading: false,
+      titleSpacing: 16,
+      title: Text(
+        'ShiftFeed',
+        style: TextStyle(
+          color: _textPrimary,
+          fontSize: 22,
+          fontWeight: FontWeight.w900,
+          letterSpacing: 1.5,
+        ),
+      ),
+      actions: [
+        Icon(Icons.search, color: _textSecondary, size: 20),
+        const SizedBox(width: 8),
+        IconButton(
+          icon: Icon(
+            _viewMode == ViewMode.grid
+                ? Icons.view_list_rounded
+                : Icons.grid_view_rounded,
+            size: 20,
+            color: _textSecondary,
+          ),
+          onPressed: () => setState(
+            () => _viewMode =
+                _viewMode == ViewMode.grid ? ViewMode.list : ViewMode.grid,
+          ),
+        ),
+        IconButton(
+          icon: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Icon(Icons.auto_awesome, size: 20, color: _textSecondary),
+              Positioned(
+                top: 0,
+                right: 0,
+                child: Container(
+                  width: 6,
+                  height: 6,
+                  decoration: const BoxDecoration(
+                    color: kRed,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          onPressed: _openDigest,
+          tooltip: 'AI Briefing',
+        ),
+        Consumer<ThemeNotifier>(
+          builder: (context, notifier, _) => IconButton(
+            icon: Icon(
+              notifier.isDark ? Icons.light_mode : Icons.dark_mode,
+              size: 20,
+              color: _textSecondary,
+            ),
+            onPressed: notifier.toggle,
+          ),
+        ),
+        const SizedBox(width: 8),
+      ],
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(54),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(height: 1, color: kRed),
+            _buildMobileFilterChips(),
+          ],
+        ),
       ),
     );
   }
