@@ -35,7 +35,10 @@
       "Bash(gh pr *)",
       "Bash(curl -sSL \"https://www.projectquay.io/\")",
       "Bash(curl -sSLI \"https://www.projectquay.io/\")",
-      "Bash(python -c \"from scraper.sources.github_releases import GITHUB_REPOS; print\\([r['repo'] for r in GITHUB_REPOS]\\)\")"
+      "Bash(python -c \"from scraper.sources.github_releases import GITHUB_REPOS; print\\([r['repo'] for r in GITHUB_REPOS]\\)\")",
+      "Bash(gh run *)",
+      "Bash(curl -sSL \"https://api.github.com/repos/quay/quay/releases?per_page=3\")",
+      "Bash(python3 -c \"import json,sys; r=json.load\\(sys.stdin\\); [print\\(x['tag_name'], x['published_at'], 'draft='+str\\(x['draft']\\), 'prerelease='+str\\(x['prerelease']\\)\\) for x in r]\")"
     ]
   }
 }
