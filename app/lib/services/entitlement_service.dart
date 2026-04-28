@@ -125,6 +125,28 @@ class EntitlementService {
     }
   }
 
+  /// Links this device's RevenueCat anonymous ID to the authenticated
+  /// Supabase user. Must be called after a successful Supabase sign-in.
+  /// Safe to call multiple times — RC deduplicates.
+  Future<void> linkUser(String userId) async {
+    if (kIsWeb) return;
+    try {
+      await Purchases.logIn(userId);
+    } catch (e) {
+      debugPrint('[EntitlementService] logIn failed: $e');
+    }
+  }
+
+  /// Unlinks the user from RevenueCat on sign-out, reverting to anonymous.
+  Future<void> unlinkUser() async {
+    if (kIsWeb) return;
+    try {
+      await Purchases.logOut();
+    } catch (e) {
+      debugPrint('[EntitlementService] logOut failed: $e');
+    }
+  }
+
   /// Restores prior purchases for the current store account.
   Future<CustomerInfo> restorePurchases() async {
     try {

@@ -6,6 +6,9 @@ library;
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'bookmark_service.dart';
+import 'entitlement_service.dart';
+
 /// Deep-link redirect URL that Supabase sends magic-link emails to.
 ///
 /// Must match the intent-filter scheme/host in
@@ -54,13 +57,35 @@ class UserService {
   Future<void> handleDeepLink(Uri uri) async {
     try {
       await _auth.getSessionFromUrl(uri);
+      final uid = currentUser?.id;
+      if (uid != null) {
+        await EntitlementService.instance.linkUser(uid);
+        await BookmarkService.instance.migrateLocalToCloud();
+      }
     } catch (_) {
       // Not an auth URI, or a stale token — ignore.
     }
   }
 
-  /// Ends the current session locally and on Supabase.
+  /// Ends the current session locally and on Supabase, then unlinks the
+  /// user from RevenueCat so the device reverts to an anonymous purchaser.
   Future<void> signOut() async {
     await _auth.signOut();
+    await EntitlementService.instance.unlinkUser();
+  }
+
+  /// Re-establishes the RevenueCat ↔ Supabase link if a session is already
+  /// present at app launch — call once during startup, after
+  /// [EntitlementService.init].
+  Future<void> init() async {
+    final uid = currentUser?.id;
+    if (uid != null) {
+      await EntitlementService.instance.linkUser(uid);
+    }
+    // Initialise bookmark service after auth so it knows which backend to use
+    await BookmarkService.instance.init();
+    if (uid != null) {
+      await BookmarkService.instance.migrateLocalToCloud();
+    }
   }
 }

@@ -71,6 +71,7 @@ Future<void> main() async {
     } catch (e) {
       debugPrint('RevenueCat init failed: $e');
     }
+    await UserService.instance.init();
 
     final isPro = await EntitlementService.instance.isPro();
     await NotificationService.applyTopicSubscriptions(isPro: isPro);

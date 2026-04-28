@@ -255,16 +255,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadBookmarkStates() async {
-    final bookmarks = await BookmarkService.instance.getBookmarks();
+    final urls = await BookmarkService.instance.getBookmarks();
     if (!mounted) return;
     setState(() {
-      _bookmarkStates = {for (final b in bookmarks) b.url: true};
+      _bookmarkStates = {for (final url in urls) url: true};
     });
   }
 
   Future<void> _toggleBookmark(Article article) async {
     final messenger = ScaffoldMessenger.of(context);
-    await BookmarkService.instance.toggleBookmark(article);
+    await BookmarkService.instance.toggleBookmark(article.url);
     final bookmarked = await BookmarkService.instance.isBookmarked(article.url);
     if (!mounted) return;
     setState(() => _bookmarkStates[article.url] = bookmarked);

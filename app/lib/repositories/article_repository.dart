@@ -97,6 +97,30 @@ class ArticleRepository {
     }
   }
 
+  /// Fetches the [Article] rows whose `url` is in [urls].
+  ///
+  /// Order is determined server-side by `published_at` desc — callers that
+  /// want to preserve a specific URL order should re-sort using a lookup
+  /// map. URLs that don't exist in the `articles` table are silently
+  /// omitted (e.g. bookmarked articles that have aged out of the feed).
+  Future<List<Article>> fetchArticlesByUrls(List<String> urls) async {
+    if (urls.isEmpty) return [];
+    try {
+      final response = await _client
+          .from('articles')
+          .select()
+          .inFilter('url', urls)
+          .order('published_at', ascending: false, nullsFirst: false);
+      return (response as List)
+          .map((row) => Article.fromJson(row as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      // ignore: avoid_print
+      print('fetchArticlesByUrls error: $e');
+      return [];
+    }
+  }
+
   Future<Digest?> fetchLatestDigest() async {
     try {
       final response = await _client
