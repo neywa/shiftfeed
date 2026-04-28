@@ -10,6 +10,9 @@ class Article:
     tags: list[str]
     summary: str | None
     published_at: datetime | None
+    # Set by Phase 6 user-RSS ingestion to scope the article to the
+    # owning Pro user. None = global/curated article visible to everyone.
+    submitted_by: str | None = None
 
     def to_dict(self) -> dict[str, object]:
         return {
@@ -21,4 +24,5 @@ class Article:
             "published_at": (
                 self.published_at.isoformat() if self.published_at is not None else None
             ),
+            "submitted_by": self.submitted_by,
         }

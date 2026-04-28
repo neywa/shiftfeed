@@ -133,3 +133,24 @@ def fetch_all_rss() -> list[Article]:
             fetch_rss_articles(src["url"], src["source"], src["tags"]),
         )
     return out
+
+
+def fetch_single_feed(feed_config: dict) -> list[Article]:
+    """Fetches and parses a single RSS/Atom feed described by ``feed_config``.
+
+    ``feed_config`` must have keys ``url``, ``source`` and ``tags`` — the
+    same shape as entries in :data:`RSS_SOURCES`. Returns an empty list
+    on any fetch/parse failure (the underlying :func:`fetch_rss_articles`
+    already swallows and logs per-entry errors)."""
+    try:
+        return fetch_rss_articles(
+            feed_config["url"],
+            feed_config["source"],
+            list(feed_config.get("tags", [])),
+        )
+    except Exception:
+        _logger.exception(
+            "Failed to fetch single feed: %s",
+            feed_config.get("url"),
+        )
+        return []

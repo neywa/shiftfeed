@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../services/alert_rule_service.dart';
+import '../services/custom_rss_service.dart';
 import '../services/digest_pref_service.dart';
 import '../services/entitlement_service.dart';
 import '../services/notification_service.dart';
@@ -218,6 +219,29 @@ class AboutScreen extends StatelessWidget {
               shape: cardShape,
               clipBehavior: Clip.antiAlias,
               child: const _DigestScheduleSection(),
+            ),
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(4, 8, 4, 8),
+              child: Row(
+                children: [
+                  Text(
+                    'Custom Feeds',
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: onSurface.withValues(alpha: 0.7),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  const _ProBadge(),
+                ],
+              ),
+            ),
+            Card(
+              elevation: 0,
+              shape: cardShape,
+              clipBehavior: Clip.antiAlias,
+              child: const _CustomFeedsSection(),
             ),
             const SizedBox(height: 16),
           ],
@@ -1260,6 +1284,384 @@ class _DigestScheduleSheetState extends State<_DigestScheduleSheet> {
               ],
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CustomFeedsSection extends StatefulWidget {
+  const _CustomFeedsSection();
+
+  @override
+  State<_CustomFeedsSection> createState() => _CustomFeedsSectionState();
+}
+
+class _CustomFeedsSectionState extends State<_CustomFeedsSection> {
+  Future<bool>? _proCheck;
+
+  @override
+  void initState() {
+    super.initState();
+    _proCheck = EntitlementService.instance.isPro();
+  }
+
+  Future<void> _showPaywall() async {
+    await PaywallSheet.show(context, reason: PaywallReason.briefing);
+    if (!mounted) return;
+    setState(() => _proCheck = EntitlementService.instance.isPro());
+  }
+
+  Future<void> _confirmDelete(CustomRssSource source) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text("Remove '${source.label}'?"),
+        content: const Text(
+          'This feed will stop being fetched and existing articles from '
+          'it will fade out as new ones replace them.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: FilledButton.styleFrom(backgroundColor: kRed),
+            child: const Text('Remove'),
+          ),
+        ],
+      ),
+    );
+    if (ok == true && source.id != null) {
+      try {
+        await CustomRssService.instance.deleteSource(source.id!);
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not remove feed: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _openAddSheet() async {
+    final messenger = ScaffoldMessenger.of(context);
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (_) => _AddRssSourceSheet(messenger: messenger),
+    );
+  }
+
+  String _truncate(String value, int max) {
+    if (value.length <= max) return value;
+    return '${value.substring(0, max - 1)}…';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<bool>(
+      future: _proCheck,
+      builder: (context, proSnap) {
+        if (!proSnap.hasData) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 24),
+            child: Center(
+              child: SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
+          );
+        }
+        final isPro = proSnap.data == true;
+        if (!isPro) {
+          return InkWell(
+            onTap: _showPaywall,
+            child: const ListTile(
+              leading: Icon(Icons.rss_feed_outlined),
+              title: Text('Custom RSS feeds'),
+              subtitle: Text(
+                'Add your own RSS feeds and see them alongside the '
+                'curated feed. Upgrade to Pro to unlock.',
+              ),
+              trailing: Icon(Icons.chevron_right),
+            ),
+          );
+        }
+        return StreamBuilder<List<CustomRssSource>>(
+          stream: CustomRssService.instance.watchSources(),
+          initialData: const [],
+          builder: (context, snap) {
+            final sources = snap.data ?? const <CustomRssSource>[];
+            final atLimit = sources.length >= CustomRssSource.maxSources;
+            return Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      '${sources.length}/${CustomRssSource.maxSources} feeds',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withValues(alpha: 0.6),
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ),
+                ),
+                if (sources.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(16, 4, 16, 8),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'No feeds yet — add one to start pulling articles '
+                        'from any RSS source.',
+                        style: TextStyle(fontSize: 12),
+                      ),
+                    ),
+                  )
+                else
+                  for (final source in sources)
+                    ListTile(
+                      leading: Switch(
+                        value: source.enabled,
+                        onChanged: source.id == null
+                            ? null
+                            : (v) => CustomRssService.instance
+                                .toggleSource(source.id!, v),
+                      ),
+                      title: Text(source.label),
+                      subtitle: Text(
+                        _truncate(source.url, 40),
+                        style: const TextStyle(fontSize: 11),
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (source.lastError != null)
+                            Tooltip(
+                              message: source.lastError!,
+                              child: const Icon(
+                                Icons.error_outline,
+                                color: kRed,
+                                size: 18,
+                              ),
+                            ),
+                          IconButton(
+                            icon: const Icon(Icons.delete_outline),
+                            tooltip: 'Remove',
+                            onPressed: () => _confirmDelete(source),
+                          ),
+                        ],
+                      ),
+                      onLongPress: () => _confirmDelete(source),
+                    ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 4, 8, 8),
+                    child: atLimit
+                        ? Padding(
+                            padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
+                            child: Text(
+                              '${CustomRssSource.maxSources}/'
+                              '${CustomRssSource.maxSources} feeds added '
+                              '(limit reached)',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurface
+                                    .withValues(alpha: 0.5),
+                              ),
+                            ),
+                          )
+                        : TextButton.icon(
+                            icon: const Icon(Icons.add),
+                            label: const Text('Add feed'),
+                            onPressed: _openAddSheet,
+                          ),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+class _AddRssSourceSheet extends StatefulWidget {
+  final ScaffoldMessengerState messenger;
+
+  const _AddRssSourceSheet({required this.messenger});
+
+  @override
+  State<_AddRssSourceSheet> createState() => _AddRssSourceSheetState();
+}
+
+class _AddRssSourceSheetState extends State<_AddRssSourceSheet> {
+  final _formKey = GlobalKey<FormState>();
+  final _labelCtrl = TextEditingController();
+  final _urlCtrl = TextEditingController();
+  String? _urlFieldError;
+  bool _saving = false;
+
+  @override
+  void dispose() {
+    _labelCtrl.dispose();
+    _urlCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _save() async {
+    if (_saving) return;
+    setState(() => _urlFieldError = null);
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+    setState(() => _saving = true);
+    try {
+      await CustomRssService.instance.addSource(
+        url: _urlCtrl.text,
+        label: _labelCtrl.text,
+      );
+      if (!mounted) return;
+      Navigator.of(context).pop();
+    } on RssSourceLimitException {
+      if (!mounted) return;
+      widget.messenger.showSnackBar(
+        const SnackBar(content: Text("You've reached the 10-feed limit")),
+      );
+    } on RssUrlInvalidException catch (e) {
+      if (!mounted) return;
+      setState(() => _urlFieldError = e.message);
+    } catch (e) {
+      if (!mounted) return;
+      widget.messenger.showSnackBar(
+        SnackBar(content: Text('Could not add feed: $e')),
+      );
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        20,
+        12,
+        20,
+        20 + MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: theme.dividerColor,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              Text(
+                'Add custom feed',
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _labelCtrl,
+                maxLength: 40,
+                decoration: const InputDecoration(
+                  labelText: 'Label',
+                  hintText: 'e.g. Kubernetes Blog',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (v) {
+                  final t = v?.trim() ?? '';
+                  if (t.isEmpty) return 'Label is required.';
+                  return null;
+                },
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _urlCtrl,
+                keyboardType: TextInputType.url,
+                decoration: InputDecoration(
+                  labelText: 'Feed URL',
+                  hintText: 'https://example.com/feed.xml',
+                  errorText: _urlFieldError,
+                  border: const OutlineInputBorder(),
+                ),
+                validator: (v) {
+                  final t = v?.trim() ?? '';
+                  if (t.isEmpty) return 'URL is required.';
+                  if (!t.startsWith('http://') &&
+                      !t.startsWith('https://')) {
+                    return 'URL must start with http:// or https://';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Paste any RSS or Atom feed URL. The feed will be checked '
+                'hourly.',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: _saving ? null : () => Navigator.pop(context),
+                      child: const Text('Cancel'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: FilledButton(
+                      onPressed: _saving ? null : _save,
+                      style: FilledButton.styleFrom(backgroundColor: kRed),
+                      child: _saving
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : const Text('Save'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

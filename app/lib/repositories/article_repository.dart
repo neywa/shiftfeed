@@ -9,7 +9,11 @@ import '../models/digest.dart';
 import '../models/ocp_version.dart';
 
 class ArticleRepository {
-  final SupabaseClient _client = Supabase.instance.client;
+  // Read at call time rather than caching — the Supabase Flutter client
+  // is a process-wide singleton, but going through `instance.client` on
+  // every call sidesteps any worry about mid-session auth changes
+  // affecting the held reference.
+  SupabaseClient get _client => Supabase.instance.client;
 
   bool _hasReachedFreeLimit = false;
 
@@ -18,6 +22,12 @@ class ArticleRepository {
   /// fetched.
   bool get hasReachedFreeLimit => _hasReachedFreeLimit;
 
+  // Feed visibility is controlled by Supabase RLS on the articles table:
+  //   - Unauthenticated / free users: only global articles
+  //     (submitted_by IS NULL).
+  //   - Authenticated Pro users: global + their own custom-feed articles.
+  // No explicit filter needed here — the JWT in the Supabase client
+  // determines what rows are returned.
   Future<List<Article>> fetchArticles({
     int limit = 50,
     int offset = 0,

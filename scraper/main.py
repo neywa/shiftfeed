@@ -13,6 +13,11 @@ from scraper.sources.github_releases import fetch_github_releases
 from scraper.sources.ocp_versions import fetch_ocp_version_updates
 from scraper.sources.rss import fetch_all_rss
 from scraper.sources.security import fetch_security_advisories
+from scraper.sources.user_rss import (
+    fetch_articles_for_source,
+    fetch_user_sources,
+    update_source_error,
+)
 from scraper.supabase_client import SupabaseClient
 
 
@@ -49,10 +54,33 @@ def main() -> None:
         rss_articles + github_articles + security_articles + ocp_articles
     )
 
+    # User custom RSS sources (Phase 6 — Pro users)
+    user_sources = fetch_user_sources(client.client)
+    user_articles_total = 0
+    for user_source in user_sources:
+        user_articles = [
+            enrich_with_cve_tags(a)
+            for a in fetch_articles_for_source(user_source)
+        ]
+        if user_articles:
+            update_source_error(client.client, user_source.source_id, None)
+            all_articles.extend(user_articles)
+            user_articles_total += len(user_articles)
+        else:
+            update_source_error(
+                client.client,
+                user_source.source_id,
+                "No articles fetched — check the feed URL",
+            )
+
     print(f"RSS articles: {len(rss_articles)}")
     print(f"GitHub release articles: {len(github_articles)}")
     print(f"Security advisory articles: {len(security_articles)}")
     print(f"OCP version update articles: {len(ocp_articles)}")
+    print(
+        f"User RSS articles: {user_articles_total} "
+        f"(from {len(user_sources)} user feed(s))"
+    )
     tagged_cve_count = sum(1 for a in all_articles if "cve" in a.tags)
     print(f"Articles with CVE tags: {tagged_cve_count}")
     print(f"Total: {len(all_articles)}")

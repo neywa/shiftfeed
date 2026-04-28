@@ -53,7 +53,8 @@
       "Bash(flutter test *)",
       "Bash(python -c \"import ast; ast.parse\\(open\\('scraper/main.py'\\).read\\(\\)\\); ast.parse\\(open\\('scraper/fcm.py'\\).read\\(\\)\\); ast.parse\\(open\\('scraper/sources/alert_rules.py'\\).read\\(\\)\\); ast.parse\\(open\\('scraper/sources/alert_rule_matcher.py'\\).read\\(\\)\\); print\\('OK'\\)\")",
       "Bash(python -m py_compile scraper/sources/security.py scraper/sources/digest_prefs.py scraper/digest.py scraper/digest_personal.py scraper/main.py)",
-      "Bash(find ~/.pub-cache/hosted/pub.dev/flutter_timezone-* -maxdepth 2 -name \"flutter_timezone.dart\")"
+      "Bash(find ~/.pub-cache/hosted/pub.dev/flutter_timezone-* -maxdepth 2 -name \"flutter_timezone.dart\")",
+      "Bash(python -m py_compile scraper/models.py scraper/sources/rss.py scraper/sources/user_rss.py scraper/main.py)"
     ]
   }
 }
