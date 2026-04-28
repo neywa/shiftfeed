@@ -71,6 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Article> _searchResults = [];
   bool _isSearching = false;
   Timer? _searchDebounce;
+  bool _showSearchBar = false;
 
   List<Article> get _displayArticles =>
       _isSearchMode ? _searchResults : _filteredArticles;
@@ -444,31 +445,30 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildMobile(BuildContext context) {
     final isFeed = _bottomNavIndex == 0;
-    return Scaffold(
-      appBar: isFeed ? _buildMobileAppBar() : null,
-      body: IndexedStack(
-        index: _bottomNavIndex,
-        children: [
-          RefreshIndicator(
-            onRefresh: () => _loadArticles(reset: true),
-            color: kRed,
-            backgroundColor: _surface,
-            child: _buildMobileList(),
-          ),
-          const VersionsScreen(),
-          const BookmarksScreen(),
-          const AboutScreen(),
-        ],
-      ),
-      floatingActionButton: isFeed
-          ? FloatingActionButton(
-              onPressed: _openSubmit,
-              backgroundColor: kRed,
-              tooltip: 'Submit a link',
-              child: const Icon(Icons.add_link, color: Colors.white),
-            )
-          : null,
-      bottomNavigationBar: BottomNavigationBar(
+    return PopScope(
+      canPop: !_showSearchBar && !_isSearchMode,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop && (_showSearchBar || _isSearchMode)) {
+          _exitSearch();
+        }
+      },
+      child: Scaffold(
+        appBar: isFeed ? _buildMobileAppBar() : null,
+        body: IndexedStack(
+          index: _bottomNavIndex,
+          children: [
+            RefreshIndicator(
+              onRefresh: () => _loadArticles(reset: true),
+              color: kRed,
+              backgroundColor: _surface,
+              child: _buildMobileList(),
+            ),
+            const VersionsScreen(),
+            const BookmarksScreen(),
+            const AboutScreen(),
+          ],
+        ),
+        bottomNavigationBar: BottomNavigationBar(
         backgroundColor: _surface,
         type: BottomNavigationBarType.fixed,
         selectedItemColor: kRed,
@@ -500,10 +500,12 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
+      ),
     );
   }
 
   PreferredSizeWidget _buildMobileAppBar() {
+    if (_showSearchBar) return _buildMobileSearchAppBar();
     return AppBar(
       automaticallyImplyLeading: false,
       titleSpacing: 16,
@@ -517,8 +519,11 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       actions: [
-        Icon(Icons.search, color: _textSecondary, size: 20),
-        const SizedBox(width: 8),
+        IconButton(
+          icon: Icon(Icons.search, color: _textSecondary, size: 20),
+          onPressed: () => setState(() => _showSearchBar = true),
+          tooltip: 'Search',
+        ),
         IconButton(
           icon: Icon(
             _viewMode == ViewMode.grid
@@ -577,6 +582,76 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  PreferredSizeWidget _buildMobileSearchAppBar() {
+    return AppBar(
+      leading: IconButton(
+        icon: Icon(Icons.arrow_back, color: _textSecondary),
+        onPressed: _exitSearch,
+      ),
+      titleSpacing: 0,
+      title: TextField(
+        controller: _searchController,
+        autofocus: true,
+        onChanged: _onSearchChanged,
+        style: TextStyle(color: _textPrimary, fontSize: 15),
+        cursorColor: kRed,
+        decoration: InputDecoration(
+          hintText: 'Search articles or #tag...',
+          hintStyle: TextStyle(color: _textMuted, fontSize: 15),
+          border: InputBorder.none,
+          isDense: true,
+        ),
+      ),
+      actions: [
+        if (_searchQuery.isNotEmpty)
+          IconButton(
+            icon: Icon(Icons.clear, color: _textSecondary, size: 20),
+            onPressed: () {
+              _searchController.clear();
+              _onSearchChanged('');
+            },
+            tooltip: 'Clear',
+          ),
+        const SizedBox(width: 4),
+      ],
+      bottom: PreferredSize(
+        preferredSize: Size.fromHeight(
+          _isSearchMode && !_isSearching && _searchResults.isNotEmpty
+              ? 25
+              : 1,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (_isSearchMode && !_isSearching && _searchResults.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    '${_searchResults.length} results',
+                    style: TextStyle(fontSize: 11, color: _textMuted),
+                  ),
+                ),
+              ),
+            Container(height: 1, color: kRed),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _exitSearch() {
+    setState(() {
+      _showSearchBar = false;
+      _searchController.clear();
+      _isSearchMode = false;
+      _searchResults = [];
+      _searchQuery = '';
+    });
+    _filterArticles();
   }
 
   Widget _buildMobileFilterChips() {
