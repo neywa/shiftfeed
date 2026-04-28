@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'bookmark_service.dart';
+import 'device_token_service.dart';
 import 'entitlement_service.dart';
 
 /// Deep-link redirect URL that Supabase sends magic-link emails to.
@@ -61,6 +62,7 @@ class UserService {
       if (uid != null) {
         await EntitlementService.instance.linkUser(uid);
         await BookmarkService.instance.migrateLocalToCloud();
+        await DeviceTokenService.instance.registerToken();
       }
     } catch (_) {
       // Not an auth URI, or a stale token — ignore.
@@ -86,6 +88,7 @@ class UserService {
     await BookmarkService.instance.init();
     if (uid != null) {
       await BookmarkService.instance.migrateLocalToCloud();
+      await DeviceTokenService.instance.registerToken();
     }
   }
 }

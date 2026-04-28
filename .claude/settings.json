@@ -50,7 +50,8 @@
       "Bash(magick assets/icon.png -resize 154x154 -background white -gravity center -extent 192x192 -strip web/icons/Icon-maskable-192.png)",
       "Bash(magick assets/icon.png -resize 410x410 -background white -gravity center -extent 512x512 -strip web/icons/Icon-maskable-512.png)",
       "Bash(file web/icons/*.png)",
-      "Bash(flutter test *)"
+      "Bash(flutter test *)",
+      "Bash(python -c \"import ast; ast.parse\\(open\\('scraper/main.py'\\).read\\(\\)\\); ast.parse\\(open\\('scraper/fcm.py'\\).read\\(\\)\\); ast.parse\\(open\\('scraper/sources/alert_rules.py'\\).read\\(\\)\\); ast.parse\\(open\\('scraper/sources/alert_rule_matcher.py'\\).read\\(\\)\\); print\\('OK'\\)\")"
     ]
   }
 }

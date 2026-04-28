@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'screens/home_screen.dart';
+import 'services/device_token_service.dart';
 import 'services/entitlement_service.dart';
 import 'services/notification_service.dart';
 import 'services/user_service.dart';
@@ -72,6 +73,7 @@ Future<void> main() async {
       debugPrint('RevenueCat init failed: $e');
     }
     await UserService.instance.init();
+    DeviceTokenService.instance.listenForTokenRefresh();
 
     final isPro = await EntitlementService.instance.isPro();
     await NotificationService.applyTopicSubscriptions(isPro: isPro);

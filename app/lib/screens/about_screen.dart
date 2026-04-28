@@ -2,9 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../services/alert_rule_service.dart';
 import '../services/entitlement_service.dart';
 import '../services/notification_service.dart';
 import '../services/user_service.dart';
+import '../theme/app_theme.dart';
 import '../widgets/auth_sheet.dart';
 import '../widgets/paywall_sheet.dart';
 import 'submit_screen.dart';
@@ -169,6 +171,29 @@ class AboutScreen extends StatelessWidget {
               shape: cardShape,
               clipBehavior: Clip.antiAlias,
               child: const _NotificationsSection(),
+            ),
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(4, 8, 4, 8),
+              child: Row(
+                children: [
+                  Text(
+                    'Alert Rules',
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: onSurface.withValues(alpha: 0.7),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  const _ProBadge(),
+                ],
+              ),
+            ),
+            Card(
+              elevation: 0,
+              shape: cardShape,
+              clipBehavior: Clip.antiAlias,
+              child: const _AlertRulesSection(),
             ),
             const SizedBox(height: 16),
           ],
@@ -423,4 +448,412 @@ class _TopicRow {
   final String label;
   final IconData icon;
   const _TopicRow(this.topic, this.label, this.icon);
+}
+
+class _AlertRulesSection extends StatefulWidget {
+  const _AlertRulesSection();
+
+  @override
+  State<_AlertRulesSection> createState() => _AlertRulesSectionState();
+}
+
+class _AlertRulesSectionState extends State<_AlertRulesSection> {
+  Future<bool>? _proCheck;
+
+  @override
+  void initState() {
+    super.initState();
+    _proCheck = EntitlementService.instance.isPro();
+  }
+
+  void _refreshProCheck() {
+    setState(() => _proCheck = EntitlementService.instance.isPro());
+  }
+
+  Future<void> _showPaywall() async {
+    await PaywallSheet.show(context, reason: PaywallReason.notifications);
+    if (!mounted) return;
+    _refreshProCheck();
+  }
+
+  Future<void> _editRule({AlertRule? existing}) async {
+    final messenger = ScaffoldMessenger.of(context);
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (_) => _AlertRuleEditSheet(
+        existing: existing,
+        messenger: messenger,
+      ),
+    );
+  }
+
+  Future<void> _confirmDelete(AlertRule rule) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text("Delete rule '${rule.name}'?"),
+        content: const Text(
+          'This rule will stop matching new articles immediately.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: FilledButton.styleFrom(backgroundColor: kRed),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    if (ok == true && rule.id != null) {
+      await AlertRuleService.instance.deleteRule(rule.id!);
+    }
+  }
+
+  String _ruleSubtitle(AlertRule rule) {
+    final parts = <String>[];
+    if (rule.categories.isEmpty) {
+      parts.add('All categories');
+    } else {
+      parts.add(
+        rule.categories
+            .map((c) => c[0].toUpperCase() + c.substring(1))
+            .join(' / '),
+      );
+    }
+    if (rule.cvssMinimum != null) {
+      parts.add('CVSS ≥ ${rule.cvssMinimum!.toStringAsFixed(1)}');
+    }
+    if (rule.keywords.isNotEmpty) {
+      parts.add('keywords: ${rule.keywords.join(", ")}');
+    }
+    return parts.join(' · ');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<bool>(
+      future: _proCheck,
+      builder: (context, snap) {
+        if (!snap.hasData) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 24),
+            child: Center(
+              child: SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
+          );
+        }
+        final isPro = snap.data == true;
+        if (!isPro) {
+          return InkWell(
+            onTap: _showPaywall,
+            child: const ListTile(
+              leading: Icon(Icons.notifications_active_outlined),
+              title: Text('Custom alert rules'),
+              subtitle: Text(
+                'Get notified only about what matters to you. '
+                'Upgrade to Pro to unlock.',
+              ),
+              trailing: Icon(Icons.chevron_right),
+            ),
+          );
+        }
+        return StreamBuilder<List<AlertRule>>(
+          stream: AlertRuleService.instance.watchRules(),
+          initialData: const [],
+          builder: (context, ruleSnap) {
+            final rules = ruleSnap.data ?? const <AlertRule>[];
+            return Column(
+              children: [
+                if (rules.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(16, 14, 16, 8),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'No rules yet — add one to start receiving '
+                        'targeted alerts.',
+                        style: TextStyle(fontSize: 12),
+                      ),
+                    ),
+                  )
+                else
+                  for (final rule in rules)
+                    ListTile(
+                      leading: Switch(
+                        value: rule.enabled,
+                        onChanged: rule.id == null
+                            ? null
+                            : (v) => AlertRuleService.instance
+                                .toggleRule(rule.id!, v),
+                      ),
+                      title: Text(rule.name),
+                      subtitle: Text(_ruleSubtitle(rule)),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.delete_outline),
+                        tooltip: 'Delete',
+                        onPressed: () => _confirmDelete(rule),
+                      ),
+                      onTap: () => _editRule(existing: rule),
+                    ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 4, 8, 8),
+                    child: TextButton.icon(
+                      icon: const Icon(Icons.add),
+                      label: const Text('Add rule'),
+                      onPressed: () => _editRule(),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+class _AlertRuleEditSheet extends StatefulWidget {
+  final AlertRule? existing;
+  final ScaffoldMessengerState messenger;
+
+  const _AlertRuleEditSheet({
+    required this.existing,
+    required this.messenger,
+  });
+
+  @override
+  State<_AlertRuleEditSheet> createState() => _AlertRuleEditSheetState();
+}
+
+class _AlertRuleEditSheetState extends State<_AlertRuleEditSheet> {
+  static const _kCategoryLabels = {
+    'security': 'Security',
+    'releases': 'Releases',
+    'ocp': 'OCP',
+  };
+
+  final _formKey = GlobalKey<FormState>();
+  late TextEditingController _nameCtrl;
+  late TextEditingController _keywordsCtrl;
+  late Set<String> _categories;
+  bool _useCvss = false;
+  double _cvss = 7.0;
+  bool _saving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final r = widget.existing;
+    _nameCtrl = TextEditingController(text: r?.name ?? '');
+    _keywordsCtrl = TextEditingController(text: (r?.keywords ?? const []).join(', '));
+    _categories = {...?r?.categories};
+    _useCvss = r?.cvssMinimum != null;
+    _cvss = r?.cvssMinimum ?? 7.0;
+  }
+
+  @override
+  void dispose() {
+    _nameCtrl.dispose();
+    _keywordsCtrl.dispose();
+    super.dispose();
+  }
+
+  bool get _showCvss =>
+      _categories.isEmpty || _categories.contains('security');
+
+  List<String> _parseKeywords(String raw) => raw
+      .split(',')
+      .map((s) => s.trim().toLowerCase())
+      .where((s) => s.isNotEmpty)
+      .toList();
+
+  Future<void> _save() async {
+    if (_saving) return;
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+    setState(() => _saving = true);
+    try {
+      final rule = AlertRule(
+        id: widget.existing?.id,
+        name: _nameCtrl.text.trim(),
+        enabled: widget.existing?.enabled ?? true,
+        categories: _categories.toList()..sort(),
+        cvssMinimum: _useCvss ? _cvss : null,
+        keywords: _parseKeywords(_keywordsCtrl.text),
+      );
+      if (rule.id == null) {
+        await AlertRuleService.instance.createRule(rule);
+      } else {
+        await AlertRuleService.instance.updateRule(rule);
+      }
+      if (!mounted) return;
+      Navigator.of(context).pop();
+    } catch (e) {
+      if (!mounted) return;
+      widget.messenger.showSnackBar(
+        SnackBar(content: Text('Could not save rule: $e')),
+      );
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        20,
+        12,
+        20,
+        20 + MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: theme.dividerColor,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              Text(
+                widget.existing == null ? 'New rule' : 'Edit rule',
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _nameCtrl,
+                maxLength: 50,
+                decoration: const InputDecoration(
+                  labelText: 'Rule name',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (v) {
+                  final t = v?.trim() ?? '';
+                  if (t.isEmpty) return 'Rule name is required.';
+                  return null;
+                },
+              ),
+              const SizedBox(height: 12),
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text('Categories'),
+              ),
+              const SizedBox(height: 6),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  FilterChip(
+                    label: const Text('All'),
+                    selected: _categories.isEmpty,
+                    onSelected: (sel) {
+                      setState(() {
+                        _categories.clear();
+                      });
+                    },
+                  ),
+                  for (final entry in _kCategoryLabels.entries)
+                    FilterChip(
+                      label: Text(entry.value),
+                      selected: _categories.contains(entry.key),
+                      onSelected: (sel) {
+                        setState(() {
+                          if (sel) {
+                            _categories.add(entry.key);
+                          } else {
+                            _categories.remove(entry.key);
+                          }
+                        });
+                      },
+                    ),
+                ],
+              ),
+              if (_showCvss) ...[
+                const SizedBox(height: 16),
+                CheckboxListTile(
+                  contentPadding: EdgeInsets.zero,
+                  controlAffinity: ListTileControlAffinity.leading,
+                  title: const Text('Only notify above CVSS threshold'),
+                  value: _useCvss,
+                  onChanged: (v) => setState(() => _useCvss = v ?? false),
+                ),
+                Slider(
+                  value: _cvss,
+                  min: 0.0,
+                  max: 10.0,
+                  divisions: 20,
+                  label: _cvss.toStringAsFixed(1),
+                  onChanged: _useCvss
+                      ? (v) => setState(() => _cvss = v)
+                      : null,
+                ),
+              ],
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: _keywordsCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Keywords (optional)',
+                  hintText: 'kubernetes, etcd, cni',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: _saving ? null : () => Navigator.pop(context),
+                      child: const Text('Cancel'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: FilledButton(
+                      onPressed: _saving ? null : _save,
+                      style: FilledButton.styleFrom(backgroundColor: kRed),
+                      child: _saving
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : const Text('Save'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

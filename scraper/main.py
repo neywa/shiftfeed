@@ -5,6 +5,8 @@ from datetime import datetime, timezone
 from scraper.digest import DigestGenerator
 from scraper.fcm import FCMSender
 from scraper.notified_cache import NotifiedCache
+from scraper.sources.alert_rule_matcher import article_matches_rule
+from scraper.sources.alert_rules import fetch_active_rules
 from scraper.sources.cve_tagger import enrich_with_cve_tags
 from scraper.sources.github_releases import fetch_github_releases
 from scraper.sources.ocp_versions import fetch_ocp_version_updates
@@ -68,6 +70,11 @@ def main() -> None:
 
     fcm = FCMSender()
     cache = NotifiedCache(client)
+
+    # Snapshot of all newly-arrived articles for this run, taken BEFORE
+    # mark_notified runs below so custom alert rules can match anything
+    # new — not just CVE/release tagged items.
+    new_articles = [a for a in all_articles if not cache.is_notified(a.url)]
 
     new_cves = [
         a
@@ -138,6 +145,44 @@ def main() -> None:
         cache.mark_notified(article.url)
 
     print(f"Notified: {cve_count} CVEs, {release_count} releases")
+
+    # --- Custom alert rules (Pro users) ---
+    try:
+        rules = fetch_active_rules(client.client)
+    except Exception as e:
+        print(f"[alert_rules] failed to fetch rules: {e}")
+        rules = []
+
+    if rules and new_articles:
+        custom_pushes = 0
+        for article in new_articles:
+            try:
+                for rule in rules:
+                    if not article_matches_rule(article, rule):
+                        continue
+                    body = (article.summary or "")[:120]
+                    for token in rule.fcm_tokens:
+                        success = fcm.send_to_token(
+                            token=token,
+                            title=f"[{rule.name}] {article.title}",
+                            body=body,
+                            data={
+                                "url": article.url,
+                                "rule_id": rule.rule_id,
+                            },
+                        )
+                        if success:
+                            custom_pushes += 1
+                        else:
+                            fcm.prune_stale_token(client.client, token)
+            except Exception as e:
+                print(
+                    f"[alert_rules] error matching article {article.url}: {e}"
+                )
+        print(
+            f"Custom rule pushes: {custom_pushes} "
+            f"({len(rules)} rules x {len(new_articles)} new articles)"
+        )
 
     print("Generating AI daily digest...")
     digest_gen = DigestGenerator(client)

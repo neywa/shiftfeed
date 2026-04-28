@@ -80,6 +80,71 @@ class FCMSender:
             print(f"FCM exception: {e}")
             return False
 
+    def send_to_token(
+        self,
+        token: str,
+        title: str,
+        body: str,
+        data: dict | None = None,
+    ) -> bool:
+        """
+        Sends a targeted FCM push to a single device token.
+
+        Returns True on success, False on failure (token expired/invalid).
+        Invalid tokens (404/410) are silently treated as False so the caller
+        can prune them from ``user_device_tokens``.
+        """
+        if not self.credentials:
+            return False
+        try:
+            access_token = self._get_access_token()
+            message = {
+                "message": {
+                    "token": token,
+                    "notification": {
+                        "title": title,
+                        "body": body,
+                    },
+                    "data": {k: str(v) for k, v in (data or {}).items()},
+                    "android": {
+                        "priority": "high",
+                        "notification": {
+                            "channel_id": "shiftfeed_alerts",
+                            "color": "#EE0000",
+                        },
+                    },
+                }
+            }
+            response = httpx.post(
+                FCM_URL,
+                json=message,
+                headers={
+                    "Authorization": f"Bearer {access_token}",
+                    "Content-Type": "application/json",
+                },
+                timeout=10,
+            )
+            if response.status_code == 200:
+                print(f"FCM sent to token: {title}")
+                return True
+            if response.status_code in (404, 410):
+                # UNREGISTERED / NOT_FOUND — caller should prune.
+                return False
+            print(f"FCM token-send error {response.status_code}: {response.text}")
+            return False
+        except Exception as e:
+            print(f"FCM token-send exception: {e}")
+            return False
+
+    def prune_stale_token(self, supabase, token: str) -> None:
+        """Removes a stale/invalid FCM token from user_device_tokens."""
+        try:
+            supabase.table("user_device_tokens").delete().eq(
+                "fcm_token", token
+            ).execute()
+        except Exception as e:
+            print(f"[FCM] Failed to prune stale token: {e}")
+
     def send_cve_alert(
         self, cve_id: str, title: str, severity: str, url: str
     ) -> None:
