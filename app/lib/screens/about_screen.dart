@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -293,6 +294,8 @@ class AboutScreen extends StatelessWidget {
               ],
             ),
           ),
+          const SizedBox(height: 24),
+          const _RevenueCatIdSection(),
           const SizedBox(height: 32),
           Center(
             child: Text(
@@ -339,6 +342,67 @@ class _AppVersionText extends StatelessWidget {
         // `buildNumber`, but defensively split on '+' in case a future
         // platform returns a combined string.
         return Text('v${raw.split('+').first}', style: style);
+      },
+    );
+  }
+}
+
+/// Bottom-of-Settings affordance that exposes the device's RevenueCat
+/// App User ID with a one-tap copy. Used to grant promotional
+/// entitlements from the RC dashboard for testers without a paid
+/// subscription. Hidden when the SDK can't return an ID (web).
+class _RevenueCatIdSection extends StatefulWidget {
+  const _RevenueCatIdSection();
+
+  @override
+  State<_RevenueCatIdSection> createState() => _RevenueCatIdSectionState();
+}
+
+class _RevenueCatIdSectionState extends State<_RevenueCatIdSection> {
+  late final Future<String?> _idFuture =
+      EntitlementService.instance.currentAppUserId();
+
+  Future<void> _copy(String id) async {
+    final messenger = ScaffoldMessenger.of(context);
+    await Clipboard.setData(ClipboardData(text: id));
+    if (!mounted) return;
+    messenger.showSnackBar(
+      const SnackBar(
+        content: Text('RevenueCat ID copied to clipboard'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final onSurface = theme.colorScheme.onSurface;
+    return FutureBuilder<String?>(
+      future: _idFuture,
+      builder: (context, snapshot) {
+        final id = snapshot.data;
+        if (id == null) return const SizedBox.shrink();
+        return Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              OutlinedButton.icon(
+                icon: const Icon(Icons.copy, size: 16),
+                label: const Text('Copy RevenueCat ID'),
+                onPressed: () => _copy(id),
+              ),
+              const SizedBox(height: 8),
+              SelectableText(
+                id,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: onSurface.withValues(alpha: 0.5),
+                  fontFamily: 'monospace',
+                ),
+              ),
+            ],
+          ),
+        );
       },
     );
   }

@@ -34,6 +34,8 @@ class PaywallSheet extends StatefulWidget {
       'AI daily briefing — delivered on your schedule';
   static const String _kBulletSync =
       'Bookmarks synced across all your devices';
+  static const String _kBulletCustomRss = 'Bring Your Own RSS feed';
+  static const String _kBulletHistory = 'Unlimited feed history';
 
   static const String _kPlanMonthlyLabel = 'Monthly';
   static const String _kPlanAnnualLabel = 'Annual';
@@ -263,6 +265,10 @@ class _PaywallSheetState extends State<PaywallSheet> {
           _bullet('\u{1F916}', PaywallSheet._kBulletBriefing, textPrimary),
           const SizedBox(height: 10),
           _bullet('\u{2601}\u{FE0F}', PaywallSheet._kBulletSync, textPrimary),
+          const SizedBox(height: 10),
+          _bullet('\u{1F4E1}', PaywallSheet._kBulletCustomRss, textPrimary),
+          const SizedBox(height: 10),
+          _bullet('\u{267E}\u{FE0F}', PaywallSheet._kBulletHistory, textPrimary),
           const SizedBox(height: 20),
           _planSelector(
             textPrimary: textPrimary,

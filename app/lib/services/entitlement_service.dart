@@ -198,6 +198,21 @@ class EntitlementService {
     }
   }
 
+  /// Returns the current RevenueCat App User ID — the value testers
+  /// need to send to grant a promotional entitlement from the RC
+  /// dashboard. Anonymous (`$RCAnonymousID:...`) before sign-in, equal
+  /// to the Supabase UUID after [linkUser] runs. Returns null on web /
+  /// failure so the UI can hide the copy affordance.
+  Future<String?> currentAppUserId() async {
+    if (!_supported) return null;
+    try {
+      return await Purchases.appUserID;
+    } catch (e) {
+      debugPrint('[EntitlementService] appUserID failed: $e');
+      return null;
+    }
+  }
+
   /// Restores prior purchases for the current store account.
   Future<CustomerInfo> restorePurchases() async {
     try {
