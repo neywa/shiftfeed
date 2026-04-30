@@ -3,6 +3,8 @@
 /// Supabase.instance.client.auth directly outside this file.
 library;
 
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -24,6 +26,16 @@ class UserService {
   static UserService get instance => _instance;
 
   GoTrueClient get _auth => Supabase.instance.client.auth;
+
+  /// Broadcast stream of human-readable error messages produced while
+  /// processing a magic-link deep link. Surfaced separately from
+  /// [authStateChanges] because Supabase's auth stream only emits on
+  /// successful state transitions — failures (expired/used links, network
+  /// timeouts) are otherwise silent. The AuthSheet listens to this stream
+  /// to bring the user back to the email-entry stage with an explanation.
+  final StreamController<String> _authErrorController =
+      StreamController<String>.broadcast();
+  Stream<String> get authErrors => _authErrorController.stream;
 
   /// The current Supabase user, or null if no session is active.
   User? get currentUser => _auth.currentUser;
@@ -55,18 +67,84 @@ class UserService {
   ///
   /// URIs that don't contain auth tokens are ignored silently — the same
   /// deep-link channel may carry non-auth URIs in the future.
+  ///
+  /// The post-auth hydration calls (`linkUser`, `migrateLocalToCloud`,
+  /// `registerToken`) are run independently with their own timeouts so a
+  /// hang in one (e.g. a stuck RevenueCat platform channel) cannot block
+  /// the others or leave the deep-link future unresolved indefinitely.
   Future<void> handleDeepLink(Uri uri) async {
+    debugPrint('[Auth] handleDeepLink called: $uri');
     try {
-      await _auth.getSessionFromUrl(uri);
-      final uid = currentUser?.id;
-      if (uid != null) {
-        await EntitlementService.instance.linkUser(uid);
-        await BookmarkService.instance.migrateLocalToCloud();
-        await DeviceTokenService.instance.registerToken();
-      }
-    } catch (_) {
-      // Not an auth URI, or a stale token — ignore.
+      debugPrint('[Auth] calling getSessionFromUrl');
+      await _auth
+          .getSessionFromUrl(uri)
+          .timeout(const Duration(seconds: 15));
+      debugPrint('[Auth] session obtained, user: ${currentUser?.id}');
+    } on TimeoutException {
+      debugPrint('[Auth] getSessionFromUrl timed out');
+      _authErrorController.add(
+        'Sign-in is taking longer than expected. Check your connection '
+        "and tap 'Send sign-in link' to try again.",
+      );
+      return;
+    } on AuthException catch (e) {
+      debugPrint('[Auth] getSessionFromUrl failed: ${e.code} ${e.message}');
+      _authErrorController.add(_friendlyAuthMessage(e));
+      return;
+    } catch (e) {
+      // Not an auth URI, or some other parser failure — ignore silently
+      // since this same channel may carry non-auth deep links in future.
+      debugPrint('[Auth] getSessionFromUrl failed: $e');
+      return;
     }
+
+    final uid = currentUser?.id;
+    if (uid == null) {
+      debugPrint('[Auth] no uid after getSessionFromUrl, skipping post-auth');
+      return;
+    }
+
+    // Best-effort hydration. Each call is independent: failures and
+    // timeouts are logged but never block subsequent calls.
+    await _runStage(
+      'linkUser',
+      () => EntitlementService.instance.linkUser(uid),
+    );
+    await _runStage(
+      'migrateLocalToCloud',
+      () => BookmarkService.instance.migrateLocalToCloud(),
+    );
+    await _runStage(
+      'registerToken',
+      () => DeviceTokenService.instance.registerToken(),
+    );
+    debugPrint('[Auth] handleDeepLink complete');
+  }
+
+  Future<void> _runStage(String name, Future<void> Function() body) async {
+    debugPrint('[Auth] calling $name');
+    try {
+      await body().timeout(const Duration(seconds: 10));
+      debugPrint('[Auth] $name ok');
+    } on TimeoutException {
+      debugPrint('[Auth] $name timed out');
+    } catch (e) {
+      debugPrint('[Auth] $name failed: $e');
+    }
+  }
+
+  String _friendlyAuthMessage(AuthException e) {
+    // PKCE codes are single-use. Re-clicking an old or already-consumed
+    // link gets a 404 with code=flow_state_not_found from Supabase.
+    if (e.code == 'flow_state_not_found') {
+      return "This sign-in link has already been used or expired. "
+          "Tap 'Send sign-in link' below to get a fresh one.";
+    }
+    final lower = e.message.toLowerCase();
+    if (lower.contains('expired')) {
+      return 'This sign-in link has expired. Please request a new one.';
+    }
+    return 'Sign-in failed: ${e.message}';
   }
 
   /// Ends the current session locally and on Supabase, then unlinks the

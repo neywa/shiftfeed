@@ -71,21 +71,42 @@ class _AuthSheetState extends State<AuthSheet> {
   String _sentToEmail = '';
 
   StreamSubscription<AuthState>? _authSub;
+  StreamSubscription<String>? _authErrorSub;
+
+  /// Guards against `AuthChangeEvent.signedIn` firing twice for one
+  /// sign-in (a known quirk of supabase_flutter v2's PKCE flow). Without
+  /// this, the second pop would pop the route underneath the modal —
+  /// the home screen — leaving a blank navigator stack.
+  bool _popped = false;
 
   @override
   void initState() {
     super.initState();
     _authSub = UserService.instance.authStateChanges.listen((state) {
-      if (!mounted) return;
+      debugPrint('[AuthSheet] auth state changed: ${state.event}');
+      if (!mounted || _popped) return;
       if (state.event == AuthChangeEvent.signedIn) {
+        _popped = true;
+        _authSub?.cancel();
+        debugPrint('[AuthSheet] attempting to pop sheet');
         Navigator.of(context).pop(true);
       }
+    });
+    _authErrorSub = UserService.instance.authErrors.listen((message) {
+      debugPrint('[AuthSheet] auth error: $message');
+      if (!mounted) return;
+      setState(() {
+        _stage = _AuthSheetStage.entering;
+        _error = message;
+        _resendInfo = null;
+      });
     });
   }
 
   @override
   void dispose() {
     _authSub?.cancel();
+    _authErrorSub?.cancel();
     _emailController.dispose();
     super.dispose();
   }

@@ -18,12 +18,11 @@ import 'services/user_service.dart';
 import 'theme/app_theme.dart';
 import 'theme/theme_notifier.dart';
 
-// TODO: replace REVENUECAT_*_KEY placeholders with real keys from RevenueCat dashboard
-const String _rcApiKeyAndroid = 'REVENUECAT_ANDROID_KEY';
+// RevenueCat publishable SDK keys — safe to ship in source (mobile SDK keys
+// are designed for client embedding, like the Supabase anon key).
+// TODO: replace the Apple placeholder with the real key before iOS testing.
+const String _rcApiKeyAndroid = 'goog_kryEWTjzpwJhvzTbeBEbQfmJXGG';
 const String _rcApiKeyApple = 'REVENUECAT_APPLE_KEY';
-
-// TODO: register shiftfeed://auth-callback as a redirect URL in the
-// Supabase dashboard under Authentication > URL Configuration
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -112,19 +111,25 @@ class _MyAppState extends State<MyApp> {
     try {
       _appLinks = AppLinks();
       final initialUri = await _appLinks!.getInitialLink();
+      debugPrint('[DeepLink] initial link: $initialUri');
       if (initialUri != null) {
         await UserService.instance.handleDeepLink(initialUri);
       }
       _linkSub = _appLinks!.uriLinkStream.listen(
         (uri) {
-          UserService.instance.handleDeepLink(uri);
+          debugPrint('[DeepLink] stream event received: $uri');
+          // Fire-and-forget — but surface unhandled errors instead of
+          // letting them become silent unhandled-future exceptions.
+          UserService.instance.handleDeepLink(uri).catchError((Object e) {
+            debugPrint('[DeepLink] handleDeepLink error: $e');
+          });
         },
         onError: (Object e) {
-          debugPrint('Deep-link stream error: $e');
+          debugPrint('[DeepLink] stream error: $e');
         },
       );
     } catch (e) {
-      debugPrint('Deep-link init failed: $e');
+      debugPrint('[DeepLink] init failed: $e');
     }
   }
 
