@@ -7,1551 +7,1284 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg: #f7f5f0;
-      --surface: #ffffff;
-      --ink: #1c1a17;
-      --muted: #6b6560;
-      --accent: #EE0000;
-      --border: #e2ddd7;
-      --radius: 12px;
+      --bg: #f7f5f0; --surface: #ffffff; --ink: #1c1a17; --muted: #6b6560;
+      --accent: #EE0000; --border: #e2ddd7; --radius: 12px;
+      --green: #3b6d11; --green-bg: #f0f7ee; --green-border: #9ac989;
+      --orange: #e65100; --orange-bg: #fff3e0; --orange-border: #ffb74d;
+      --purple: #3c3489; --purple-bg: #eeedfe; --purple-border: #afa9ec;
     }
-
-    body {
-      background: var(--bg);
-      color: var(--ink);
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 300;
-      font-size: 16px;
-      line-height: 1.75;
-      padding: 2rem 1rem 4rem;
-    }
-
+    body { background: var(--bg); color: var(--ink); font-family: 'DM Sans', sans-serif; font-weight: 300; font-size: 16px; line-height: 1.75; padding: 2rem 1rem 4rem; }
     .wrap { max-width: 720px; margin: 0 auto; }
-
-    header {
-      padding: 2.5rem 0 2rem;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 2.5rem;
-    }
-
-    .app-badge {
-      display: inline-block;
-      background: var(--accent);
-      color: #fff;
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 500;
-      font-size: 0.75rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      padding: 0.3em 0.85em;
-      border-radius: 99px;
-      margin-bottom: 1rem;
-    }
-
-    h1 {
-      font-family: 'DM Serif Display', serif;
-      font-size: clamp(2rem, 5vw, 3rem);
-      font-weight: 400;
-      line-height: 1.15;
-      color: var(--ink);
-      margin-bottom: 0.6rem;
-    }
-
+    header { padding: 2.5rem 0 2rem; border-bottom: 1px solid var(--border); margin-bottom: 2.5rem; }
+    .app-badge { display: inline-block; background: var(--accent); color: #fff; font-weight: 500; font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.3em 0.85em; border-radius: 99px; margin-bottom: 1rem; }
+    h1 { font-family: 'DM Serif Display', serif; font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 400; line-height: 1.15; margin-bottom: 0.6rem; }
     .meta { color: var(--muted); font-size: 0.875rem; }
-
-    section {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.75rem 2rem;
-      margin-bottom: 1.25rem;
-    }
-
-    h2 {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1.3rem;
-      font-weight: 400;
-      color: var(--ink);
-      margin-bottom: 0.75rem;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-    }
-
-    h2 .num {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 1.8em;
-      height: 1.8em;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 50%;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.7rem;
-      font-weight: 500;
-      color: var(--muted);
-      flex-shrink: 0;
-    }
-
-    h3 {
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 500;
-      font-size: 0.85rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin: 1.5rem 0 0.5rem;
-    }
-
+    section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.75rem 2rem; margin-bottom: 1.25rem; }
+    h2 { font-family: 'DM Serif Display', serif; font-size: 1.3rem; font-weight: 400; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.6rem; }
+    h2 .num { display: inline-flex; align-items: center; justify-content: center; width: 1.8em; height: 1.8em; background: var(--bg); border: 1px solid var(--border); border-radius: 50%; font-family: 'DM Sans', sans-serif; font-size: 0.7rem; font-weight: 500; color: var(--muted); flex-shrink: 0; }
+    h3 { font-weight: 500; font-size: 0.85rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 1.5rem 0 0.5rem; }
     h3:first-of-type { margin-top: 0.5rem; }
-
     p { color: var(--ink); margin-bottom: 0.75rem; }
     p:last-child { margin-bottom: 0; }
-
     ul, ol { padding-left: 1.5rem; margin-bottom: 0.75rem; }
-    li { margin-bottom: 0.3rem; color: var(--ink); }
-
-    a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.15s; }
+    li { margin-bottom: 0.3rem; }
+    a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; }
     a:hover { border-bottom-color: var(--accent); }
-
-    .highlight {
-      background: #fff0f0;
-      border-left: 3px solid var(--accent);
-      border-radius: 0 8px 8px 0;
-      padding: 0.85rem 1rem;
-      margin: 0.75rem 0;
-      font-size: 0.925rem;
-    }
-
-    /* TOC */
+    .highlight { background: #fff0f0; border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 0.85rem 1rem; margin: 0.75rem 0; font-size: 0.925rem; }
     .toc { list-style: none; padding: 0; }
     .toc li { margin-bottom: 0.4rem; }
-    .toc a {
-      font-size: 0.9rem;
-      color: var(--ink);
-      border-bottom: none;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
+    .toc a { font-size: 0.9rem; color: var(--ink); border-bottom: none; display: flex; align-items: center; gap: 0.5rem; }
     .toc a:hover { color: var(--accent); }
-    .toc-num {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 1.6em;
-      height: 1.6em;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 50%;
-      font-size: 0.65rem;
-      font-weight: 500;
-      color: var(--muted);
-      flex-shrink: 0;
+    .toc-num { display: inline-flex; align-items: center; justify-content: center; min-width: 1.6em; height: 1.6em; background: var(--bg); border: 1px solid var(--border); border-radius: 50%; font-size: 0.65rem; font-weight: 500; color: var(--muted); flex-shrink: 0; }
+
+    /* Progress */
+    .progress-wrap { margin-bottom: 1.5rem; }
+    .progress-labels { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.4rem; }
+    .progress-bar { height: 6px; background: var(--bg); border-radius: 3px; border: 1px solid var(--border); overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.3s ease; width: 0%; }
+
+    /* Tester fields */
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    .field-group { margin-bottom: 0.75rem; }
+    .field-label { font-size: 0.78rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 0.3rem; display: block; }
+    input[type="text"], input[type="email"], select, textarea {
+      width: 100%; font-size: 0.9rem; padding: 0.5rem 0.75rem;
+      border: 1px solid var(--border); border-radius: 6px;
+      background: var(--bg); color: var(--ink); font-family: 'DM Sans', sans-serif;
     }
+    input[type="text"]:focus, input[type="email"]:focus, select:focus, textarea:focus {
+      outline: none; border-color: var(--accent); background: var(--surface);
+    }
+
+    /* Device chips */
+    .device-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.3rem; }
+    .device-chip { font-size: 0.78rem; padding: 0.25em 0.75em; border-radius: 99px; border: 1px solid var(--border); background: transparent; cursor: pointer; color: var(--muted); transition: all 0.15s; }
+    .device-chip.active { background: #e3f2fd; border-color: #90caf9; color: #0d47a1; font-weight: 500; }
 
     /* Test cases */
-    .test-case {
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1rem 1.25rem;
-      margin-bottom: 0.85rem;
-    }
-
-    .test-header {
-      display: flex;
-      align-items: flex-start;
-      gap: 0.75rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .test-checkbox {
-      width: 20px;
-      height: 20px;
-      min-width: 20px;
-      border: 1.5px solid var(--border);
-      border-radius: 4px;
-      margin-top: 2px;
-      flex-shrink: 0;
-      background: var(--bg);
-    }
-
-    .test-id {
-      font-family: 'DM Sans', monospace;
-      font-size: 0.72rem;
-      font-weight: 500;
-      letter-spacing: 0.08em;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 0.15em 0.5em;
-      color: var(--muted);
-      white-space: nowrap;
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
-
-    .test-title {
-      font-weight: 500;
-      font-size: 0.95rem;
-      color: var(--ink);
-      line-height: 1.4;
-    }
-
-    .badges { display: flex; gap: 0.35rem; flex-wrap: wrap; margin: 0.5rem 0 0.65rem 2.55rem; }
-
-    .badge {
-      font-size: 0.65rem;
-      font-weight: 500;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      padding: 0.15em 0.6em;
-      border-radius: 99px;
-      border: 1px solid;
-    }
-
-    .badge-free { background: #f0f7ee; border-color: #9ac989; color: #3b6d11; }
-    .badge-pro { background: #eeedfe; border-color: #afa9ec; color: #3c3489; }
-    .badge-android { background: #e8f5e9; border-color: #81c784; color: #1b5e20; }
-    .badge-ios { background: #e3f2fd; border-color: #90caf9; color: #0d47a1; }
-    .badge-native { background: #fff3e0; border-color: #ffb74d; color: #e65100; }
-
-    .test-body { margin-left: 2.55rem; font-size: 0.9rem; }
-    .test-body .label { font-weight: 500; color: var(--muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.5rem; margin-bottom: 0.2rem; }
+    .test-case { border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 0.85rem; transition: border-color 0.2s; }
+    .test-case.status-pass { border-color: var(--green-border); background: #fafff9; }
+    .test-case.status-fail { border-color: #e57373; background: #fff9f9; }
+    .test-case.status-skip { border-color: #bdbdbd; background: #fafafa; }
+    .test-header { display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.5rem; }
+    .test-id { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.08em; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.15em 0.5em; color: var(--muted); white-space: nowrap; flex-shrink: 0; margin-top: 2px; font-family: monospace; }
+    .test-title { font-weight: 500; font-size: 0.95rem; line-height: 1.4; flex: 1; }
+    .badges { display: flex; gap: 0.35rem; flex-wrap: wrap; margin: 0.4rem 0 0.6rem 0; }
+    .badge { font-size: 0.65rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.15em 0.6em; border-radius: 99px; border: 1px solid; }
+    .badge-free { background: var(--green-bg); border-color: var(--green-border); color: var(--green); }
+    .badge-pro { background: var(--purple-bg); border-color: var(--purple-border); color: var(--purple); }
+    .badge-native { background: var(--orange-bg); border-color: var(--orange-border); color: var(--orange); }
+    .test-body { font-size: 0.9rem; }
+    .label { font-weight: 500; color: var(--muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.5rem; margin-bottom: 0.2rem; }
     .test-body ol { padding-left: 1.25rem; margin-bottom: 0.5rem; }
     .test-body ol li { margin-bottom: 0.2rem; }
-    .expected { background: #f0f7ee; border-left: 2px solid #9ac989; border-radius: 0 6px 6px 0; padding: 0.5rem 0.75rem; font-size: 0.875rem; color: #2d4a26; margin-top: 0.35rem; }
+    .expected { background: var(--green-bg); border-left: 2px solid var(--green-border); border-radius: 0 6px 6px 0; padding: 0.5rem 0.75rem; font-size: 0.875rem; color: #2d4a26; margin-top: 0.35rem; margin-bottom: 0.75rem; }
 
-    .back-to-top { text-align: right; margin-top: 1.25rem; }
-    .back-to-top a { font-size: 0.8rem; color: var(--muted); }
+    /* Status buttons */
+    .status-row { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap; }
+    .status-label { font-size: 0.78rem; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; flex-shrink: 0; }
+    .status-btn { font-size: 0.78rem; font-weight: 500; padding: 0.3em 0.9em; border-radius: 99px; border: 1px solid var(--border); background: transparent; cursor: pointer; color: var(--muted); transition: all 0.15s; letter-spacing: 0.04em; }
+    .status-btn:hover { background: var(--bg); }
+    .status-btn.pass.active { background: var(--green-bg); border-color: var(--green-border); color: var(--green); font-weight: 500; }
+    .status-btn.fail.active { background: #ffebee; border-color: #e57373; color: #b71c1c; font-weight: 500; }
+    .status-btn.skip.active { background: #f5f5f5; border-color: #bdbdbd; color: #616161; font-weight: 500; }
+    .note-field { margin-top: 0.6rem; display: none; }
+    .note-field textarea { font-size: 0.85rem; border-radius: 6px; border: 1px solid var(--border); padding: 0.5rem 0.75rem; background: var(--surface); min-height: 56px; resize: vertical; }
+    .note-field.show { display: block; }
 
-    /* Sign-off table */
+    /* Sign-off */
     .signoff-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; margin-top: 0.75rem; }
     .signoff-table th { text-align: left; font-weight: 500; font-size: 0.78rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); padding: 0.5rem 0.75rem; background: var(--bg); border-bottom: 1px solid var(--border); }
-    .signoff-table td { padding: 0.65rem 0.75rem; border-bottom: 1px solid var(--border); color: var(--ink); }
-    .signoff-table td.write { background: #fffcf9; min-width: 100px; }
+    .signoff-table td { padding: 0.65rem 0.75rem; border-bottom: 1px solid var(--border); }
     .signoff-table tr:last-child td { border-bottom: none; }
+    .signoff-table select, .signoff-table textarea { font-size: 0.85rem; padding: 0.3rem 0.5rem; }
+    .signoff-table .wide { min-height: 60px; }
 
-    .contact-box {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1rem 1.25rem;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin-top: 0.75rem;
-    }
+    /* Export */
+    .export-section { background: #fff0f0; border: 1px solid #ffcdd2; border-radius: var(--radius); padding: 1.5rem 2rem; margin-bottom: 1.25rem; }
+    .export-section h2 { color: var(--accent); }
+    .export-btns { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem; }
+    .btn { font-size: 0.875rem; font-weight: 500; padding: 0.6em 1.4em; border-radius: 6px; border: none; cursor: pointer; transition: opacity 0.15s; display: inline-flex; align-items: center; gap: 0.4rem; }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-secondary { background: var(--surface); color: var(--ink); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: var(--bg); }
+    .btn-green { background: var(--green); color: white; }
+    .btn-green:hover { opacity: 0.85; }
 
-    footer {
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.8rem;
-      margin-top: 2.5rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid var(--border);
-    }
+    .stats-row { display: flex; gap: 1rem; flex-wrap: wrap; margin: 1rem 0 0; }
+    .stat-chip { font-size: 0.85rem; padding: 0.3em 0.8em; border-radius: 99px; font-weight: 500; }
+    .stat-pass { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+    .stat-fail { background: #ffebee; color: #b71c1c; border: 1px solid #e57373; }
+    .stat-skip { background: #f5f5f5; color: #616161; border: 1px solid #bdbdbd; }
+    .stat-total { background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
 
+    .contact-box { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; display: flex; align-items: center; gap: 0.75rem; margin-top: 0.75rem; }
+    .back-to-top { text-align: right; margin-top: 1.25rem; }
+    .back-to-top a { font-size: 0.8rem; color: var(--muted); }
+    .precondition { font-size: 0.875rem; color: var(--muted); background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.4rem 0.75rem; margin-bottom: 0.4rem; display: inline-block; }
+    footer { text-align: center; color: var(--muted); font-size: 0.8rem; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
     @media (max-width: 540px) {
       section { padding: 1.25rem 1rem; }
-      .test-case { padding: 0.85rem 1rem; }
-      .test-body { margin-left: 0; }
-      .badges { margin-left: 0; }
-    }
-
-    @media print {
-      body { background: #fff; padding: 0; font-size: 14px; }
-      section { box-shadow: none; break-inside: avoid; }
-      .test-case { break-inside: avoid; }
-      a { color: var(--ink); }
+      .field-row { grid-template-columns: 1fr; }
+      .export-section { padding: 1.25rem 1rem; }
     }
   </style>
 </head>
 <body>
 <div class="wrap">
 
-  <header id="top">
-    <div class="app-badge">ShiftFeed · Golden Gate</div>
-    <h1>Beta Test Plan</h1>
-    <p class="meta">Effective date: May 07, 2026 &nbsp;·&nbsp; Mobile only (Android + iOS) &nbsp;·&nbsp; ~45 minutes</p>
-  </header>
+<header id="top">
+  <div class="app-badge">ShiftFeed · Golden Gate</div>
+  <h1>Beta Test Plan</h1>
+  <p class="meta">Effective date: May 08, 2026 &nbsp;·&nbsp; Mobile only (Android + iOS) &nbsp;·&nbsp; ~45 minutes</p>
+</header>
 
-  <!-- SUMMARY -->
-  <section>
-    <h2><span class="num">★</span> What you're testing</h2>
-    <p>ShiftFeed is an OpenShift and Kubernetes news aggregator for SREs, DevOps engineers, and platform engineers. It pulls articles from Red Hat Blog, Kubernetes Blog, CNCF, HackerNoon, and Hacker News, tracks OCP stable releases, surfaces Red Hat CVEs, and generates an AI-powered daily briefing.</p>
-    <div class="highlight"><strong>Scope of this round:</strong> the mobile app on Android and iOS only. Do not test the web build at neywa.github.io/shiftfeed — that is a separate target and is not in scope here.</div>
-    <p>The test plan is split into Free and Pro features. You can complete a full Free pass in about 30 minutes. Pro testing requires a promotional entitlement — see Section 3 for setup.</p>
-  </section>
+<!-- PROGRESS -->
+<div class="progress-wrap">
+  <div class="progress-labels">
+    <span>Testing progress</span>
+    <span id="progress-text">0 / 46 test cases</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+  <div class="stats-row">
+    <span class="stat-chip stat-pass" id="stat-pass">✓ 0 passed</span>
+    <span class="stat-chip stat-fail" id="stat-fail">✗ 0 failed</span>
+    <span class="stat-chip stat-skip" id="stat-skip">— 0 skipped</span>
+    <span class="stat-chip stat-total" id="stat-total">46 remaining</span>
+  </div>
+</div>
 
-  <!-- TOC -->
-  <section>
-    <h2><span class="num">☰</span> Table of contents</h2>
-    <ul class="toc">
-      <li><a href="#env"><span class="toc-num">1</span> Environment setup</a></li>
-      <li><a href="#pro-setup"><span class="toc-num">2</span> Pro tier setup</a></li>
-      <li><a href="#reporting"><span class="toc-num">3</span> How to report a bug</a></li>
-      <li><a href="#feed"><span class="toc-num">4</span> Feed and article browsing</a></li>
-      <li><a href="#search"><span class="toc-num">5</span> Search</a></li>
-      <li><a href="#bookmarks"><span class="toc-num">6</span> Bookmarks</a></li>
-      <li><a href="#briefing"><span class="toc-num">7</span> AI daily briefing</a></li>
-      <li><a href="#ocp"><span class="toc-num">8</span> OCP versions and CVE alerts</a></li>
-      <li><a href="#submit"><span class="toc-num">9</span> Submit a link</a></li>
-      <li><a href="#auth"><span class="toc-num">10</span> Authentication</a></li>
-      <li><a href="#notifications"><span class="toc-num">11</span> Push notifications</a></li>
-      <li><a href="#rss"><span class="toc-num">12</span> Custom RSS feeds</a></li>
-      <li><a href="#paywall"><span class="toc-num">13</span> Subscriptions and entitlements</a></li>
-      <li><a href="#theme"><span class="toc-num">14</span> Theme and visual</a></li>
-      <li><a href="#settings"><span class="toc-num">15</span> Settings screen</a></li>
-      <li><a href="#edge"><span class="toc-num">16</span> Edge cases and regression</a></li>
-      <li><a href="#signoff"><span class="toc-num">17</span> Final sign-off</a></li>
-    </ul>
-  </section>
-
-  <!-- SECTION 1: ENVIRONMENT -->
-  <section id="env">
-    <h2><span class="num">1</span> Environment setup</h2>
-
-    <h3>Android</h3>
-    <ol>
-      <li>Install the Play Internal Testing build via the link the developer sent you.</li>
-      <li>Minimum supported version: Android 7.0 (API 24). Ideally test on Android 13+ for push notification behaviour.</li>
-      <li>Note the app version — you'll find it at the very bottom of the Settings screen.</li>
-      <li>Confirm you have Wi-Fi or cellular data available. The app degrades gracefully offline but most features need a connection.</li>
-    </ol>
-
-    <h3>iOS</h3>
-    <ol>
-      <li>Accept the TestFlight invite sent by the developer and install via TestFlight.</li>
-      <li>Minimum supported version: iOS 13.</li>
-      <li>Note the app version from the TestFlight app or from Settings inside ShiftFeed.</li>
-      <li>Confirm network access as above.</li>
-    </ol>
-
-    <div class="highlight">Web and desktop builds are <strong>out of scope</strong> for this round. If you open neywa.github.io/shiftfeed in a browser, please do not file issues against it — that is a separate release track.</div>
-
-    <div class="back-to-top"><a href="#top">↑ Back to top</a></div>
-  </section>
-
-  <!-- SECTION 2: PRO SETUP -->
-  <section id="pro-setup">
-    <h2><span class="num">2</span> Pro tier setup</h2>
-    <p>Skip this section if you're only testing Free features. Come back here when you reach a Pro-tagged test case.</p>
-    <ol>
-      <li>Open ShiftFeed → tap Settings (gear icon).</li>
-      <li>Go to Account → Sign in → enter your email → tap "Send sign-in link".</li>
-      <li>Open the magic-link email on the same device → tap the link → ShiftFeed opens and you're signed in.</li>
-      <li>Back in Settings, scroll to the very bottom → tap <strong>Copy RevenueCat ID</strong>.</li>
-      <li>Send that ID to the developer via email or Slack. They will grant a Pro promotional entitlement from the RevenueCat dashboard.</li>
-      <li>Once confirmed, fully restart the app (swipe it away from recents and relaunch).</li>
-      <li>A <strong>PRO</strong> badge should appear next to "ShiftFeed" in the top app bar.</li>
-      <li>In Settings, the Notifications, Alert Rules, Daily Briefing, and Custom Feeds sections should show real content instead of upgrade prompts.</li>
-    </ol>
-    <div class="highlight">If the PRO badge doesn't appear after restarting, tap Settings → scroll to bottom → "Restore purchases" and try again.</div>
-    <div class="back-to-top"><a href="#top">↑ Back to top</a></div>
-  </section>
-
-  <!-- SECTION 3: REPORTING -->
-  <section id="reporting">
-    <h2><span class="num">3</span> How to report a bug</h2>
-    <p>For every issue you find, please include:</p>
-    <ul>
-      <li><strong>Test ID</strong> — e.g. T-FEED-03</li>
-      <li><strong>Device model and OS version</strong> — e.g. Samsung Galaxy S23 Ultra, Android 16</li>
-      <li><strong>App version</strong> — from the bottom of the Settings screen</li>
-      <li><strong>Steps to reproduce</strong> — what you did, in order</li>
-      <li><strong>Expected vs actual</strong> — what should have happened vs what did</li>
-      <li><strong>Screenshot or screen recording</strong> — if possible, attach one</li>
-    </ul>
-    <div class="contact-box">
-      <span style="font-size:1.25rem;">✉</span>
-      <div>Send bug reports to: <a href="mailto:bobek.roman@gmail.com">bobek.roman@gmail.com</a> or via Slack as agreed with the developer.</div>
+<!-- TESTER INFO -->
+<section>
+  <h2><span class="num">★</span> Your details</h2>
+  <div class="field-row">
+    <div class="field-group">
+      <label class="field-label" for="tester-name">Full name *</label>
+      <input type="text" id="tester-name" placeholder="Jane Smith" />
     </div>
-    <div class="back-to-top"><a href="#top">↑ Back to top</a></div>
-  </section>
-
-  <!-- SECTION 4: FEED -->
-  <section id="feed">
-    <h2><span class="num">4</span> Feed and article browsing</h2>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-FEED-01</span>
-        <div class="test-title">App launches without crash and shows the feed</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Cold-launch ShiftFeed from the home screen.</li>
-          <li>Wait for the feed to load.</li>
-          <li>Pull down to refresh.</li>
-        </ol>
-        <div class="expected">✓ App opens without crashing. Feed loads recent articles from multiple sources. Pull-to-refresh fetches new items and shows a loading indicator while doing so.</div>
-      </div>
+    <div class="field-group">
+      <label class="field-label" for="tester-email">Email *</label>
+      <input type="email" id="tester-email" placeholder="jane@example.com" />
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-FEED-02</span>
-        <div class="test-title">Grid and list view toggle</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>In the top app bar, tap the grid/list toggle icon.</li>
-          <li>Switch between grid and list.</li>
-          <li>Background the app and return.</li>
-        </ol>
-        <div class="expected">✓ Layout changes immediately between compact list and card grid. The chosen layout persists when returning to the app.</div>
-      </div>
+  </div>
+  <div class="field-group">
+    <label class="field-label">Device(s) used for testing</label>
+    <div class="device-chips">
+      <button class="device-chip" onclick="toggleDevice(this,'Android phone')">Android phone</button>
+      <button class="device-chip" onclick="toggleDevice(this,'Android tablet')">Android tablet</button>
+      <button class="device-chip" onclick="toggleDevice(this,'iPhone')">iPhone</button>
+      <button class="device-chip" onclick="toggleDevice(this,'iPad')">iPad</button>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-FEED-03</span>
-        <div class="test-title">Source filter chips</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Below the app bar, tap a source chip (e.g. "Red Hat Blog").</li>
-          <li>Observe the feed.</li>
-          <li>Tap the chip again or tap "ALL" to clear the filter.</li>
-        </ol>
-        <div class="expected">✓ Feed filters to show only articles from the selected source. Clearing returns the full feed. The selected chip has a distinct highlighted appearance.</div>
-      </div>
+  </div>
+  <div class="field-row">
+    <div class="field-group">
+      <label class="field-label" for="device-model">Device model</label>
+      <input type="text" id="device-model" placeholder="e.g. Samsung Galaxy S23 Ultra" />
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-FEED-04</span>
-        <div class="test-title">Tag filter from article card</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Find an article card that shows tag chips (e.g. #security, #kubernetes).</li>
-          <li>Tap one of the tag chips.</li>
-        </ol>
-        <div class="expected">✓ Feed filters to articles tagged with that tag. The search bar populates with #tagname showing the active filter.</div>
-      </div>
+    <div class="field-group">
+      <label class="field-label" for="os-version">OS version</label>
+      <input type="text" id="os-version" placeholder="e.g. Android 16" />
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-FEED-05</span>
-        <div class="test-title">Infinite scroll and free tier limit</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Scroll down steadily through the feed.</li>
-          <li>Continue past the initial 30 articles.</li>
-          <li>Keep scrolling until no more articles load.</li>
-        </ol>
-        <div class="expected">✓ New articles load automatically as you approach the bottom. After approximately 50 articles, a "free limit" tile appears. Tapping the upgrade button on that tile opens the paywall sheet.</div>
-      </div>
+  </div>
+  <div class="field-row">
+    <div class="field-group">
+      <label class="field-label" for="app-version">App version</label>
+      <input type="text" id="app-version" placeholder="e.g. v1.0.0 (from Settings)" />
     </div>
+  </div>
+</section>
 
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-FEED-06</span>
-        <div class="test-title">Article tap opens correct destination</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Tap a standard blog article (e.g. from Red Hat Blog or Kubernetes Blog).</li>
-          <li>Then tap a CVE article (tagged with #cve).</li>
-          <li>Then tap a GitHub Releases article.</li>
-        </ol>
-        <div class="expected">✓ Blog articles open in the in-app WebView with source name in the toolbar and an external-link icon. CVE and release articles open in WebView. All load within a few seconds with a progress indicator.</div>
-      </div>
+<!-- WHAT YOU'RE TESTING -->
+<section>
+  <h2><span class="num">1</span> What you're testing</h2>
+  <p>ShiftFeed is an OpenShift and Kubernetes news aggregator for SREs, DevOps engineers, and platform engineers. It pulls articles from Red Hat Blog, Kubernetes Blog, CNCF, HackerNoon, and Hacker News, tracks OCP stable releases, surfaces Red Hat CVEs, and generates an AI-powered daily briefing.</p>
+  <div class="highlight"><strong>Scope of this round:</strong> the mobile app on Android and iOS only. Do not test the web build at neywa.github.io/shiftfeed — that is a separate target and out of scope here.</div>
+  <p>The test plan is split into Free and Pro features. You can complete a full Free pass in about 30 minutes. Pro testing requires a promotional entitlement — see Section 3 for setup.</p>
+  <p>For each test case below, mark <strong>Pass</strong>, <strong>Fail</strong>, or <strong>Skip</strong> and add a note if needed. Your results will be exported at the end.</p>
+</section>
+
+<!-- TOC -->
+<section>
+  <h2><span class="num">☰</span> Table of contents</h2>
+  <ul class="toc">
+    <li><a href="#env"><span class="toc-num">2</span> Environment setup</a></li>
+    <li><a href="#pro-setup"><span class="toc-num">3</span> Pro tier setup</a></li>
+    <li><a href="#reporting"><span class="toc-num">4</span> How to report a bug</a></li>
+    <li><a href="#feed"><span class="toc-num">5</span> Feed and article browsing</a></li>
+    <li><a href="#search"><span class="toc-num">6</span> Search</a></li>
+    <li><a href="#bookmarks"><span class="toc-num">7</span> Bookmarks</a></li>
+    <li><a href="#briefing"><span class="toc-num">8</span> AI daily briefing</a></li>
+    <li><a href="#ocp"><span class="toc-num">9</span> OCP versions and CVE alerts</a></li>
+    <li><a href="#submit"><span class="toc-num">10</span> Submit a link</a></li>
+    <li><a href="#auth"><span class="toc-num">11</span> Authentication</a></li>
+    <li><a href="#notifications"><span class="toc-num">12</span> Push notifications</a></li>
+    <li><a href="#rss"><span class="toc-num">13</span> Custom RSS feeds</a></li>
+    <li><a href="#paywall"><span class="toc-num">14</span> Subscriptions and entitlements</a></li>
+    <li><a href="#theme"><span class="toc-num">15</span> Theme and visual</a></li>
+    <li><a href="#settings"><span class="toc-num">16</span> Settings screen</a></li>
+    <li><a href="#edge"><span class="toc-num">17</span> Edge cases and regression</a></li>
+    <li><a href="#signoff"><span class="toc-num">18</span> Final sign-off and export</a></li>
+  </ul>
+</section>
+
+<!-- ENVIRONMENT -->
+<section id="env">
+  <h2><span class="num">2</span> Environment setup</h2>
+  <h3>Android</h3>
+  <ol>
+    <li>Install the Play Internal Testing build via the link the developer sent you.</li>
+    <li>Minimum supported version: Android 7.0 (API 24). Ideally test on Android 13+ for push notification behaviour.</li>
+    <li>Note the app version — you'll find it at the very bottom of the Settings screen.</li>
+    <li>Confirm you have Wi-Fi or cellular data available.</li>
+  </ol>
+  <h3>iOS</h3>
+  <ol>
+    <li>Accept the TestFlight invite sent by the developer and install via TestFlight.</li>
+    <li>Minimum supported version: iOS 13.</li>
+    <li>Note the app version from the TestFlight app or from Settings inside ShiftFeed.</li>
+    <li>Confirm network access as above.</li>
+  </ol>
+  <div class="highlight">Web and desktop builds are <strong>out of scope</strong> for this round. Do not file issues against neywa.github.io/shiftfeed.</div>
+  <div class="back-to-top"><a href="#top">↑ Back to top</a></div>
+</section>
+
+<!-- PRO SETUP -->
+<section id="pro-setup">
+  <h2><span class="num">3</span> Pro tier setup</h2>
+  <p>Skip this section if you're only testing Free features.</p>
+  <ol>
+    <li>Open ShiftFeed → tap Settings (gear icon).</li>
+    <li>Go to Account → Sign in → enter your email → tap "Send sign-in link".</li>
+    <li>Open the magic-link email on the same device → tap the link → ShiftFeed opens signed in.</li>
+    <li>Back in Settings, scroll to the very bottom → tap <strong>Copy RevenueCat ID</strong>.</li>
+    <li>Send that ID to the developer via email or Slack. They will grant a Pro promotional entitlement.</li>
+    <li>Fully restart the app. A <strong>PRO</strong> badge should appear in the top app bar.</li>
+  </ol>
+  <div class="highlight">If the PRO badge doesn't appear after restarting, tap Settings → scroll to bottom → "Restore purchases" and try again.</div>
+  <div class="back-to-top"><a href="#top">↑ Back to top</a></div>
+</section>
+
+<!-- REPORTING -->
+<section id="reporting">
+  <h2><span class="num">4</span> How to report a bug</h2>
+  <p>For every issue include: test ID, device model, OS version, app version, steps to reproduce, expected vs actual, and a screenshot if possible.</p>
+  <div class="contact-box">
+    <span style="font-size:1.25rem;">✉</span>
+    <div>Send bug reports to: <a href="mailto:neywa.blake@gmail.com">neywa.blake@gmail.com</a> or via Slack as agreed with the developer. You can also use the <strong>Export to AppFleet CSV</strong> button at the bottom of this page.</div>
+  </div>
+  <div class="back-to-top"><a href="#top">↑ Back to top</a></div>
+</section>
+
+<!-- FEED -->
+<section id="feed">
+  <h2><span class="num">5</span> Feed and article browsing</h2>
+  <div id="tc-T-FEED-01" class="test-case">
+    <div class="test-header"><span class="test-id">T-FEED-01</span><div class="test-title">App launches without crash and shows the feed</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Cold-launch ShiftFeed from the home screen.</li><li>Wait for the feed to load.</li><li>Pull down to refresh.</li></ol>
+      <div class="expected">✓ App opens without crashing. Feed loads recent articles from multiple sources. Pull-to-refresh fetches new items with a loading indicator.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-FEED-01','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-FEED-01','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-FEED-01','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-FEED-01"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-FEED-01',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-FEED-07</span>
-        <div class="test-title">Card visual design — accent colours and metadata</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Scroll through the feed and visually inspect several cards from different sources.</li>
-          <li>Look at the left edge accent stripe, the source favicon, relative time, and tags.</li>
-        </ol>
-        <div class="expected">✓ Each card has a coloured left stripe (red for Red Hat, green for releases, orange for CVEs, bright green for HackerNoon). Source favicon is visible. Relative time shows correctly ("2h ago"). Tags appear in muted grey except CVE (orange) and release (green).</div>
-      </div>
+  </div>
+  <div id="tc-T-FEED-02" class="test-case">
+    <div class="test-header"><span class="test-id">T-FEED-02</span><div class="test-title">Grid and list view toggle</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>In the top app bar, tap the grid/list toggle icon.</li><li>Switch between grid and list.</li><li>Background the app and return.</li></ol>
+      <div class="expected">✓ Layout changes immediately. The chosen layout persists when returning to the app.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-FEED-02','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-FEED-02','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-FEED-02','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-FEED-02"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-FEED-02',this.value)"></textarea></div>
     </div>
-
-    <div class="back-to-top"><a href="#top">↑ Back to top</a></div>
-  </section>
-
-  <!-- SECTION 5: SEARCH -->
-  <section id="search">
-    <h2><span class="num">5</span> Search</h2>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-SRCH-01</span>
-        <div class="test-title">Search bar opens and closes</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Tap the magnifying-glass icon in the top app bar.</li>
-          <li>Observe the layout change.</li>
-          <li>Tap the back arrow or press the Android back gesture.</li>
-        </ol>
-        <div class="expected">✓ The app bar title is replaced by a text input with autofocus — the keyboard appears immediately. Tapping back exits search mode and returns to the normal feed.</div>
-      </div>
+  </div>
+  <div id="tc-T-FEED-03" class="test-case">
+    <div class="test-header"><span class="test-id">T-FEED-03</span><div class="test-title">Source filter chips</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Tap a source chip below the app bar (e.g. "Red Hat Blog").</li><li>Observe the feed.</li><li>Tap again or tap "ALL" to clear.</li></ol>
+      <div class="expected">✓ Feed filters to that source only. Clearing returns the full feed. Selected chip has a distinct highlighted appearance.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-FEED-03','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-FEED-03','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-FEED-03','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-FEED-03"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-FEED-03',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-SRCH-02</span>
-        <div class="test-title">Keyword search returns results from full database</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Open search and type "openshift" (wait ~400ms for debounce).</li>
-          <li>Observe results.</li>
-          <li>Clear and try "gateway api".</li>
-        </ol>
-        <div class="expected">✓ Results appear from the full database (not just the currently loaded page). Results are relevant to the keyword. A result count appears in the subtitle area.</div>
-      </div>
+  </div>
+  <div id="tc-T-FEED-04" class="test-case">
+    <div class="test-header"><span class="test-id">T-FEED-04</span><div class="test-title">Tag filter from article card</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Find a card with tag chips (e.g. #security, #kubernetes).</li><li>Tap one tag.</li></ol>
+      <div class="expected">✓ Feed filters to articles with that tag. Search bar populates with #tagname.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-FEED-04','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-FEED-04','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-FEED-04','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-FEED-04"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-FEED-04',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-SRCH-03</span>
-        <div class="test-title">Tag search with # prefix</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Open search and type "#kubernetes".</li>
-          <li>Then try "#cve".</li>
-          <li>Then try "#release".</li>
-        </ol>
-        <div class="expected">✓ Results filter to articles specifically tagged with that tag. "#cve" should return only security advisories. "#release" only release announcements.</div>
-      </div>
+  </div>
+  <div id="tc-T-FEED-05" class="test-case">
+    <div class="test-header"><span class="test-id">T-FEED-05</span><div class="test-title">Infinite scroll and free tier limit</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Scroll down through the feed steadily.</li><li>Continue past the initial 30 articles.</li><li>Keep scrolling until no more load.</li></ol>
+      <div class="expected">✓ New articles load automatically. After ~50 articles, a "free limit" tile appears. Tapping the Upgrade button opens the paywall sheet.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-FEED-05','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-FEED-05','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-FEED-05','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-FEED-05"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-FEED-05',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-SRCH-04</span>
-        <div class="test-title">Empty search result state</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Open search and type "xyznotexistentterm".</li>
-        </ol>
-        <div class="expected">✓ A friendly empty state appears with a search-off icon and the message "No results for…". A "Clear search" button is visible and functional.</div>
-      </div>
+  </div>
+  <div id="tc-T-FEED-06" class="test-case">
+    <div class="test-header"><span class="test-id">T-FEED-06</span><div class="test-title">Article tap opens correct destination</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Tap a standard blog article.</li><li>Tap a CVE article (#cve tag).</li><li>Tap a GitHub Releases article.</li></ol>
+      <div class="expected">✓ Articles open in the in-app WebView with source name in toolbar and external-link icon. All load within a few seconds with a progress indicator.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-FEED-06','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-FEED-06','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-FEED-06','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-FEED-06"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-FEED-06',this.value)"></textarea></div>
     </div>
-
-    <div class="back-to-top"><a href="#top">↑ Back to top</a></div>
-  </section>
-
-  <!-- SECTION 6: BOOKMARKS -->
-  <section id="bookmarks">
-    <h2><span class="num">6</span> Bookmarks</h2>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-BM-01</span>
-        <div class="test-title">Save and unsave a bookmark</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Find any article card in the feed.</li>
-          <li>Tap the bookmark icon on the card.</li>
-          <li>Tap it again.</li>
-        </ol>
-        <div class="expected">✓ A SnackBar confirms "Article saved". The bookmark icon fills (solid). Tapping again shows "Bookmark removed" and the icon becomes outline again.</div>
-      </div>
+  </div>
+  <div id="tc-T-FEED-07" class="test-case">
+    <div class="test-header"><span class="test-id">T-FEED-07</span><div class="test-title">Card visual design — accent colours and metadata</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Scroll through several cards from different sources.</li><li>Check the left edge accent stripe, favicon, relative time, and tags.</li></ol>
+      <div class="expected">✓ Each card has a coloured left stripe (red = Red Hat, green = releases, orange = CVEs, bright green = HackerNoon). Favicon visible. Relative time correct. Tags in muted grey except CVE (orange) and release (green).</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-FEED-07','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-FEED-07','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-FEED-07','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-FEED-07"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-FEED-07',this.value)"></textarea></div>
     </div>
+  </div>
+  <div class="back-to-top"><a href="#top">↑ Back to top</a></div>
+</section>
 
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-BM-02</span>
-        <div class="test-title">Saved screen shows bookmarks and opens articles</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Bookmark two articles from the feed.</li>
-          <li>Tap the Saved tab in the bottom navigation.</li>
-          <li>Tap one of the bookmarked articles.</li>
-        </ol>
-        <div class="expected">✓ Both saved articles appear in the Saved screen. Tapping one opens the article (browser or WebView as appropriate).</div>
-      </div>
+<!-- SEARCH -->
+<section id="search">
+  <h2><span class="num">6</span> Search</h2>
+  <div id="tc-T-SRCH-01" class="test-case">
+    <div class="test-header"><span class="test-id">T-SRCH-01</span><div class="test-title">Search bar opens and closes</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Tap the magnifying-glass icon in the top app bar.</li><li>Tap the back arrow or use the Android back gesture.</li></ol>
+      <div class="expected">✓ App bar title is replaced by a text input with autofocus — keyboard appears immediately. Back exits search mode and returns normal feed.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-SRCH-01','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-SRCH-01','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-SRCH-01','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-SRCH-01"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-SRCH-01',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-BM-03</span>
-        <div class="test-title">Swipe to delete a bookmark</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>In the Saved screen, swipe a bookmark card to the left.</li>
-        </ol>
-        <div class="expected">✓ A red delete indicator appears. On completing the swipe, the bookmark is removed from the list.</div>
-      </div>
+  </div>
+  <div id="tc-T-SRCH-02" class="test-case">
+    <div class="test-header"><span class="test-id">T-SRCH-02</span><div class="test-title">Keyword search returns results from full database</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Open search and type "openshift" (wait ~400ms).</li><li>Clear and try "gateway api".</li></ol>
+      <div class="expected">✓ Results appear from the full database (not just the currently loaded page). Results relevant to the keyword. Result count appears in the subtitle.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-SRCH-02','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-SRCH-02','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-SRCH-02','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-SRCH-02"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-SRCH-02',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-BM-04</span>
-        <div class="test-title">Clear all bookmarks</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>With at least two bookmarks saved, open the Saved screen.</li>
-          <li>Tap the delete/sweep icon in the top app bar.</li>
-          <li>Confirm the dialog.</li>
-        </ol>
-        <div class="expected">✓ A confirmation dialog appears before clearing. After confirming, all bookmarks are removed and the empty state illustration is shown.</div>
-      </div>
+  </div>
+  <div id="tc-T-SRCH-03" class="test-case">
+    <div class="test-header"><span class="test-id">T-SRCH-03</span><div class="test-title">Tag search with # prefix</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Open search and type "#kubernetes".</li><li>Then try "#cve".</li><li>Then try "#release".</li></ol>
+      <div class="expected">✓ Results filter to articles tagged with that exact tag. "#cve" returns only security advisories. "#release" only release announcements.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-SRCH-03','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-SRCH-03','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-SRCH-03','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-SRCH-03"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-SRCH-03',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-BM-05</span>
-        <div class="test-title">Cloud sync indicator (Pro)</div>
-      </div>
-      <div class="badges"><span class="badge badge-pro">Pro</span></div>
-      <div class="test-body">
-        <div class="label">Precondition</div>
-        <p style="font-size:0.875rem;margin-bottom:0.35rem;">Signed in with Pro entitlement.</p>
-        <div class="label">Steps</div>
-        <ol>
-          <li>Open the Saved screen.</li>
-          <li>Look at the screen title area.</li>
-        </ol>
-        <div class="expected">✓ A cloud icon appears next to the "Saved" title, indicating bookmarks are being synced to the cloud.</div>
-      </div>
+  </div>
+  <div id="tc-T-SRCH-04" class="test-case">
+    <div class="test-header"><span class="test-id">T-SRCH-04</span><div class="test-title">Empty search result state</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Open search and type "xyznotexistentterm".</li></ol>
+      <div class="expected">✓ A friendly empty state appears with a search-off icon and "No results for…". A "Clear search" button is visible and functional.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-SRCH-04','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-SRCH-04','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-SRCH-04','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-SRCH-04"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-SRCH-04',this.value)"></textarea></div>
     </div>
+  </div>
+  <div class="back-to-top"><a href="#top">↑ Back to top</a></div>
+</section>
 
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-BM-06</span>
-        <div class="test-title">Cross-device bookmark sync (Pro)</div>
-      </div>
-      <div class="badges"><span class="badge badge-pro">Pro</span></div>
-      <div class="test-body">
-        <div class="label">Precondition</div>
-        <p style="font-size:0.875rem;margin-bottom:0.35rem;">Access to two devices signed into the same account with Pro.</p>
-        <div class="label">Steps</div>
-        <ol>
-          <li>Bookmark three articles on Device A.</li>
-          <li>Open the Saved screen on Device B.</li>
-        </ol>
-        <div class="expected">✓ The same bookmarks appear on Device B within a few seconds, without any manual sync action.</div>
-      </div>
+<!-- BOOKMARKS -->
+<section id="bookmarks">
+  <h2><span class="num">7</span> Bookmarks</h2>
+  <div id="tc-T-BM-01" class="test-case">
+    <div class="test-header"><span class="test-id">T-BM-01</span><div class="test-title">Save and unsave a bookmark</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Tap the bookmark icon on any article card.</li><li>Tap it again.</li></ol>
+      <div class="expected">✓ SnackBar confirms "Article saved". Icon fills. Tapping again shows "Bookmark removed" and icon returns to outline.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-BM-01','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-BM-01','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-BM-01','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-BM-01"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-BM-01',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-BM-07</span>
-        <div class="test-title">Export bookmarks (Pro)</div>
-      </div>
-      <div class="badges"><span class="badge badge-pro">Pro</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>In the Saved screen, tap the export icon in the app bar.</li>
-          <li>Choose Markdown or PDF.</li>
-        </ol>
-        <div class="expected">✓ The system share sheet opens with a generated file. The file contains the bookmarked articles with titles and URLs.</div>
-      </div>
+  </div>
+  <div id="tc-T-BM-02" class="test-case">
+    <div class="test-header"><span class="test-id">T-BM-02</span><div class="test-title">Saved screen shows bookmarks and opens articles</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Bookmark two articles.</li><li>Tap the Saved tab in the bottom navigation.</li><li>Tap one bookmarked article.</li></ol>
+      <div class="expected">✓ Both saved articles appear. Tapping one opens the article correctly.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-BM-02','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-BM-02','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-BM-02','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-BM-02"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-BM-02',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-BM-08</span>
-        <div class="test-title">Sign out reverts to local bookmarks (Pro)</div>
-      </div>
-      <div class="badges"><span class="badge badge-pro">Pro</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>While signed in with Pro, sign out (Settings → Account → Sign out).</li>
-          <li>Open the Saved screen.</li>
-        </ol>
-        <div class="expected">✓ The cloud icon disappears. Bookmarks remain visible (stored locally). The "Upgrade to Pro to sync bookmarks" banner appears.</div>
-      </div>
+  </div>
+  <div id="tc-T-BM-03" class="test-case">
+    <div class="test-header"><span class="test-id">T-BM-03</span><div class="test-title">Swipe to delete a bookmark</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>In the Saved screen, swipe a bookmark card to the left.</li></ol>
+      <div class="expected">✓ A red delete indicator appears. On completing the swipe, the bookmark is removed.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-BM-03','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-BM-03','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-BM-03','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-BM-03"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-BM-03',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-BM-09</span>
-        <div class="test-title">Upgrade prompt for free users</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Without signing in or with a non-Pro account, open the Saved screen.</li>
-        </ol>
-        <div class="expected">✓ An "Upgrade to Pro to sync bookmarks" banner appears above the bookmark list. Tapping the Upgrade button opens the paywall sheet.</div>
-      </div>
+  </div>
+  <div id="tc-T-BM-04" class="test-case">
+    <div class="test-header"><span class="test-id">T-BM-04</span><div class="test-title">Clear all bookmarks</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>With at least two bookmarks, tap the delete/sweep icon in the app bar.</li><li>Confirm the dialog.</li></ol>
+      <div class="expected">✓ Confirmation dialog appears. After confirming, all bookmarks removed and empty state shown.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-BM-04','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-BM-04','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-BM-04','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-BM-04"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-BM-04',this.value)"></textarea></div>
     </div>
-
-    <div class="back-to-top"><a href="#top">↑ Back to top</a></div>
-  </section>
-
-  <!-- SECTION 7: AI BRIEFING -->
-  <section id="briefing">
-    <h2><span class="num">7</span> AI daily briefing</h2>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-AI-01</span>
-        <div class="test-title">Briefing access — free vs Pro gate</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span><span class="badge badge-pro">Pro</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Tap the sparkle (✨) icon in the top app bar while on a Free account.</li>
-          <li>Repeat while signed in with Pro.</li>
-        </ol>
-        <div class="expected">✓ Free: paywall sheet appears. Pro: digest screen opens showing the latest AI briefing.</div>
-      </div>
+  </div>
+  <div id="tc-T-BM-05" class="test-case">
+    <div class="test-header"><span class="test-id">T-BM-05</span><div class="test-title">Cloud sync indicator (Pro)</div></div>
+    <div class="badges"><span class="badge badge-pro">Pro</span></div>
+    <div class="test-body">
+      <div class="precondition">Precondition: signed in with Pro entitlement</div>
+      <div class="label">Steps</div><ol><li>Open the Saved screen.</li><li>Look at the screen title area.</li></ol>
+      <div class="expected">✓ A cloud icon appears next to the "Saved" title.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-BM-05','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-BM-05','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-BM-05','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-BM-05"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-BM-05',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-AI-02</span>
-        <div class="test-title">Digest content and formatting (Pro)</div>
-      </div>
-      <div class="badges"><span class="badge badge-pro">Pro</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Open the digest screen as a Pro user.</li>
-          <li>Read through the content.</li>
-          <li>Tap an article link in the Top Stories section.</li>
-        </ol>
-        <div class="expected">✓ Digest shows today's date in the header. Sections include Top Stories, Security Watch, Releases, and Community Buzz. Bold section headers are red. CVE entries appear in orange. Tapping a story link opens the article. Pull-to-refresh reloads the digest.</div>
-      </div>
+  </div>
+  <div id="tc-T-BM-06" class="test-case">
+    <div class="test-header"><span class="test-id">T-BM-06</span><div class="test-title">Cross-device bookmark sync (Pro)</div></div>
+    <div class="badges"><span class="badge badge-pro">Pro</span></div>
+    <div class="test-body">
+      <div class="precondition">Precondition: two devices signed into the same account with Pro</div>
+      <div class="label">Steps</div><ol><li>Bookmark three articles on Device A.</li><li>Open the Saved screen on Device B.</li></ol>
+      <div class="expected">✓ Same bookmarks appear on Device B within a few seconds without any manual sync.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-BM-06','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-BM-06','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-BM-06','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-BM-06"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-BM-06',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-AI-03</span>
-        <div class="test-title">Scheduled digest delivery (Pro)</div>
-      </div>
-      <div class="badges"><span class="badge badge-pro">Pro</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Settings → Daily Briefing → enable scheduled delivery.</li>
-          <li>Set a delivery hour (pick one that's coming soon for testing).</li>
-          <li>Save.</li>
-        </ol>
-        <div class="expected">✓ Schedule saves without error. At the configured hour, a push notification for the personalised digest arrives. Note: full end-to-end verification requires waiting for the scheduled hour.</div>
-      </div>
+  </div>
+  <div id="tc-T-BM-07" class="test-case">
+    <div class="test-header"><span class="test-id">T-BM-07</span><div class="test-title">Export bookmarks (Pro)</div></div>
+    <div class="badges"><span class="badge badge-pro">Pro</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>In the Saved screen, tap the export icon in the app bar.</li><li>Choose Markdown or PDF.</li></ol>
+      <div class="expected">✓ System share sheet opens with a generated file containing bookmarked articles with titles and URLs.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-BM-07','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-BM-07','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-BM-07','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-BM-07"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-BM-07',this.value)"></textarea></div>
     </div>
-
-    <div class="back-to-top"><a href="#top">↑ Back to top</a></div>
-  </section>
-
-  <!-- SECTION 8: OCP + CVE -->
-  <section id="ocp">
-    <h2><span class="num">8</span> OCP versions and CVE alerts</h2>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-OCP-01</span>
-        <div class="test-title">OCP versions list renders correctly</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Tap the Sources tab in the bottom navigation.</li>
-          <li>Observe the version list.</li>
-        </ol>
-        <div class="expected">✓ Active stable channels (4.16 through 4.21 at minimum) are listed, each showing the latest stable version number. Color coding: top two are green (LATEST), next two amber (SUPPORTED), older grey (MAINTENANCE).</div>
-      </div>
+  </div>
+  <div id="tc-T-BM-08" class="test-case">
+    <div class="test-header"><span class="test-id">T-BM-08</span><div class="test-title">Sign out reverts to local bookmarks (Pro)</div></div>
+    <div class="badges"><span class="badge badge-pro">Pro</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>While signed in with Pro, sign out (Settings → Account → Sign out).</li><li>Open the Saved screen.</li></ol>
+      <div class="expected">✓ Cloud icon disappears. Bookmarks remain visible (stored locally). Upgrade banner appears.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-BM-08','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-BM-08','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-BM-08','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-BM-08"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-BM-08',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-OCP-02</span>
-        <div class="test-title">Copy version summary</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>On the OCP Versions screen, tap the COPY button.</li>
-          <li>Paste into a notes app.</li>
-        </ol>
-        <div class="expected">✓ Clipboard contains a sentence like "Latest stable versions are 4.18.37, 4.19.27, 4.20.18 and 4.21.9". Pasted text is clean with no extra characters.</div>
-      </div>
+  </div>
+  <div id="tc-T-BM-09" class="test-case">
+    <div class="test-header"><span class="test-id">T-BM-09</span><div class="test-title">Upgrade prompt for free users</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Without signing in or with a non-Pro account, open the Saved screen.</li></ol>
+      <div class="expected">✓ "Upgrade to Pro to sync bookmarks" banner appears. Tapping Upgrade opens the paywall sheet.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-BM-09','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-BM-09','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-BM-09','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-BM-09"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-BM-09',this.value)"></textarea></div>
     </div>
+  </div>
+  <div class="back-to-top"><a href="#top">↑ Back to top</a></div>
+</section>
 
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-CVE-01</span>
-        <div class="test-title">CVE articles in feed with severity badges</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>In the feed, tap the SECURITY filter chip.</li>
-          <li>Inspect the resulting article cards.</li>
-        </ol>
-        <div class="expected">✓ Only CVE and security advisory articles show. Each card has an orange left border. Severity badges (CRITICAL, IMPORTANT, MODERATE) are visible and colour-coded (red, orange, amber).</div>
-      </div>
+<!-- AI BRIEFING -->
+<section id="briefing">
+  <h2><span class="num">8</span> AI daily briefing</h2>
+  <div id="tc-T-AI-01" class="test-case">
+    <div class="test-header"><span class="test-id">T-AI-01</span><div class="test-title">Briefing access — Free vs Pro gate</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span><span class="badge badge-pro">Pro</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Tap the sparkle (✨) icon while on Free account.</li><li>Repeat while signed in with Pro.</li></ol>
+      <div class="expected">✓ Free: paywall sheet appears. Pro: digest screen opens showing the latest AI briefing.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-AI-01','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-AI-01','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-AI-01','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-AI-01"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-AI-01',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-CVE-02</span>
-        <div class="test-title">CVE article opens Red Hat advisory</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Tap any CVE article in the feed.</li>
-        </ol>
-        <div class="expected">✓ Opens in the in-app WebView pointing to the Red Hat security advisory. The URL shown in the toolbar matches access.redhat.com or a GitHub advisory.</div>
-      </div>
+  </div>
+  <div id="tc-T-AI-02" class="test-case">
+    <div class="test-header"><span class="test-id">T-AI-02</span><div class="test-title">Digest content and formatting (Pro)</div></div>
+    <div class="badges"><span class="badge badge-pro">Pro</span></div>
+    <div class="test-body">
+      <div class="precondition">Precondition: signed in with Pro</div>
+      <div class="label">Steps</div><ol><li>Open the digest screen.</li><li>Read through the content.</li><li>Tap an article link in Top Stories.</li></ol>
+      <div class="expected">✓ Digest shows today's date. Sections include Top Stories, Security Watch, Releases, Community Buzz. Bold headers are red. CVE entries are orange. Links open articles. Pull-to-refresh reloads.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-AI-02','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-AI-02','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-AI-02','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-AI-02"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-AI-02',this.value)"></textarea></div>
     </div>
-
-    <div class="back-to-top"><a href="#top">↑ Back to top</a></div>
-  </section>
-
-  <!-- SECTION 9: SUBMIT A LINK -->
-  <section id="submit">
-    <h2><span class="num">9</span> Submit a link</h2>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-SUB-01</span>
-        <div class="test-title">Valid URL submits successfully</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Tap the + (add link) floating button on the feed screen.</li>
-          <li>Paste a valid, public URL — e.g. https://kubernetes.io/blog/2025/01/example.</li>
-          <li>Optionally add a title.</li>
-          <li>Tap Submit.</li>
-        </ol>
-        <div class="expected">✓ A success screen appears with a confirmation message. The submission appears in the Supabase queue for developer review.</div>
-      </div>
+  </div>
+  <div id="tc-T-AI-03" class="test-case">
+    <div class="test-header"><span class="test-id">T-AI-03</span><div class="test-title">Scheduled digest delivery (Pro)</div></div>
+    <div class="badges"><span class="badge badge-pro">Pro</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Settings → Daily Briefing → enable scheduled delivery.</li><li>Set a delivery hour (pick one coming soon for testing).</li><li>Save.</li></ol>
+      <div class="expected">✓ Schedule saves without error. At the configured hour a push notification for the personalised digest arrives.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-AI-03','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-AI-03','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-AI-03','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-AI-03"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-AI-03',this.value)"></textarea></div>
     </div>
+  </div>
+  <div class="back-to-top"><a href="#top">↑ Back to top</a></div>
+</section>
 
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-SUB-02</span>
-        <div class="test-title">Duplicate URL shows friendly error</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Submit the same URL a second time.</li>
-        </ol>
-        <div class="expected">✓ Error message "This URL has already been submitted." appears inline. No duplicate is created.</div>
-      </div>
+<!-- OCP + CVE -->
+<section id="ocp">
+  <h2><span class="num">9</span> OCP versions and CVE alerts</h2>
+  <div id="tc-T-OCP-01" class="test-case">
+    <div class="test-header"><span class="test-id">T-OCP-01</span><div class="test-title">OCP versions list renders correctly</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Tap the Sources tab in the bottom navigation.</li><li>Observe the version list.</li></ol>
+      <div class="expected">✓ Active stable channels (4.16 through 4.21+) listed with latest stable version numbers. Top 2 green (LATEST), next 2 amber (SUPPORTED), older grey (MAINTENANCE).</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-OCP-01','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-OCP-01','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-OCP-01','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-OCP-01"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-OCP-01',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-SUB-03</span>
-        <div class="test-title">Invalid URL blocked by validation</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Enter "notaurl" in the URL field and tap Submit.</li>
-        </ol>
-        <div class="expected">✓ A validation error appears before the network request is made: "Please enter a valid URL starting with https://".</div>
-      </div>
+  </div>
+  <div id="tc-T-OCP-02" class="test-case">
+    <div class="test-header"><span class="test-id">T-OCP-02</span><div class="test-title">Copy version summary</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>On the OCP Versions screen, tap the COPY button.</li><li>Paste into a notes app.</li></ol>
+      <div class="expected">✓ Clipboard contains a sentence like "Latest stable versions are 4.18.37, 4.19.27, 4.20.18 and 4.21.9". Clean text, no extra characters.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-OCP-02','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-OCP-02','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-OCP-02','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-OCP-02"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-OCP-02',this.value)"></textarea></div>
     </div>
-
-    <div class="back-to-top"><a href="#top">↑ Back to top</a></div>
-  </section>
-
-  <!-- SECTION 10: AUTH -->
-  <section id="auth">
-    <h2><span class="num">10</span> Authentication (magic-link sign-in)</h2>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-AUTH-01</span>
-        <div class="test-title">Request a sign-in link</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Settings → Account → Sign in.</li>
-          <li>Enter a valid email address.</li>
-          <li>Tap "Send sign-in link".</li>
-        </ol>
-        <div class="expected">✓ A confirmation screen appears with instructions to check the inbox. No crash, no spinner left running indefinitely.</div>
-      </div>
+  </div>
+  <div id="tc-T-CVE-01" class="test-case">
+    <div class="test-header"><span class="test-id">T-CVE-01</span><div class="test-title">CVE articles in feed with severity badges</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Tap the SECURITY filter chip.</li><li>Inspect the resulting cards.</li></ol>
+      <div class="expected">✓ Only CVE and advisory articles shown. Each card has an orange left border. CRITICAL/IMPORTANT/MODERATE badges are visible and colour-coded.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-CVE-01','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-CVE-01','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-CVE-01','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-CVE-01"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-CVE-01',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-AUTH-02</span>
-        <div class="test-title">Open magic link on the same device</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Open the email client on the same device that ShiftFeed is installed on.</li>
-          <li>Find the ShiftFeed sign-in email.</li>
-          <li>Tap the sign-in link.</li>
-        </ol>
-        <div class="expected">✓ ShiftFeed opens (or comes to the foreground) and the signed-in state appears in Settings → Account. Your email address is shown.</div>
-      </div>
+  </div>
+  <div id="tc-T-CVE-02" class="test-case">
+    <div class="test-header"><span class="test-id">T-CVE-02</span><div class="test-title">CVE article opens Red Hat advisory</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Tap any CVE article in the feed.</li></ol>
+      <div class="expected">✓ Opens in the in-app WebView. URL in toolbar matches access.redhat.com or a GitHub advisory.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-CVE-02','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-CVE-02','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-CVE-02','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-CVE-02"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-CVE-02',this.value)"></textarea></div>
     </div>
+  </div>
+  <div class="back-to-top"><a href="#top">↑ Back to top</a></div>
+</section>
 
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-AUTH-03</span>
-        <div class="test-title">Expired or already-used link</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Request a link, use it to sign in successfully.</li>
-          <li>Tap the same link again from the email.</li>
-        </ol>
-        <div class="expected">✓ App shows an inline error message suggesting the user request a fresh sign-in link. No crash. No empty white screen.</div>
-      </div>
+<!-- SUBMIT -->
+<section id="submit">
+  <h2><span class="num">10</span> Submit a link</h2>
+  <div id="tc-T-SUB-01" class="test-case">
+    <div class="test-header"><span class="test-id">T-SUB-01</span><div class="test-title">Valid URL submits successfully</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Tap the + (add link) floating button on the feed screen.</li><li>Paste a valid public URL — e.g. https://kubernetes.io/blog/2025/01/example.</li><li>Optionally add a title. Tap Submit.</li></ol>
+      <div class="expected">✓ A success screen appears with a confirmation message.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-SUB-01','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-SUB-01','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-SUB-01','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-SUB-01"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-SUB-01',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-AUTH-04</span>
-        <div class="test-title">Sign out</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Settings → Account → Sign out.</li>
-          <li>Confirm the dialog.</li>
-        </ol>
-        <div class="expected">✓ Account reverts to "No account / sign in" state. Any Pro-only UI disappears. Local bookmarks remain intact.</div>
-      </div>
+  </div>
+  <div id="tc-T-SUB-02" class="test-case">
+    <div class="test-header"><span class="test-id">T-SUB-02</span><div class="test-title">Duplicate URL shows friendly error</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Submit the same URL a second time.</li></ol>
+      <div class="expected">✓ Error message "This URL has already been submitted." appears inline. No duplicate created.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-SUB-02','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-SUB-02','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-SUB-02','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-SUB-02"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-SUB-02',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-AUTH-05</span>
-        <div class="test-title">Paywall triggers auth before purchase</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>While signed out, trigger any Pro feature (e.g. tap the AI briefing icon).</li>
-        </ol>
-        <div class="expected">✓ The sign-in sheet (AuthSheet) appears first. After completing sign-in, the paywall sheet automatically resumes for plan selection.</div>
-      </div>
+  </div>
+  <div id="tc-T-SUB-03" class="test-case">
+    <div class="test-header"><span class="test-id">T-SUB-03</span><div class="test-title">Invalid URL blocked by validation</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Enter "notaurl" in the URL field and tap Submit.</li></ol>
+      <div class="expected">✓ Validation error appears before the network request: "Please enter a valid URL starting with https://".</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-SUB-03','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-SUB-03','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-SUB-03','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-SUB-03"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-SUB-03',this.value)"></textarea></div>
     </div>
+  </div>
+  <div class="back-to-top"><a href="#top">↑ Back to top</a></div>
+</section>
 
-    <div class="back-to-top"><a href="#top">↑ Back to top</a></div>
-  </section>
-
-  <!-- SECTION 11: NOTIFICATIONS -->
-  <section id="notifications">
-    <h2><span class="num">11</span> Push notifications</h2>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-NOTIF-01</span>
-        <div class="test-title">Permission prompt on first launch</div>
-      </div>
-      <div class="badges"><span class="badge badge-native">Native only</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Fresh install (or clear app data) and launch ShiftFeed.</li>
-        </ol>
-        <div class="expected">✓ On Android 13+ or iOS, the system notification permission dialog appears. Granting it subscribes the device to the "all", "security", and "releases" broadcast topics.</div>
-      </div>
+<!-- AUTH -->
+<section id="auth">
+  <h2><span class="num">11</span> Authentication (magic-link sign-in)</h2>
+  <div id="tc-T-AUTH-01" class="test-case">
+    <div class="test-header"><span class="test-id">T-AUTH-01</span><div class="test-title">Request a sign-in link</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Settings → Account → Sign in.</li><li>Enter a valid email. Tap "Send sign-in link".</li></ol>
+      <div class="expected">✓ A confirmation screen appears with instructions to check the inbox. No crash, no infinite spinner.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-AUTH-01','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-AUTH-01','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-AUTH-01','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-AUTH-01"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-AUTH-01',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-NOTIF-02</span>
-        <div class="test-title">CVE push notification arrives and deep-links</div>
-      </div>
-      <div class="badges"><span class="badge badge-native">Native only</span></div>
-      <div class="test-body">
-        <div class="label">Precondition</div>
-        <p style="font-size:0.875rem;margin-bottom:0.35rem;">Ask the developer to trigger a test push to the security topic.</p>
-        <div class="label">Steps</div>
-        <ol>
-          <li>Background the app.</li>
-          <li>Wait for the notification.</li>
-          <li>Tap the notification.</li>
-        </ol>
-        <div class="expected">✓ Notification arrives in the system tray with a title like "🔴 CRITICAL: CVE-XXXX-XXXX". Tapping it opens ShiftFeed and navigates to the relevant article.</div>
-      </div>
+  </div>
+  <div id="tc-T-AUTH-02" class="test-case">
+    <div class="test-header"><span class="test-id">T-AUTH-02</span><div class="test-title">Open magic link on the same device</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Open the ShiftFeed sign-in email on the same device.</li><li>Tap the sign-in link.</li></ol>
+      <div class="expected">✓ ShiftFeed opens (or comes to foreground) and the signed-in state appears in Settings → Account.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-AUTH-02','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-AUTH-02','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-AUTH-02','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-AUTH-02"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-AUTH-02',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-NOTIF-03</span>
-        <div class="test-title">Batched notification for multiple alerts</div>
-      </div>
-      <div class="badges"><span class="badge badge-native">Native only</span></div>
-      <div class="test-body">
-        <div class="label">Precondition</div>
-        <p style="font-size:0.875rem;margin-bottom:0.35rem;">Ask the developer to trigger a batch test push.</p>
-        <div class="label">Steps</div>
-        <ol>
-          <li>Wait for the notification when multiple CVEs or releases are found in one scrape run.</li>
-        </ol>
-        <div class="expected">✓ A single batched notification arrives (e.g. "🔴 3 New Security Advisories") rather than individual notifications for each item.</div>
-      </div>
+  </div>
+  <div id="tc-T-AUTH-03" class="test-case">
+    <div class="test-header"><span class="test-id">T-AUTH-03</span><div class="test-title">Expired or already-used link</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Sign in successfully. Tap the same link again from the email.</li></ol>
+      <div class="expected">✓ App shows an inline error suggesting the user request a fresh link. No crash. No empty white screen.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-AUTH-03','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-AUTH-03','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-AUTH-03','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-AUTH-03"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-AUTH-03',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-NOTIF-04</span>
-        <div class="test-title">Topic toggle persists (Pro)</div>
-      </div>
-      <div class="badges"><span class="badge badge-pro">Pro</span><span class="badge badge-native">Native only</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Settings → Notifications → toggle the "releases" topic off.</li>
-          <li>Force-close and relaunch the app.</li>
-          <li>Return to Settings → Notifications.</li>
-        </ol>
-        <div class="expected">✓ The "releases" toggle remains off after relaunch. Free users tapping any toggle see the paywall instead.</div>
-      </div>
+  </div>
+  <div id="tc-T-AUTH-04" class="test-case">
+    <div class="test-header"><span class="test-id">T-AUTH-04</span><div class="test-title">Sign out</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Settings → Account → Sign out. Confirm the dialog.</li></ol>
+      <div class="expected">✓ Account reverts to "No account / sign in" state. Pro-only UI disappears. Local bookmarks remain intact.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-AUTH-04','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-AUTH-04','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-AUTH-04','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-AUTH-04"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-AUTH-04',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-NOTIF-05</span>
-        <div class="test-title">Custom alert rule (Pro)</div>
-      </div>
-      <div class="badges"><span class="badge badge-pro">Pro</span><span class="badge badge-native">Native only</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Settings → Alert Rules → tap "Add rule".</li>
-          <li>Set name "OCP 4.21", keyword "4.21", category "release".</li>
-          <li>Save and enable the rule.</li>
-        </ol>
-        <div class="expected">✓ Rule saves and appears in the list in an enabled state. When a new article matching the keyword "4.21" is scraped, a targeted push arrives on this device only.</div>
-      </div>
+  </div>
+  <div id="tc-T-AUTH-05" class="test-case">
+    <div class="test-header"><span class="test-id">T-AUTH-05</span><div class="test-title">Paywall triggers auth before purchase</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>While signed out, trigger any Pro feature.</li></ol>
+      <div class="expected">✓ AuthSheet appears first. After signing in, the paywall sheet automatically resumes.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-AUTH-05','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-AUTH-05','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-AUTH-05','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-AUTH-05"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-AUTH-05',this.value)"></textarea></div>
     </div>
+  </div>
+  <div class="back-to-top"><a href="#top">↑ Back to top</a></div>
+</section>
 
-    <div class="back-to-top"><a href="#top">↑ Back to top</a></div>
-  </section>
-
-  <!-- SECTION 12: CUSTOM RSS -->
-  <section id="rss">
-    <h2><span class="num">12</span> Custom RSS feeds</h2>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-RSS-01</span>
-        <div class="test-title">Add a valid custom RSS source</div>
-      </div>
-      <div class="badges"><span class="badge badge-pro">Pro</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Settings → Custom Feeds → "Add source".</li>
-          <li>Enter a name (e.g. "My Blog") and a valid RSS URL (e.g. https://thenewstack.io/feed/).</li>
-          <li>Save.</li>
-        </ol>
-        <div class="expected">✓ The source appears in the list. After the next scraper run (up to 1 hour), the status indicator turns green. Articles from this feed appear in the main feed tagged "custom_feed".</div>
-      </div>
+<!-- NOTIFICATIONS -->
+<section id="notifications">
+  <h2><span class="num">12</span> Push notifications</h2>
+  <div id="tc-T-NOTIF-01" class="test-case">
+    <div class="test-header"><span class="test-id">T-NOTIF-01</span><div class="test-title">Permission prompt on first launch</div></div>
+    <div class="badges"><span class="badge badge-native">Native only</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Fresh install (or clear app data) and launch ShiftFeed.</li></ol>
+      <div class="expected">✓ On Android 13+ or iOS, the system notification permission dialog appears. Granting it subscribes the device to "all", "security", and "releases" broadcast topics.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-NOTIF-01','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-NOTIF-01','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-NOTIF-01','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-NOTIF-01"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-NOTIF-01',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-RSS-02</span>
-        <div class="test-title">Custom feed articles are private</div>
-      </div>
-      <div class="badges"><span class="badge badge-pro">Pro</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Add a custom RSS source on Account A.</li>
-          <li>Sign in with a different Account B on another device.</li>
-          <li>Check the feed on Account B.</li>
-        </ol>
-        <div class="expected">✓ Articles from Account A's custom RSS source do not appear for Account B. Row-level security ensures feeds are user-scoped.</div>
-      </div>
+  </div>
+  <div id="tc-T-NOTIF-02" class="test-case">
+    <div class="test-header"><span class="test-id">T-NOTIF-02</span><div class="test-title">CVE push notification arrives and deep-links</div></div>
+    <div class="badges"><span class="badge badge-native">Native only</span></div>
+    <div class="test-body">
+      <div class="precondition">Precondition: ask the developer to send a test push to the security topic</div>
+      <div class="label">Steps</div><ol><li>Background the app. Wait for the notification. Tap it.</li></ol>
+      <div class="expected">✓ Notification arrives with a title like "🔴 CRITICAL: CVE-XXXX-XXXX". Tapping it opens ShiftFeed and navigates to the relevant article.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-NOTIF-02','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-NOTIF-02','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-NOTIF-02','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-NOTIF-02"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-NOTIF-02',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-RSS-03</span>
-        <div class="test-title">Malformed URL shows error status</div>
-      </div>
-      <div class="badges"><span class="badge badge-pro">Pro</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Add a source with URL "https://notarealrssfeed.example.com/feed".</li>
-        </ol>
-        <div class="expected">✓ After the next scraper run, the status indicator stays red and shows a parse error message. No crash.</div>
-      </div>
+  </div>
+  <div id="tc-T-NOTIF-03" class="test-case">
+    <div class="test-header"><span class="test-id">T-NOTIF-03</span><div class="test-title">Batched notification for multiple alerts</div></div>
+    <div class="badges"><span class="badge badge-native">Native only</span></div>
+    <div class="test-body">
+      <div class="precondition">Precondition: ask the developer to trigger a batch test push</div>
+      <div class="label">Steps</div><ol><li>Wait for the notification when multiple CVEs or releases are found in one scrape run.</li></ol>
+      <div class="expected">✓ A single batched notification arrives (e.g. "🔴 3 New Security Advisories") rather than individual notifications.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-NOTIF-03','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-NOTIF-03','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-NOTIF-03','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-NOTIF-03"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-NOTIF-03',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-RSS-04</span>
-        <div class="test-title">Delete a custom RSS source</div>
-      </div>
-      <div class="badges"><span class="badge badge-pro">Pro</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Delete a previously added custom source.</li>
-          <li>Confirm the dialog.</li>
-        </ol>
-        <div class="expected">✓ The source disappears from the list. Previously fetched articles from that source disappear from the main feed within one scraper cycle.</div>
-      </div>
+  </div>
+  <div id="tc-T-NOTIF-04" class="test-case">
+    <div class="test-header"><span class="test-id">T-NOTIF-04</span><div class="test-title">Topic toggle persists (Pro)</div></div>
+    <div class="badges"><span class="badge badge-pro">Pro</span><span class="badge badge-native">Native only</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Settings → Notifications → toggle "releases" off.</li><li>Force-close and relaunch the app.</li><li>Return to Settings → Notifications.</li></ol>
+      <div class="expected">✓ The "releases" toggle remains off after relaunch. Free users tapping any toggle see the paywall.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-NOTIF-04','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-NOTIF-04','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-NOTIF-04','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-NOTIF-04"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-NOTIF-04',this.value)"></textarea></div>
     </div>
-
-    <div class="back-to-top"><a href="#top">↑ Back to top</a></div>
-  </section>
-
-  <!-- SECTION 13: PAYWALL -->
-  <section id="paywall">
-    <h2><span class="num">13</span> Subscriptions and entitlements</h2>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-PAY-01</span>
-        <div class="test-title">Paywall sheet appearance</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Trigger any Pro feature (e.g. AI briefing icon) while on a Free account.</li>
-          <li>Inspect the paywall sheet carefully.</li>
-        </ol>
-        <div class="expected">✓ Sheet shows five benefit bullets. Monthly / annual toggle present. "Save 40%" badge on the annual option. Prices show in your local currency (not USD if you're not in the US). A "7-day free trial" call-out is prominent.</div>
-      </div>
+  </div>
+  <div id="tc-T-NOTIF-05" class="test-case">
+    <div class="test-header"><span class="test-id">T-NOTIF-05</span><div class="test-title">Custom alert rule (Pro)</div></div>
+    <div class="badges"><span class="badge badge-pro">Pro</span><span class="badge badge-native">Native only</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Settings → Alert Rules → "Add rule".</li><li>Set name "OCP 4.21", keyword "4.21", category "release". Save and enable.</li></ol>
+      <div class="expected">✓ Rule saves and appears in the list enabled. Matching new articles deliver as targeted pushes to this device only.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-NOTIF-05','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-NOTIF-05','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-NOTIF-05','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-NOTIF-05"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-NOTIF-05',this.value)"></textarea></div>
     </div>
+  </div>
+  <div class="back-to-top"><a href="#top">↑ Back to top</a></div>
+</section>
 
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-PAY-02</span>
-        <div class="test-title">Trial initiation triggers auth first when signed out</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>While signed out, tap "Start Free Trial" on the paywall.</li>
-        </ol>
-        <div class="expected">✓ AuthSheet appears for sign-in. After completing sign-in, the paywall resumes automatically — the user does not have to navigate back to it manually.</div>
-      </div>
+<!-- CUSTOM RSS -->
+<section id="rss">
+  <h2><span class="num">13</span> Custom RSS feeds</h2>
+  <div id="tc-T-RSS-01" class="test-case">
+    <div class="test-header"><span class="test-id">T-RSS-01</span><div class="test-title">Add a valid custom RSS source</div></div>
+    <div class="badges"><span class="badge badge-pro">Pro</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Settings → Custom Feeds → "Add source".</li><li>Enter a name and a valid RSS URL (e.g. https://thenewstack.io/feed/).</li><li>Save.</li></ol>
+      <div class="expected">✓ Source appears in the list. After the next scraper run (up to 1 hour), status turns green. Articles appear tagged "custom_feed".</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-RSS-01','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-RSS-01','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-RSS-01','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-RSS-01"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-RSS-01',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-PAY-03</span>
-        <div class="test-title">Sandbox purchase completes and unlocks Pro</div>
-      </div>
-      <div class="badges"><span class="badge badge-pro">Pro</span></div>
-      <div class="test-body">
-        <div class="label">Precondition</div>
-        <p style="font-size:0.875rem;margin-bottom:0.35rem;">Use a sandbox/test account in Play Store or App Store sandbox — do not use a real payment method.</p>
-        <div class="label">Steps</div>
-        <ol>
-          <li>Complete a sandbox purchase via "Start Free Trial".</li>
-        </ol>
-        <div class="expected">✓ "Welcome to Pro 🎉" SnackBar appears. PRO badge appears in the AppBar. Pro features unlock immediately without requiring a restart.</div>
-      </div>
+  </div>
+  <div id="tc-T-RSS-02" class="test-case">
+    <div class="test-header"><span class="test-id">T-RSS-02</span><div class="test-title">Custom feed articles are private</div></div>
+    <div class="badges"><span class="badge badge-pro">Pro</span></div>
+    <div class="test-body">
+      <div class="precondition">Precondition: access to two different accounts</div>
+      <div class="label">Steps</div><ol><li>Add a custom RSS source on Account A.</li><li>Sign in with Account B on another device. Check the feed.</li></ol>
+      <div class="expected">✓ Articles from Account A's custom RSS source do not appear for Account B.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-RSS-02','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-RSS-02','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-RSS-02','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-RSS-02"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-RSS-02',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-PAY-04</span>
-        <div class="test-title">Cancel from system sheet is silent</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Open the paywall, tap "Start Free Trial".</li>
-          <li>When the system purchase sheet appears, cancel / dismiss it.</li>
-        </ol>
-        <div class="expected">✓ No error SnackBar appears. The paywall sheet simply dismisses. The user is returned to wherever they were in the app.</div>
-      </div>
+  </div>
+  <div id="tc-T-RSS-03" class="test-case">
+    <div class="test-header"><span class="test-id">T-RSS-03</span><div class="test-title">Malformed URL shows error status</div></div>
+    <div class="badges"><span class="badge badge-pro">Pro</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Add a source with URL "https://notarealrssfeed.example.com/feed".</li></ol>
+      <div class="expected">✓ After the next scraper run, status stays red with a parse error message. No crash.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-RSS-03','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-RSS-03','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-RSS-03','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-RSS-03"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-RSS-03',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-PAY-05</span>
-        <div class="test-title">Restore purchases on fresh install</div>
-      </div>
-      <div class="badges"><span class="badge badge-pro">Pro</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>On a device with an active subscription, uninstall and reinstall the app.</li>
-          <li>Sign in with the same account.</li>
-          <li>Tap "Restore purchases" in Settings or when prompted.</li>
-        </ol>
-        <div class="expected">✓ "Purchases restored" SnackBar appears. PRO badge hydrates. Pro features become available without re-purchasing.</div>
-      </div>
+  </div>
+  <div id="tc-T-RSS-04" class="test-case">
+    <div class="test-header"><span class="test-id">T-RSS-04</span><div class="test-title">Delete a custom RSS source</div></div>
+    <div class="badges"><span class="badge badge-pro">Pro</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Delete a previously added custom source. Confirm the dialog.</li></ol>
+      <div class="expected">✓ Source disappears. Previously fetched articles from that source disappear from the feed within one scraper cycle.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-RSS-04','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-RSS-04','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-RSS-04','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-RSS-04"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-RSS-04',this.value)"></textarea></div>
     </div>
+  </div>
+  <div class="back-to-top"><a href="#top">↑ Back to top</a></div>
+</section>
 
-    <div class="back-to-top"><a href="#top">↑ Back to top</a></div>
-  </section>
-
-  <!-- SECTION 14: THEME -->
-  <section id="theme">
-    <h2><span class="num">14</span> Theme and visual</h2>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-UI-01</span>
-        <div class="test-title">Light and dark mode toggle</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>In the Settings AppBar, tap the sun/moon icon.</li>
-          <li>Switch between light and dark.</li>
-          <li>Force-close and relaunch the app.</li>
-        </ol>
-        <div class="expected">✓ The entire app switches theme instantly. The chosen theme persists after relaunch. No flash of the wrong theme on startup.</div>
-      </div>
+<!-- PAYWALL -->
+<section id="paywall">
+  <h2><span class="num">14</span> Subscriptions and entitlements</h2>
+  <div id="tc-T-PAY-01" class="test-case">
+    <div class="test-header"><span class="test-id">T-PAY-01</span><div class="test-title">Paywall sheet appearance</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Trigger any Pro feature while on a Free account.</li><li>Inspect the paywall sheet carefully.</li></ol>
+      <div class="expected">✓ Sheet shows five benefit bullets. Monthly/annual toggle. "Save 40%" badge on annual. Prices in local currency. "7-day free trial" call-out is prominent.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-PAY-01','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-PAY-01','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-PAY-01','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-PAY-01"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-PAY-01',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-UI-02</span>
-        <div class="test-title">Light mode contrast — no invisible text</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Switch to light mode.</li>
-          <li>Navigate through: Feed, Saved, OCP Versions, AI Briefing, Settings.</li>
-          <li>Visually check every screen for black-on-black or white-on-white text.</li>
-        </ol>
-        <div class="expected">✓ All text is legible on every screen in light mode. Tag chips, badges, and status labels are all readable. System status widget in particular should use dark green instead of bright green.</div>
-      </div>
+  </div>
+  <div id="tc-T-PAY-02" class="test-case">
+    <div class="test-header"><span class="test-id">T-PAY-02</span><div class="test-title">Trial initiation triggers auth first when signed out</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>While signed out, tap "Start Free Trial" on the paywall.</li></ol>
+      <div class="expected">✓ AuthSheet appears. After signing in, the paywall resumes automatically.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-PAY-02','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-PAY-02','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-PAY-02','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-PAY-02"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-PAY-02',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-UI-03</span>
-        <div class="test-title">No layout overflow errors</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Sign in with Pro so the PRO badge appears in the AppBar.</li>
-          <li>Navigate to every screen and inspect the AppBar.</li>
-        </ol>
-        <div class="expected">✓ No yellow/black "RenderFlex overflowed" stripe appears anywhere. The PRO badge fits alongside the app title without truncation.</div>
-      </div>
+  </div>
+  <div id="tc-T-PAY-03" class="test-case">
+    <div class="test-header"><span class="test-id">T-PAY-03</span><div class="test-title">Sandbox purchase completes and unlocks Pro</div></div>
+    <div class="badges"><span class="badge badge-pro">Pro</span></div>
+    <div class="test-body">
+      <div class="precondition">Precondition: use a sandbox/test account — do not use a real payment method</div>
+      <div class="label">Steps</div><ol><li>Complete a sandbox purchase via "Start Free Trial".</li></ol>
+      <div class="expected">✓ "Welcome to Pro 🎉" SnackBar appears. PRO badge appears in AppBar. Pro features unlock immediately.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-PAY-03','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-PAY-03','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-PAY-03','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-PAY-03"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-PAY-03',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-UI-04</span>
-        <div class="test-title">Bottom sheets clear the system gesture bar</div>
-      </div>
-      <div class="badges"><span class="badge badge-native">Native only</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Trigger the paywall sheet, AuthSheet, and the custom RSS "Add source" sheet.</li>
-          <li>Check whether the action buttons at the bottom of each sheet are accessible.</li>
-        </ol>
-        <div class="expected">✓ Buttons are not hidden behind the Android gesture navigation bar or the iOS home indicator. All tappable elements are reachable without dismissing the sheet first.</div>
-      </div>
+  </div>
+  <div id="tc-T-PAY-04" class="test-case">
+    <div class="test-header"><span class="test-id">T-PAY-04</span><div class="test-title">Cancel from system sheet is silent</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Open the paywall, tap "Start Free Trial".</li><li>When the system purchase sheet appears, cancel it.</li></ol>
+      <div class="expected">✓ No error SnackBar. Paywall simply dismisses. User returned to where they were.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-PAY-04','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-PAY-04','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-PAY-04','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-PAY-04"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-PAY-04',this.value)"></textarea></div>
     </div>
-
-    <div class="back-to-top"><a href="#top">↑ Back to top</a></div>
-  </section>
-
-  <!-- SECTION 15: SETTINGS -->
-  <section id="settings">
-    <h2><span class="num">15</span> Settings screen</h2>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-SET-01</span>
-        <div class="test-title">All settings sections render and are tappable</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Open Settings.</li>
-          <li>Tap through Submit a Link, Sources, Data, Links sections.</li>
-        </ol>
-        <div class="expected">✓ All sections render without blank cards. Tapping each one either navigates or opens a sheet — nothing is dead. No missing text or placeholder labels.</div>
-      </div>
+  </div>
+  <div id="tc-T-PAY-05" class="test-case">
+    <div class="test-header"><span class="test-id">T-PAY-05</span><div class="test-title">Restore purchases on fresh install</div></div>
+    <div class="badges"><span class="badge badge-pro">Pro</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Uninstall and reinstall on a device with an active subscription.</li><li>Sign in with the same account. Tap "Restore purchases".</li></ol>
+      <div class="expected">✓ "Purchases restored" SnackBar. PRO badge hydrates. Pro features available without re-purchasing.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-PAY-05','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-PAY-05','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-PAY-05','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-PAY-05"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-PAY-05',this.value)"></textarea></div>
     </div>
+  </div>
+  <div class="back-to-top"><a href="#top">↑ Back to top</a></div>
+</section>
 
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-SET-02</span>
-        <div class="test-title">App version label is populated</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Scroll to the very bottom of Settings.</li>
-        </ol>
-        <div class="expected">✓ A version label shows the current build — e.g. "v1.0.0". It is not blank and does not show "v..." as a placeholder.</div>
-      </div>
+<!-- THEME -->
+<section id="theme">
+  <h2><span class="num">15</span> Theme and visual</h2>
+  <div id="tc-T-UI-01" class="test-case">
+    <div class="test-header"><span class="test-id">T-UI-01</span><div class="test-title">Light and dark mode toggle</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>In the Settings AppBar, tap the sun/moon icon.</li><li>Switch between light and dark. Force-close and relaunch.</li></ol>
+      <div class="expected">✓ Entire app switches theme instantly. Chosen theme persists after relaunch. No flash of wrong theme on startup.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-UI-01','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-UI-01','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-UI-01','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-UI-01"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-UI-01',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-SET-03</span>
-        <div class="test-title">Copy RevenueCat ID</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>At the very bottom of Settings, tap "Copy RevenueCat ID".</li>
-          <li>Paste into Notes.</li>
-        </ol>
-        <div class="expected">✓ SnackBar confirms "RevenueCat ID copied". Pasted string starts with "$RCAnonymousID:" (if not signed in) or matches a UUID format (if signed in). Not empty.</div>
-      </div>
+  </div>
+  <div id="tc-T-UI-02" class="test-case">
+    <div class="test-header"><span class="test-id">T-UI-02</span><div class="test-title">Light mode contrast — no invisible text</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Switch to light mode.</li><li>Navigate through: Feed, Saved, OCP Versions, AI Briefing, Settings.</li><li>Check every screen for black-on-black or white-on-white text.</li></ol>
+      <div class="expected">✓ All text legible on every screen in light mode. Tag chips, badges, and status labels all readable.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-UI-02','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-UI-02','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-UI-02','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-UI-02"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-UI-02',this.value)"></textarea></div>
     </div>
-
-    <div class="back-to-top"><a href="#top">↑ Back to top</a></div>
-  </section>
-
-  <!-- SECTION 16: EDGE CASES -->
-  <section id="edge">
-    <h2><span class="num">16</span> Edge cases and regression</h2>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-EDGE-01</span>
-        <div class="test-title">Offline behaviour</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Enable Airplane mode.</li>
-          <li>Launch ShiftFeed cold.</li>
-          <li>Pull to refresh.</li>
-        </ol>
-        <div class="expected">✓ App launches. Previously cached articles are shown. A clear "no network" or "offline" indicator appears on pull-to-refresh. No crash.</div>
-      </div>
+  </div>
+  <div id="tc-T-UI-03" class="test-case">
+    <div class="test-header"><span class="test-id">T-UI-03</span><div class="test-title">No layout overflow errors</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Sign in with Pro so the PRO badge appears in the AppBar.</li><li>Navigate to every screen and inspect the AppBar.</li></ol>
+      <div class="expected">✓ No yellow/black "RenderFlex overflowed" stripe anywhere. PRO badge fits alongside the title without truncation.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-UI-03','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-UI-03','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-UI-03','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-UI-03"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-UI-03',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-EDGE-02</span>
-        <div class="test-title">Resume after long background period</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Background the app and use other apps for 30+ minutes.</li>
-          <li>Return to ShiftFeed.</li>
-        </ol>
-        <div class="expected">✓ App resumes without crashing. Feed re-fetches new content. No stale spinner or frozen screen.</div>
-      </div>
+  </div>
+  <div id="tc-T-UI-04" class="test-case">
+    <div class="test-header"><span class="test-id">T-UI-04</span><div class="test-title">Bottom sheets clear the system gesture bar</div></div>
+    <div class="badges"><span class="badge badge-native">Native only</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Trigger the paywall sheet, AuthSheet, and the custom RSS "Add source" sheet.</li><li>Check whether action buttons at the bottom are accessible.</li></ol>
+      <div class="expected">✓ Buttons are not hidden behind the Android gesture navigation bar or iOS home indicator. All tappable elements reachable.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-UI-04','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-UI-04','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-UI-04','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-UI-04"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-UI-04',this.value)"></textarea></div>
     </div>
+  </div>
+  <div class="back-to-top"><a href="#top">↑ Back to top</a></div>
+</section>
 
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-EDGE-03</span>
-        <div class="test-title">Foreground push notification handling</div>
-      </div>
-      <div class="badges"><span class="badge badge-native">Native only</span></div>
-      <div class="test-body">
-        <div class="label">Precondition</div>
-        <p style="font-size:0.875rem;margin-bottom:0.35rem;">Ask the developer to send a test push while you keep the app open.</p>
-        <div class="label">Steps</div>
-        <ol>
-          <li>Keep ShiftFeed in the foreground.</li>
-          <li>Receive a push notification.</li>
-        </ol>
-        <div class="expected">✓ An in-app banner or SnackBar appears — no system notification tray item visible. No crash. App state is unaffected.</div>
-      </div>
+<!-- SETTINGS -->
+<section id="settings">
+  <h2><span class="num">16</span> Settings screen</h2>
+  <div id="tc-T-SET-01" class="test-case">
+    <div class="test-header"><span class="test-id">T-SET-01</span><div class="test-title">All settings sections render and are tappable</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Open Settings.</li><li>Tap through Submit a Link, Sources, Data, Links sections.</li></ol>
+      <div class="expected">✓ All sections render without blank cards. Tapping each navigates or opens a sheet. Nothing is dead.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-SET-01','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-SET-01','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-SET-01','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-SET-01"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-SET-01',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-EDGE-04</span>
-        <div class="test-title">State persistence across cold restart</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Steps</div>
-        <ol>
-          <li>Bookmark two articles, switch to dark mode, sign in.</li>
-          <li>Kill the app completely from recents.</li>
-          <li>Relaunch.</li>
-        </ol>
-        <div class="expected">✓ Bookmarks are present. Dark mode is active. Signed-in state is maintained. Topic preferences are unchanged.</div>
-      </div>
+  </div>
+  <div id="tc-T-SET-02" class="test-case">
+    <div class="test-header"><span class="test-id">T-SET-02</span><div class="test-title">App version label is populated</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Scroll to the very bottom of Settings.</li></ol>
+      <div class="expected">✓ Version label shows the current build — e.g. "v1.0.0". Not blank, not "v...".</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-SET-02','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-SET-02','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-SET-02','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-SET-02"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-SET-02',this.value)"></textarea></div>
     </div>
-
-    <div class="back-to-top"><a href="#top">↑ Back to top</a></div>
-  </section>
-
-  <!-- SECTION 17: SIGN-OFF -->
-  <section id="signoff">
-    <h2><span class="num">17</span> Final sign-off</h2>
-    <p>Please fill in the table below and include it in your feedback report.</p>
-
-    <table class="signoff-table">
-      <thead>
-        <tr>
-          <th>Field</th>
-          <th>Your entry</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td>Tester name</td><td class="write">&nbsp;</td></tr>
-        <tr><td>Device model</td><td class="write">&nbsp;</td></tr>
-        <tr><td>OS version</td><td class="write">&nbsp;</td></tr>
-        <tr><td>App version</td><td class="write">&nbsp;</td></tr>
-        <tr><td>Date tested</td><td class="write">&nbsp;</td></tr>
-        <tr><td>Total tests passed</td><td class="write">&nbsp;</td></tr>
-        <tr><td>Total tests failed</td><td class="write">&nbsp;</td></tr>
-        <tr><td>Blocker count (crashes / data loss)</td><td class="write">&nbsp;</td></tr>
-        <tr><td>Overall impression (1–5)</td><td class="write">&nbsp;</td></tr>
-        <tr><td>Most critical issue found</td><td class="write">&nbsp;</td></tr>
-      </tbody>
-    </table>
-
-    <p style="margin-top:1rem;">When you're done, send your completed sign-off and any bug reports to:</p>
-    <div class="contact-box">
-      <span style="font-size:1.25rem;">✉</span>
-      <a href="mailto:bobek.roman@gmail.com">bobek.roman@gmail.com</a>
+  </div>
+  <div id="tc-T-SET-03" class="test-case">
+    <div class="test-header"><span class="test-id">T-SET-03</span><div class="test-title">Copy RevenueCat ID</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>At the very bottom of Settings, tap "Copy RevenueCat ID".</li><li>Paste into Notes.</li></ol>
+      <div class="expected">✓ SnackBar confirms "RevenueCat ID copied". Pasted string starts with "$RCAnonymousID:" (signed out) or a UUID (signed in). Not empty.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-SET-03','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-SET-03','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-SET-03','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-SET-03"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-SET-03',this.value)"></textarea></div>
     </div>
+  </div>
+  <div class="back-to-top"><a href="#top">↑ Back to top</a></div>
+</section>
 
-    <p style="margin-top:1rem;color:var(--muted);font-size:0.875rem;">Thank you for taking the time to test ShiftFeed. Your feedback directly shapes what gets fixed before the public release.</p>
+<!-- EDGE CASES -->
+<section id="edge">
+  <h2><span class="num">17</span> Edge cases and regression</h2>
+  <div id="tc-T-EDGE-01" class="test-case">
+    <div class="test-header"><span class="test-id">T-EDGE-01</span><div class="test-title">Offline behaviour</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Enable Airplane mode.</li><li>Launch ShiftFeed cold.</li><li>Pull to refresh.</li></ol>
+      <div class="expected">✓ App launches. Previously cached articles shown. A clear "no network" or "offline" indicator appears on pull-to-refresh. No crash.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-EDGE-01','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-EDGE-01','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-EDGE-01','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-EDGE-01"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-EDGE-01',this.value)"></textarea></div>
+    </div>
+  </div>
+  <div id="tc-T-EDGE-02" class="test-case">
+    <div class="test-header"><span class="test-id">T-EDGE-02</span><div class="test-title">Resume after long background period</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Background the app and use other apps for 30+ minutes.</li><li>Return to ShiftFeed.</li></ol>
+      <div class="expected">✓ App resumes without crashing. Feed re-fetches new content. No stale spinner or frozen screen.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-EDGE-02','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-EDGE-02','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-EDGE-02','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-EDGE-02"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-EDGE-02',this.value)"></textarea></div>
+    </div>
+  </div>
+  <div id="tc-T-EDGE-03" class="test-case">
+    <div class="test-header"><span class="test-id">T-EDGE-03</span><div class="test-title">Foreground push notification handling</div></div>
+    <div class="badges"><span class="badge badge-native">Native only</span></div>
+    <div class="test-body">
+      <div class="precondition">Precondition: ask the developer to send a test push while the app is open</div>
+      <div class="label">Steps</div><ol><li>Keep ShiftFeed in the foreground.</li><li>Receive a push notification.</li></ol>
+      <div class="expected">✓ An in-app banner or SnackBar appears — no system notification tray item visible. No crash. App state unaffected.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-EDGE-03','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-EDGE-03','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-EDGE-03','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-EDGE-03"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-EDGE-03',this.value)"></textarea></div>
+    </div>
+  </div>
+  <div id="tc-T-EDGE-04" class="test-case">
+    <div class="test-header"><span class="test-id">T-EDGE-04</span><div class="test-title">State persistence across cold restart</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Steps</div><ol><li>Bookmark two articles, switch to dark mode, sign in.</li><li>Kill the app completely from recents.</li><li>Relaunch.</li></ol>
+      <div class="expected">✓ Bookmarks present. Dark mode active. Signed-in state maintained. Topic preferences unchanged.</div>
+      <div class="status-row"><span class="status-label">Result:</span><button class="status-btn pass" onclick="setStatus('T-EDGE-04','pass',this)">✓ Pass</button><button class="status-btn fail" onclick="setStatus('T-EDGE-04','fail',this)">✗ Fail</button><button class="status-btn skip" onclick="setStatus('T-EDGE-04','skip',this)">— Skip</button></div>
+      <div class="note-field" id="note-T-EDGE-04"><textarea placeholder="Add a note (required for Fail)..." oninput="saveNote('T-EDGE-04',this.value)"></textarea></div>
+    </div>
+  </div>
+  <div class="back-to-top"><a href="#top">↑ Back to top</a></div>
+</section>
 
-    <div class="back-to-top"><a href="#top">↑ Back to top</a></div>
-  </section>
+<!-- SIGN-OFF -->
+<section id="signoff">
+  <h2><span class="num">18</span> Final sign-off</h2>
+  <div class="field-group">
+    <label class="field-label" for="overall-rating">Overall rating</label>
+    <select id="overall-rating">
+      <option value="">Select a rating...</option>
+      <option value="5">5 — Excellent, ready to ship</option>
+      <option value="4">4 — Good, minor issues only</option>
+      <option value="3">3 — Usable, some issues to fix</option>
+      <option value="2">2 — Significant issues, needs work</option>
+      <option value="1">1 — Blocking issues, not ready</option>
+    </select>
+  </div>
+  <div class="field-group">
+    <label class="field-label" for="liked-most">What did you like most?</label>
+    <textarea id="liked-most" rows="3" placeholder="Your answer..."></textarea>
+  </div>
+  <div class="field-group">
+    <label class="field-label" for="improve-most">What needs the most improvement?</label>
+    <textarea id="improve-most" rows="3" placeholder="Your answer..."></textarea>
+  </div>
+  <div class="field-group">
+    <label class="field-label" for="recommend">Would you recommend ShiftFeed to a colleague?</label>
+    <select id="recommend">
+      <option value="">Select...</option>
+      <option>Definitely yes</option>
+      <option>Probably yes</option>
+      <option>Not sure</option>
+      <option>Probably not</option>
+      <option>Definitely not</option>
+    </select>
+  </div>
+  <div class="field-group">
+    <label class="field-label" for="other-comments">Any other comments or blockers?</label>
+    <textarea id="other-comments" rows="4" placeholder="Your answer..."></textarea>
+  </div>
+</section>
 
-  <footer>
-    <p>ShiftFeed &nbsp;·&nbsp; Beta Test Plan &nbsp;·&nbsp; Golden Gate release &nbsp;·&nbsp; Mobile only</p>
-    <p style="margin-top:0.4rem;">Effective May 07, 2026 &nbsp;·&nbsp; Web and desktop builds are out of scope for this round.</p>
-  </footer>
+<!-- EXPORT -->
+<div class="export-section" id="signoff-export">
+  <h2><span class="num">⬇</span> Export your results</h2>
+  <p>When you're done testing, use the buttons below to export your results.</p>
+  <ul style="margin: 0.5rem 0 0; font-size: 0.9rem;">
+    <li><strong>AppFleet CSV</strong> — imports all <em>failed</em> test cases as bugs into AppFleet (project code: SFD). Send this file to the developer.</li>
+    <li><strong>KB Article (Markdown)</strong> — your full test session summary, suitable for pasting into the AppFleet Knowledge Base.</li>
+    <li><strong>Copy as text</strong> — plain text summary for pasting into Slack or email.</li>
+  </ul>
+  <div class="export-btns">
+    <button class="btn btn-primary" onclick="exportCSV()">⬇ AppFleet CSV (bugs only)</button>
+    <button class="btn btn-green" onclick="exportMarkdown()">⬇ KB Article (Markdown)</button>
+    <button class="btn btn-secondary" onclick="copyText()">📋 Copy as text</button>
+  </div>
+  <p style="margin-top: 1rem; font-size: 0.85rem; color: var(--muted);">After exporting, send the CSV to <a href="mailto:neywa.blake@gmail.com">neywa.blake@gmail.com</a> or import it directly into AppFleet via the ShiftFeed app's issue importer.</p>
+</div>
+
+<footer>
+  <p>ShiftFeed &nbsp;·&nbsp; Beta Test Plan &nbsp;·&nbsp; Golden Gate release &nbsp;·&nbsp; Mobile only (Android + iOS)</p>
+  <p style="margin-top:0.4rem;">Effective May 08, 2026 &nbsp;·&nbsp; Web and desktop builds are out of scope for this round.</p>
+</footer>
 
 </div>
+
+<script>
+const statuses = {};
+const notes = {};
+const selectedDevices = new Set();
+const PROJECT_CODE = 'SFD';
+const TODAY = '20260508';
+
+const ALL_TESTS = [
+  'T-FEED-01','T-FEED-02','T-FEED-03','T-FEED-04','T-FEED-05','T-FEED-06','T-FEED-07',
+  'T-SRCH-01','T-SRCH-02','T-SRCH-03','T-SRCH-04',
+  'T-BM-01','T-BM-02','T-BM-03','T-BM-04','T-BM-05','T-BM-06','T-BM-07','T-BM-08','T-BM-09',
+  'T-AI-01','T-AI-02','T-AI-03',
+  'T-OCP-01','T-OCP-02','T-CVE-01','T-CVE-02',
+  'T-SUB-01','T-SUB-02','T-SUB-03',
+  'T-AUTH-01','T-AUTH-02','T-AUTH-03','T-AUTH-04','T-AUTH-05',
+  'T-NOTIF-01','T-NOTIF-02','T-NOTIF-03','T-NOTIF-04','T-NOTIF-05',
+  'T-RSS-01','T-RSS-02','T-RSS-03','T-RSS-04',
+  'T-PAY-01','T-PAY-02','T-PAY-03','T-PAY-04','T-PAY-05',
+  'T-UI-01','T-UI-02','T-UI-03','T-UI-04',
+  'T-SET-01','T-SET-02','T-SET-03',
+  'T-EDGE-01','T-EDGE-02','T-EDGE-03','T-EDGE-04'
+];
+
+const TEST_TITLES = {
+  'T-FEED-01': 'App launches without crash and shows the feed',
+  'T-FEED-02': 'Grid and list view toggle',
+  'T-FEED-03': 'Source filter chips',
+  'T-FEED-04': 'Tag filter from article card',
+  'T-FEED-05': 'Infinite scroll and free tier limit',
+  'T-FEED-06': 'Article tap opens correct destination',
+  'T-FEED-07': 'Card visual design — accent colours and metadata',
+  'T-SRCH-01': 'Search bar opens and closes',
+  'T-SRCH-02': 'Keyword search returns results from full database',
+  'T-SRCH-03': 'Tag search with # prefix',
+  'T-SRCH-04': 'Empty search result state',
+  'T-BM-01': 'Save and unsave a bookmark',
+  'T-BM-02': 'Saved screen shows bookmarks and opens articles',
+  'T-BM-03': 'Swipe to delete a bookmark',
+  'T-BM-04': 'Clear all bookmarks',
+  'T-BM-05': 'Cloud sync indicator (Pro)',
+  'T-BM-06': 'Cross-device bookmark sync (Pro)',
+  'T-BM-07': 'Export bookmarks (Pro)',
+  'T-BM-08': 'Sign out reverts to local bookmarks (Pro)',
+  'T-BM-09': 'Upgrade prompt for free users',
+  'T-AI-01': 'Briefing access — Free vs Pro gate',
+  'T-AI-02': 'Digest content and formatting (Pro)',
+  'T-AI-03': 'Scheduled digest delivery (Pro)',
+  'T-OCP-01': 'OCP versions list renders correctly',
+  'T-OCP-02': 'Copy version summary',
+  'T-CVE-01': 'CVE articles in feed with severity badges',
+  'T-CVE-02': 'CVE article opens Red Hat advisory',
+  'T-SUB-01': 'Valid URL submits successfully',
+  'T-SUB-02': 'Duplicate URL shows friendly error',
+  'T-SUB-03': 'Invalid URL blocked by validation',
+  'T-AUTH-01': 'Request a sign-in link',
+  'T-AUTH-02': 'Open magic link on the same device',
+  'T-AUTH-03': 'Expired or already-used link',
+  'T-AUTH-04': 'Sign out',
+  'T-AUTH-05': 'Paywall triggers auth before purchase',
+  'T-NOTIF-01': 'Permission prompt on first launch',
+  'T-NOTIF-02': 'CVE push notification arrives and deep-links',
+  'T-NOTIF-03': 'Batched notification for multiple alerts',
+  'T-NOTIF-04': 'Topic toggle persists (Pro)',
+  'T-NOTIF-05': 'Custom alert rule (Pro)',
+  'T-RSS-01': 'Add a valid custom RSS source',
+  'T-RSS-02': 'Custom feed articles are private',
+  'T-RSS-03': 'Malformed URL shows error status',
+  'T-RSS-04': 'Delete a custom RSS source',
+  'T-PAY-01': 'Paywall sheet appearance',
+  'T-PAY-02': 'Trial initiation triggers auth first when signed out',
+  'T-PAY-03': 'Sandbox purchase completes and unlocks Pro',
+  'T-PAY-04': 'Cancel from system sheet is silent',
+  'T-PAY-05': 'Restore purchases on fresh install',
+  'T-UI-01': 'Light and dark mode toggle',
+  'T-UI-02': 'Light mode contrast — no invisible text',
+  'T-UI-03': 'No layout overflow errors',
+  'T-UI-04': 'Bottom sheets clear the system gesture bar',
+  'T-SET-01': 'All settings sections render and are tappable',
+  'T-SET-02': 'App version label is populated',
+  'T-SET-03': 'Copy RevenueCat ID',
+  'T-EDGE-01': 'Offline behaviour',
+  'T-EDGE-02': 'Resume after long background period',
+  'T-EDGE-03': 'Foreground push notification handling',
+  'T-EDGE-04': 'State persistence across cold restart',
+};
+
+function toggleDevice(btn, device) {
+  btn.classList.toggle('active');
+  if (selectedDevices.has(device)) selectedDevices.delete(device);
+  else selectedDevices.add(device);
+}
+
+function setStatus(id, status, btn) {
+  statuses[id] = status;
+  const card = document.getElementById('tc-' + id);
+  card.classList.remove('status-pass', 'status-fail', 'status-skip');
+  card.classList.add('status-' + status);
+  const btns = card.querySelectorAll('.status-btn');
+  btns.forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const noteField = document.getElementById('note-' + id);
+  if (status === 'fail') noteField.classList.add('show');
+  else noteField.classList.remove('show');
+  updateProgress();
+}
+
+function saveNote(id, value) {
+  notes[id] = value;
+}
+
+function updateProgress() {
+  const total = ALL_TESTS.length;
+  const done = ALL_TESTS.filter(id => statuses[id]).length;
+  const passed = ALL_TESTS.filter(id => statuses[id] === 'pass').length;
+  const failed = ALL_TESTS.filter(id => statuses[id] === 'fail').length;
+  const skipped = ALL_TESTS.filter(id => statuses[id] === 'skip').length;
+  const remaining = total - done;
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = done + ' / ' + total + ' test cases (' + pct + '%)';
+  document.getElementById('stat-pass').textContent = '✓ ' + passed + ' passed';
+  document.getElementById('stat-fail').textContent = '✗ ' + failed + ' failed';
+  document.getElementById('stat-skip').textContent = '— ' + skipped + ' skipped';
+  document.getElementById('stat-total').textContent = remaining + ' remaining';
+}
+
+function getTesterInfo() {
+  return {
+    name: document.getElementById('tester-name').value.trim() || 'Unknown tester',
+    email: document.getElementById('tester-email').value.trim() || '',
+    devices: [...selectedDevices].join(', ') || document.getElementById('device-model').value.trim() || 'Not specified',
+    model: document.getElementById('device-model').value.trim() || 'Not specified',
+    os: document.getElementById('os-version').value.trim() || 'Not specified',
+    appVersion: document.getElementById('app-version').value.trim() || 'Not specified',
+    rating: document.getElementById('overall-rating').value || 'Not rated',
+    likedMost: document.getElementById('liked-most').value.trim() || '-',
+    improvemost: document.getElementById('improve-most').value.trim() || '-',
+    recommend: document.getElementById('recommend').value || '-',
+    otherComments: document.getElementById('other-comments').value.trim() || '-',
+  };
+}
+
+function exportCSV() {
+  const info = getTesterInfo();
+  const failed = ALL_TESTS.filter(id => statuses[id] === 'fail');
+  if (failed.length === 0) {
+    alert('No failed test cases to export. Mark at least one test as Fail first.');
+    return;
+  }
+  const rows = [['number', 'kind', 'note', 'status', 'squished_date']];
+  failed.forEach((id, i) => {
+    const title = TEST_TITLES[id] || id;
+    const note = notes[id] ? notes[id].trim() : '';
+    const noteText = '[' + id + '] ' + title +
+      ' | Tester: ' + info.name +
+      ' | Device: ' + info.model + ' ' + info.os +
+      ' | App: ' + info.appVersion +
+      (note ? ' | Note: ' + note : '');
+    rows.push([String(i + 1).padStart(3, '0'), 'bug', noteText, 'new', TODAY]);
+  });
+  const csv = rows.map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(',')).join('\n');
+  downloadFile(PROJECT_CODE + '_bugs_' + TODAY + '.csv', csv, 'text/csv');
+}
+
+function exportMarkdown() {
+  const info = getTesterInfo();
+  const passed = ALL_TESTS.filter(id => statuses[id] === 'pass').length;
+  const failed = ALL_TESTS.filter(id => statuses[id] === 'fail').length;
+  const skipped = ALL_TESTS.filter(id => statuses[id] === 'skip').length;
+  const total = ALL_TESTS.length;
+  const passRate = total > 0 ? Math.round((passed / total) * 100) : 0;
+  let md = '# ShiftFeed Beta Test — Golden Gate\n\n';
+  md += '## Tester profile\n\n';
+  md += '| Field | Value |\n|---|---|\n';
+  md += '| Tester | ' + info.name + ' (' + info.email + ') |\n';
+  md += '| Device | ' + info.model + ' |\n';
+  md += '| OS | ' + info.os + ' |\n';
+  md += '| App version | ' + info.appVersion + ' |\n';
+  md += '| Test date | ' + new Date().toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'}) + ' |\n';
+  md += '| Overall rating | ' + info.rating + '/5 |\n';
+  md += '| Would recommend | ' + info.recommend + ' |\n\n';
+  md += '## Summary\n\n';
+  md += '| Result | Count |\n|---|---|\n';
+  md += '| ✓ Passed | ' + passed + ' |\n';
+  md += '| ✗ Failed | ' + failed + ' |\n';
+  md += '| — Skipped | ' + skipped + ' |\n';
+  md += '| Pass rate | ' + passRate + '% |\n\n';
+  if (failed > 0) {
+    md += '## Failed test cases\n\n';
+    ALL_TESTS.filter(id => statuses[id] === 'fail').forEach(id => {
+      md += '### ' + id + ' — ' + (TEST_TITLES[id] || id) + '\n\n';
+      if (notes[id]) md += '**Note:** ' + notes[id] + '\n\n';
+    });
+  }
+  md += '## Feedback\n\n';
+  md += '**What did you like most?**\n\n' + info.likedMost + '\n\n';
+  md += '**What needs the most improvement?**\n\n' + info.improvemost + '\n\n';
+  md += '**Other comments:**\n\n' + info.otherComments + '\n\n';
+  md += '## Full results\n\n';
+  md += '| Test ID | Title | Result | Note |\n|---|---|---|---|\n';
+  ALL_TESTS.forEach(id => {
+    const s = statuses[id] || 'not tested';
+    const icon = s === 'pass' ? '✓' : s === 'fail' ? '✗' : s === 'skip' ? '—' : '?';
+    const n = (notes[id] || '').replace(/\|/g, '\\|').replace(/\n/g, ' ');
+    md += '| ' + id + ' | ' + (TEST_TITLES[id] || id) + ' | ' + icon + ' ' + s + ' | ' + n + ' |\n';
+  });
+  downloadFile('SFD_kb_article_' + TODAY + '.md', md, 'text/markdown');
+}
+
+function copyText() {
+  const info = getTesterInfo();
+  const passed = ALL_TESTS.filter(id => statuses[id] === 'pass').length;
+  const failed = ALL_TESTS.filter(id => statuses[id] === 'fail').length;
+  const skipped = ALL_TESTS.filter(id => statuses[id] === 'skip').length;
+  let text = 'ShiftFeed Beta Test — Golden Gate\n';
+  text += '='.repeat(40) + '\n';
+  text += 'Tester: ' + info.name + ' | Device: ' + info.model + ' ' + info.os + ' | App: ' + info.appVersion + '\n';
+  text += 'Date: ' + new Date().toLocaleDateString('en-GB') + '\n\n';
+  text += 'RESULTS: ' + passed + ' passed / ' + failed + ' failed / ' + skipped + ' skipped\n';
+  text += 'Overall rating: ' + info.rating + '/5\n\n';
+  if (failed > 0) {
+    text += 'FAILED TESTS:\n';
+    ALL_TESTS.filter(id => statuses[id] === 'fail').forEach(id => {
+      text += '  [' + id + '] ' + (TEST_TITLES[id] || id);
+      if (notes[id]) text += '\n  → ' + notes[id];
+      text += '\n';
+    });
+    text += '\n';
+  }
+  text += 'Liked most: ' + info.likedMost + '\n';
+  text += 'Needs improvement: ' + info.improvemost + '\n';
+  text += 'Would recommend: ' + info.recommend + '\n';
+  if (info.otherComments !== '-') text += 'Other: ' + info.otherComments + '\n';
+  navigator.clipboard.writeText(text).then(() => {
+    alert('Results copied to clipboard!');
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    alert('Results copied to clipboard!');
+  });
+}
+
+function downloadFile(filename, content, type) {
+  const blob = new Blob([content], {type: type + ';charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+updateProgress();
+</script>
 </body>
 </html>
