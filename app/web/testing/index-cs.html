@@ -7,1548 +7,1261 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg: #f7f5f0;
-      --surface: #ffffff;
-      --ink: #1c1a17;
-      --muted: #6b6560;
-      --accent: #EE0000;
-      --border: #e2ddd7;
-      --radius: 12px;
+      --bg: #f7f5f0; --surface: #ffffff; --ink: #1c1a17; --muted: #6b6560;
+      --accent: #EE0000; --border: #e2ddd7; --radius: 12px;
+      --green: #3b6d11; --green-bg: #f0f7ee; --green-border: #9ac989;
+      --orange: #e65100; --orange-bg: #fff3e0; --orange-border: #ffb74d;
+      --purple: #3c3489; --purple-bg: #eeedfe; --purple-border: #afa9ec;
     }
-
-    body {
-      background: var(--bg);
-      color: var(--ink);
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 300;
-      font-size: 16px;
-      line-height: 1.75;
-      padding: 2rem 1rem 4rem;
-    }
-
+    body { background: var(--bg); color: var(--ink); font-family: 'DM Sans', sans-serif; font-weight: 300; font-size: 16px; line-height: 1.75; padding: 2rem 1rem 4rem; }
     .wrap { max-width: 720px; margin: 0 auto; }
-
-    header {
-      padding: 2.5rem 0 2rem;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 2.5rem;
-    }
-
-    .app-badge {
-      display: inline-block;
-      background: var(--accent);
-      color: #fff;
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 500;
-      font-size: 0.75rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      padding: 0.3em 0.85em;
-      border-radius: 99px;
-      margin-bottom: 1rem;
-    }
-
-    h1 {
-      font-family: 'DM Serif Display', serif;
-      font-size: clamp(2rem, 5vw, 3rem);
-      font-weight: 400;
-      line-height: 1.15;
-      color: var(--ink);
-      margin-bottom: 0.6rem;
-    }
-
+    header { padding: 2.5rem 0 2rem; border-bottom: 1px solid var(--border); margin-bottom: 2.5rem; }
+    .app-badge { display: inline-block; background: var(--accent); color: #fff; font-weight: 500; font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.3em 0.85em; border-radius: 99px; margin-bottom: 1rem; }
+    h1 { font-family: 'DM Serif Display', serif; font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 400; line-height: 1.15; margin-bottom: 0.6rem; }
     .meta { color: var(--muted); font-size: 0.875rem; }
-
-    section {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.75rem 2rem;
-      margin-bottom: 1.25rem;
-    }
-
-    h2 {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1.3rem;
-      font-weight: 400;
-      color: var(--ink);
-      margin-bottom: 0.75rem;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-    }
-
-    h2 .num {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 1.8em;
-      height: 1.8em;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 50%;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.7rem;
-      font-weight: 500;
-      color: var(--muted);
-      flex-shrink: 0;
-    }
-
-    h3 {
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 500;
-      font-size: 0.85rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin: 1.5rem 0 0.5rem;
-    }
-
+    section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.75rem 2rem; margin-bottom: 1.25rem; }
+    h2 { font-family: 'DM Serif Display', serif; font-size: 1.3rem; font-weight: 400; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.6rem; }
+    h2 .num { display: inline-flex; align-items: center; justify-content: center; width: 1.8em; height: 1.8em; background: var(--bg); border: 1px solid var(--border); border-radius: 50%; font-family: 'DM Sans', sans-serif; font-size: 0.7rem; font-weight: 500; color: var(--muted); flex-shrink: 0; }
+    h3 { font-weight: 500; font-size: 0.85rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 1.5rem 0 0.5rem; }
     h3:first-of-type { margin-top: 0.5rem; }
-
     p { color: var(--ink); margin-bottom: 0.75rem; }
     p:last-child { margin-bottom: 0; }
-
     ul, ol { padding-left: 1.5rem; margin-bottom: 0.75rem; }
-    li { margin-bottom: 0.3rem; color: var(--ink); }
-
-    a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.15s; }
+    li { margin-bottom: 0.3rem; }
+    a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; }
     a:hover { border-bottom-color: var(--accent); }
-
-    .highlight {
-      background: #fff0f0;
-      border-left: 3px solid var(--accent);
-      border-radius: 0 8px 8px 0;
-      padding: 0.85rem 1rem;
-      margin: 0.75rem 0;
-      font-size: 0.925rem;
-    }
-
+    .highlight { background: #fff0f0; border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 0.85rem 1rem; margin: 0.75rem 0; font-size: 0.925rem; }
     .toc { list-style: none; padding: 0; }
     .toc li { margin-bottom: 0.4rem; }
-    .toc a {
-      font-size: 0.9rem;
-      color: var(--ink);
-      border-bottom: none;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
+    .toc a { font-size: 0.9rem; color: var(--ink); border-bottom: none; display: flex; align-items: center; gap: 0.5rem; }
     .toc a:hover { color: var(--accent); }
-    .toc-num {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 1.6em;
-      height: 1.6em;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 50%;
-      font-size: 0.65rem;
-      font-weight: 500;
-      color: var(--muted);
-      flex-shrink: 0;
-    }
-
-    .test-case {
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1rem 1.25rem;
-      margin-bottom: 0.85rem;
-    }
-
-    .test-header {
-      display: flex;
-      align-items: flex-start;
-      gap: 0.75rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .test-checkbox {
-      width: 20px;
-      height: 20px;
-      min-width: 20px;
-      border: 1.5px solid var(--border);
-      border-radius: 4px;
-      margin-top: 2px;
-      flex-shrink: 0;
-      background: var(--bg);
-    }
-
-    .test-id {
-      font-family: 'DM Sans', monospace;
-      font-size: 0.72rem;
-      font-weight: 500;
-      letter-spacing: 0.08em;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 0.15em 0.5em;
-      color: var(--muted);
-      white-space: nowrap;
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
-
-    .test-title {
-      font-weight: 500;
-      font-size: 0.95rem;
-      color: var(--ink);
-      line-height: 1.4;
-    }
-
-    .badges { display: flex; gap: 0.35rem; flex-wrap: wrap; margin: 0.5rem 0 0.65rem 2.55rem; }
-
-    .badge {
-      font-size: 0.65rem;
-      font-weight: 500;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      padding: 0.15em 0.6em;
-      border-radius: 99px;
-      border: 1px solid;
-    }
-
-    .badge-free { background: #f0f7ee; border-color: #9ac989; color: #3b6d11; }
-    .badge-pro { background: #eeedfe; border-color: #afa9ec; color: #3c3489; }
-    .badge-android { background: #e8f5e9; border-color: #81c784; color: #1b5e20; }
-    .badge-ios { background: #e3f2fd; border-color: #90caf9; color: #0d47a1; }
-    .badge-native { background: #fff3e0; border-color: #ffb74d; color: #e65100; }
-
-    .test-body { margin-left: 2.55rem; font-size: 0.9rem; }
-    .test-body .label { font-weight: 500; color: var(--muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.5rem; margin-bottom: 0.2rem; }
+    .toc-num { display: inline-flex; align-items: center; justify-content: center; min-width: 1.6em; height: 1.6em; background: var(--bg); border: 1px solid var(--border); border-radius: 50%; font-size: 0.65rem; font-weight: 500; color: var(--muted); flex-shrink: 0; }
+    .progress-wrap { margin-bottom: 1.5rem; }
+    .progress-labels { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.4rem; }
+    .progress-bar { height: 6px; background: var(--bg); border-radius: 3px; border: 1px solid var(--border); overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.3s ease; width: 0%; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    .field-group { margin-bottom: 0.75rem; }
+    .field-label { font-size: 0.78rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 0.3rem; display: block; }
+    input[type="text"], input[type="email"], select, textarea { width: 100%; font-size: 0.9rem; padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--ink); font-family: 'DM Sans', sans-serif; }
+    input[type="text"]:focus, input[type="email"]:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); background: var(--surface); }
+    .device-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.3rem; }
+    .device-chip { font-size: 0.78rem; padding: 0.25em 0.75em; border-radius: 99px; border: 1px solid var(--border); background: transparent; cursor: pointer; color: var(--muted); transition: all 0.15s; }
+    .device-chip.active { background: #e3f2fd; border-color: #90caf9; color: #0d47a1; font-weight: 500; }
+    .test-case { border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 0.85rem; transition: border-color 0.2s; }
+    .test-case.status-pass { border-color: var(--green-border); background: #fafff9; }
+    .test-case.status-fail { border-color: #e57373; background: #fff9f9; }
+    .test-case.status-skip { border-color: #bdbdbd; background: #fafafa; }
+    .test-header { display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.5rem; }
+    .test-id { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.08em; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.15em 0.5em; color: var(--muted); white-space: nowrap; flex-shrink: 0; margin-top: 2px; font-family: monospace; }
+    .test-title { font-weight: 500; font-size: 0.95rem; line-height: 1.4; flex: 1; }
+    .badges { display: flex; gap: 0.35rem; flex-wrap: wrap; margin: 0.4rem 0 0.6rem 0; }
+    .badge { font-size: 0.65rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.15em 0.6em; border-radius: 99px; border: 1px solid; }
+    .badge-free { background: var(--green-bg); border-color: var(--green-border); color: var(--green); }
+    .badge-pro { background: var(--purple-bg); border-color: var(--purple-border); color: var(--purple); }
+    .badge-native { background: var(--orange-bg); border-color: var(--orange-border); color: var(--orange); }
+    .test-body { font-size: 0.9rem; }
+    .label { font-weight: 500; color: var(--muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.5rem; margin-bottom: 0.2rem; }
     .test-body ol { padding-left: 1.25rem; margin-bottom: 0.5rem; }
     .test-body ol li { margin-bottom: 0.2rem; }
-    .expected { background: #f0f7ee; border-left: 2px solid #9ac989; border-radius: 0 6px 6px 0; padding: 0.5rem 0.75rem; font-size: 0.875rem; color: #2d4a26; margin-top: 0.35rem; }
-
-    .back-to-top { text-align: right; margin-top: 1.25rem; }
-    .back-to-top a { font-size: 0.8rem; color: var(--muted); }
-
+    .expected { background: var(--green-bg); border-left: 2px solid var(--green-border); border-radius: 0 6px 6px 0; padding: 0.5rem 0.75rem; font-size: 0.875rem; color: #2d4a26; margin-top: 0.35rem; margin-bottom: 0.75rem; }
+    .status-row { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap; }
+    .status-label { font-size: 0.78rem; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; flex-shrink: 0; }
+    .status-btn { font-size: 0.78rem; font-weight: 500; padding: 0.3em 0.9em; border-radius: 99px; border: 1px solid var(--border); background: transparent; cursor: pointer; color: var(--muted); transition: all 0.15s; letter-spacing: 0.04em; }
+    .status-btn:hover { background: var(--bg); }
+    .status-btn.pass.active { background: var(--green-bg); border-color: var(--green-border); color: var(--green); font-weight: 500; }
+    .status-btn.fail.active { background: #ffebee; border-color: #e57373; color: #b71c1c; font-weight: 500; }
+    .status-btn.skip.active { background: #f5f5f5; border-color: #bdbdbd; color: #616161; font-weight: 500; }
+    .note-field { margin-top: 0.6rem; display: none; }
+    .note-field textarea { font-size: 0.85rem; border-radius: 6px; border: 1px solid var(--border); padding: 0.5rem 0.75rem; background: var(--surface); min-height: 56px; resize: vertical; }
+    .note-field.show { display: block; }
     .signoff-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; margin-top: 0.75rem; }
     .signoff-table th { text-align: left; font-weight: 500; font-size: 0.78rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); padding: 0.5rem 0.75rem; background: var(--bg); border-bottom: 1px solid var(--border); }
-    .signoff-table td { padding: 0.65rem 0.75rem; border-bottom: 1px solid var(--border); color: var(--ink); }
-    .signoff-table td.write { background: #fffcf9; min-width: 100px; }
+    .signoff-table td { padding: 0.65rem 0.75rem; border-bottom: 1px solid var(--border); }
     .signoff-table tr:last-child td { border-bottom: none; }
-
-    .contact-box {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1rem 1.25rem;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin-top: 0.75rem;
-    }
-
-    footer {
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.8rem;
-      margin-top: 2.5rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid var(--border);
-    }
-
+    .export-section { background: #fff0f0; border: 1px solid #ffcdd2; border-radius: var(--radius); padding: 1.5rem 2rem; margin-bottom: 1.25rem; }
+    .export-section h2 { color: var(--accent); }
+    .export-btns { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem; }
+    .btn { font-size: 0.875rem; font-weight: 500; padding: 0.6em 1.4em; border-radius: 6px; border: none; cursor: pointer; transition: opacity 0.15s; display: inline-flex; align-items: center; gap: 0.4rem; }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-secondary { background: var(--surface); color: var(--ink); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: var(--bg); }
+    .btn-green { background: var(--green); color: white; }
+    .btn-green:hover { opacity: 0.85; }
+    .stats-row { display: flex; gap: 1rem; flex-wrap: wrap; margin: 1rem 0 0; }
+    .stat-chip { font-size: 0.85rem; padding: 0.3em 0.8em; border-radius: 99px; font-weight: 500; }
+    .stat-pass { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+    .stat-fail { background: #ffebee; color: #b71c1c; border: 1px solid #e57373; }
+    .stat-skip { background: #f5f5f5; color: #616161; border: 1px solid #bdbdbd; }
+    .stat-total { background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
+    .contact-box { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; display: flex; align-items: center; gap: 0.75rem; margin-top: 0.75rem; }
+    .back-to-top { text-align: right; margin-top: 1.25rem; }
+    .back-to-top a { font-size: 0.8rem; color: var(--muted); }
+    .precondition { font-size: 0.875rem; color: var(--muted); background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.4rem 0.75rem; margin-bottom: 0.4rem; display: inline-block; }
+    footer { text-align: center; color: var(--muted); font-size: 0.8rem; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
     @media (max-width: 540px) {
       section { padding: 1.25rem 1rem; }
-      .test-case { padding: 0.85rem 1rem; }
-      .test-body { margin-left: 0; }
-      .badges { margin-left: 0; }
-    }
-
-    @media print {
-      body { background: #fff; padding: 0; font-size: 14px; }
-      section { box-shadow: none; break-inside: avoid; }
-      .test-case { break-inside: avoid; }
-      a { color: var(--ink); }
+      .field-row { grid-template-columns: 1fr; }
+      .export-section { padding: 1.25rem 1rem; }
     }
   </style>
 </head>
 <body>
 <div class="wrap">
 
-  <header id="top">
-    <div class="app-badge">ShiftFeed · Golden Gate</div>
-    <h1>Beta testovací plán</h1>
-    <p class="meta">Datum vydání: 7. května 2026 &nbsp;·&nbsp; Pouze mobilní aplikace (Android + iOS) &nbsp;·&nbsp; ~45 minut</p>
-  </header>
+<header id="top">
+  <div class="app-badge">ShiftFeed · Golden Gate</div>
+  <h1>Beta testovací plán</h1>
+  <p class="meta">Datum vydání: 8. května 2026 &nbsp;·&nbsp; Pouze mobilní aplikace (Android + iOS) &nbsp;·&nbsp; ~45 minut</p>
+</header>
 
-  <!-- SHRNUTÍ -->
-  <section>
-    <h2><span class="num">★</span> Co testujete</h2>
-    <p>ShiftFeed je agregátor zpráv o OpenShiftu a Kubernetes pro SRE, DevOps inženýry a platform inženýry. Stahuje články z Red Hat Blogu, Kubernetes Blogu, CNCF, HackerNoon a Hacker News, sleduje stabilní vydání OCP, zobrazuje Red Hat CVE a generuje denní AI přehled.</p>
-    <div class="highlight"><strong>Rozsah tohoto kola:</strong> mobilní aplikace na Androidu a iOS. Netestujte webovou verzi na neywa.github.io/shiftfeed — ta je samostatný cíl a není součástí tohoto kola.</div>
-    <p>Testovací plán je rozdělen na funkce Free a Pro. Kompletní Free průchod zvládnete přibližně za 30 minut. Testování Pro funkcí vyžaduje propagační oprávnění — viz část 2 pro nastavení.</p>
-  </section>
+<!-- PRŮBĚH -->
+<div class="progress-wrap">
+  <div class="progress-labels">
+    <span>Průběh testování</span>
+    <span id="progress-text">0 / 46 testovacích případů</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+  <div class="stats-row">
+    <span class="stat-chip stat-pass" id="stat-pass">✓ 0 prošlo</span>
+    <span class="stat-chip stat-fail" id="stat-fail">✗ 0 selhalo</span>
+    <span class="stat-chip stat-skip" id="stat-skip">— 0 přeskočeno</span>
+    <span class="stat-chip stat-total" id="stat-total">46 zbývá</span>
+  </div>
+</div>
 
-  <!-- OBSAH -->
-  <section>
-    <h2><span class="num">☰</span> Obsah</h2>
-    <ul class="toc">
-      <li><a href="#env"><span class="toc-num">1</span> Nastavení prostředí</a></li>
-      <li><a href="#pro-setup"><span class="toc-num">2</span> Nastavení Pro úrovně</a></li>
-      <li><a href="#reporting"><span class="toc-num">3</span> Jak nahlásit chybu</a></li>
-      <li><a href="#feed"><span class="toc-num">4</span> Přehled a procházení článků</a></li>
-      <li><a href="#search"><span class="toc-num">5</span> Vyhledávání</a></li>
-      <li><a href="#bookmarks"><span class="toc-num">6</span> Záložky</a></li>
-      <li><a href="#briefing"><span class="toc-num">7</span> Denní AI přehled</a></li>
-      <li><a href="#ocp"><span class="toc-num">8</span> Verze OCP a CVE upozornění</a></li>
-      <li><a href="#submit"><span class="toc-num">9</span> Odeslání odkazu</a></li>
-      <li><a href="#auth"><span class="toc-num">10</span> Přihlášení (magic link)</a></li>
-      <li><a href="#notifications"><span class="toc-num">11</span> Push notifikace</a></li>
-      <li><a href="#rss"><span class="toc-num">12</span> Vlastní RSS zdroje</a></li>
-      <li><a href="#paywall"><span class="toc-num">13</span> Předplatné a oprávnění</a></li>
-      <li><a href="#theme"><span class="toc-num">14</span> Vzhled a vizuální design</a></li>
-      <li><a href="#settings"><span class="toc-num">15</span> Obrazovka Nastavení</a></li>
-      <li><a href="#edge"><span class="toc-num">16</span> Hraniční případy a regrese</a></li>
-      <li><a href="#signoff"><span class="toc-num">17</span> Závěrečné zhodnocení</a></li>
-    </ul>
-  </section>
-
-  <!-- SEKCE 1: PROSTŘEDÍ -->
-  <section id="env">
-    <h2><span class="num">1</span> Nastavení prostředí</h2>
-
-    <h3>Android</h3>
-    <ol>
-      <li>Nainstalujte sestavení z interního testování Play Store pomocí odkazu zaslaného vývojářem.</li>
-      <li>Minimální podporovaná verze: Android 7.0 (API 24). Ideálně testujte na Androidu 13+ kvůli chování push notifikací.</li>
-      <li>Poznamenejte si verzi aplikace — najdete ji úplně dole na obrazovce Nastavení.</li>
-      <li>Potvrďte, že máte dostupné Wi-Fi nebo mobilní data. Aplikace funguje bez připojení degradovaně, ale většina funkcí připojení vyžaduje.</li>
-    </ol>
-
-    <h3>iOS</h3>
-    <ol>
-      <li>Přijměte pozvánku do TestFlight zaslanou vývojářem a nainstalujte přes TestFlight.</li>
-      <li>Minimální podporovaná verze: iOS 13.</li>
-      <li>Poznamenejte si verzi aplikace z aplikace TestFlight nebo z Nastavení v ShiftFeed.</li>
-      <li>Potvrďte dostupnost sítě stejně jako výše.</li>
-    </ol>
-
-    <div class="highlight">Webová a desktopová verze jsou v tomto kole <strong>mimo rozsah testování</strong>. Pokud otevřete neywa.github.io/shiftfeed v prohlížeči, prosím nenahlašujte chyby — to je samostatná větev vydání.</div>
-
-    <div class="back-to-top"><a href="#top">↑ Zpět nahoru</a></div>
-  </section>
-
-  <!-- SEKCE 2: PRO NASTAVENÍ -->
-  <section id="pro-setup">
-    <h2><span class="num">2</span> Nastavení Pro úrovně</h2>
-    <p>Tuto sekci přeskočte, pokud testujete pouze Free funkce. Vraťte se sem, až dojdete k testovacímu případu označenému Pro.</p>
-    <ol>
-      <li>Otevřete ShiftFeed → klepněte na Nastavení (ikona ozubeného kola).</li>
-      <li>Přejděte na Účet → Přihlásit se → zadejte e-mail → klepněte na „Odeslat přihlašovací odkaz".</li>
-      <li>Otevřete e-mail s magic linkem na stejném zařízení → klepněte na odkaz → ShiftFeed se otevře a jste přihlášeni.</li>
-      <li>Zpět v Nastavení se přesuňte úplně dolů → klepněte na <strong>Kopírovat RevenueCat ID</strong>.</li>
-      <li>Odešlete toto ID vývojáři e-mailem nebo přes Slack. Vývojář vám z RevenueCat dashboardu přidělí propagační Pro oprávnění.</li>
-      <li>Po potvrzení zcela restartujte aplikaci (přejeďte ji z přepínače aplikací a znovu spusťte).</li>
-      <li>V horní liště aplikace by se měl zobrazit odznak <strong>PRO</strong> vedle nápisu „ShiftFeed".</li>
-      <li>V Nastavení by sekce Notifikace, Pravidla upozornění, Denní přehled a Vlastní zdroje měly zobrazovat skutečný obsah místo výzev k upgradu.</li>
-    </ol>
-    <div class="highlight">Pokud se odznak PRO po restartu neobjeví, klepněte na Nastavení → přesuňte se dolů → „Obnovit nákupy" a zkuste znovu.</div>
-    <div class="back-to-top"><a href="#top">↑ Zpět nahoru</a></div>
-  </section>
-
-  <!-- SEKCE 3: HLÁŠENÍ CHYB -->
-  <section id="reporting">
-    <h2><span class="num">3</span> Jak nahlásit chybu</h2>
-    <p>Pro každý nalezený problém prosím uveďte:</p>
-    <ul>
-      <li><strong>ID testu</strong> — např. T-FEED-03</li>
-      <li><strong>Model zařízení a verze OS</strong> — např. Samsung Galaxy S23 Ultra, Android 16</li>
-      <li><strong>Verze aplikace</strong> — z dolní části obrazovky Nastavení</li>
-      <li><strong>Kroky k reprodukci</strong> — co jste udělali, v jakém pořadí</li>
-      <li><strong>Očekávané vs. skutečné chování</strong> — co se mělo stát a co se stalo</li>
-      <li><strong>Screenshot nebo záznam obrazovky</strong> — pokud je to možné, přiložte</li>
-    </ul>
-    <div class="contact-box">
-      <span style="font-size:1.25rem;">✉</span>
-      <div>Hlášení chyb zasílejte na: <a href="mailto:bobek.roman@gmail.com">bobek.roman@gmail.com</a> nebo přes Slack dle dohody s vývojářem.</div>
+<!-- INFORMACE O TESTEROVI -->
+<section>
+  <h2><span class="num">★</span> Vaše údaje</h2>
+  <div class="field-row">
+    <div class="field-group">
+      <label class="field-label" for="tester-name">Celé jméno *</label>
+      <input type="text" id="tester-name" placeholder="Jana Nováková" />
     </div>
-    <div class="back-to-top"><a href="#top">↑ Zpět nahoru</a></div>
-  </section>
-
-  <!-- SEKCE 4: PŘEHLED -->
-  <section id="feed">
-    <h2><span class="num">4</span> Přehled a procházení článků</h2>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-FEED-01</span>
-        <div class="test-title">Aplikace se spustí bez pádu a zobrazí přehled</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Spusťte ShiftFeed ze studena z domovské obrazovky.</li>
-          <li>Počkejte na načtení přehledu.</li>
-          <li>Táhněte dolů pro obnovení.</li>
-        </ol>
-        <div class="expected">✓ Aplikace se otevře bez pádu. Přehled načte aktuální články z více zdrojů. Obnovení táhnutím stáhne nové položky a zobrazí indikátor načítání.</div>
-      </div>
+    <div class="field-group">
+      <label class="field-label" for="tester-email">E-mail *</label>
+      <input type="email" id="tester-email" placeholder="jana@example.com" />
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-FEED-02</span>
-        <div class="test-title">Přepínání mezi mřížkovým a seznamovým zobrazením</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>V horní liště aplikace klepněte na ikonu přepínání mřížka/seznam.</li>
-          <li>Přepněte mezi mřížkou a seznamem.</li>
-          <li>Aplikaci přesuňte na pozadí a vraťte se.</li>
-        </ol>
-        <div class="expected">✓ Rozložení se okamžitě změní mezi kompaktním seznamem a kartovým zobrazením. Zvolené rozložení se zachová po návratu do aplikace.</div>
-      </div>
+  </div>
+  <div class="field-group">
+    <label class="field-label">Použitá zařízení</label>
+    <div class="device-chips">
+      <button class="device-chip" onclick="toggleDevice(this,'Android telefon')">Android telefon</button>
+      <button class="device-chip" onclick="toggleDevice(this,'Android tablet')">Android tablet</button>
+      <button class="device-chip" onclick="toggleDevice(this,'iPhone')">iPhone</button>
+      <button class="device-chip" onclick="toggleDevice(this,'iPad')">iPad</button>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-FEED-03</span>
-        <div class="test-title">Filtrovací čipy podle zdroje</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Pod horní lištou klepněte na čip zdroje (např. „Red Hat Blog").</li>
-          <li>Sledujte přehled.</li>
-          <li>Klepněte na čip znovu nebo na „VŠE" pro zrušení filtru.</li>
-        </ol>
-        <div class="expected">✓ Přehled se filtruje tak, aby zobrazoval pouze články z vybraného zdroje. Zrušení filtru vrátí celý přehled. Vybraný čip má výrazný vzhled.</div>
-      </div>
+  </div>
+  <div class="field-row">
+    <div class="field-group">
+      <label class="field-label" for="device-model">Model zařízení</label>
+      <input type="text" id="device-model" placeholder="např. Samsung Galaxy S23 Ultra" />
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-FEED-04</span>
-        <div class="test-title">Filtr podle štítku z karty článku</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Najděte kartu článku se štítky (např. #security, #kubernetes).</li>
-          <li>Klepněte na jeden ze štítků.</li>
-        </ol>
-        <div class="expected">✓ Přehled se filtruje na články s daným štítkem. Vyhledávací lišta se vyplní hodnotou #nazevstitku zobrazující aktivní filtr.</div>
-      </div>
+    <div class="field-group">
+      <label class="field-label" for="os-version">Verze OS</label>
+      <input type="text" id="os-version" placeholder="např. Android 16" />
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-FEED-05</span>
-        <div class="test-title">Nekonečné rolování a limit Free úrovně</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Plynule rolujte přehledem dolů.</li>
-          <li>Pokračujte za počátečních 30 článků.</li>
-          <li>Rolujte dál, dokud se nenačítají žádné další články.</li>
-        </ol>
-        <div class="expected">✓ Nové články se načítají automaticky při přiblížení ke konci. Po přibližně 50 článcích se zobrazí dlaždice s limitem Free. Klepnutím na tlačítko upgradu na ní se otevře platební obrazovka.</div>
-      </div>
+  </div>
+  <div class="field-row">
+    <div class="field-group">
+      <label class="field-label" for="app-version">Verze aplikace</label>
+      <input type="text" id="app-version" placeholder="např. v1.0.0 (z Nastavení)" />
     </div>
+  </div>
+</section>
 
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-FEED-06</span>
-        <div class="test-title">Klepnutí na článek otevře správný cíl</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Klepněte na běžný blogový článek (např. z Red Hat Blog nebo Kubernetes Blog).</li>
-          <li>Pak klepněte na CVE článek (označený #cve).</li>
-          <li>Pak klepněte na článek o vydání z GitHubu.</li>
-        </ol>
-        <div class="expected">✓ Blogové články se otevírají v integrovaném WebView s názvem zdroje v liště a ikonou externího odkazu. CVE a články o vydáních se otevírají ve WebView. Vše se načte do několika sekund s indikátorem průběhu.</div>
-      </div>
+<!-- CO TESTUJETE -->
+<section>
+  <h2><span class="num">1</span> Co testujete</h2>
+  <p>ShiftFeed je agregátor zpráv o OpenShiftu a Kubernetes pro SRE, DevOps inženýry a platform inženýry. Stahuje články z Red Hat Blogu, Kubernetes Blogu, CNCF, HackerNoon a Hacker News, sleduje stabilní vydání OCP, zobrazuje Red Hat CVE a generuje denní AI přehled.</p>
+  <div class="highlight"><strong>Rozsah tohoto kola:</strong> mobilní aplikace na Androidu a iOS. Netestujte webovou verzi na neywa.github.io/shiftfeed — ta je samostatným cílem a není součástí tohoto kola.</div>
+  <p>Plán je rozdělen na funkce Free a Pro. Kompletní Free průchod zvládnete přibližně za 30 minut. Pro testování vyžaduje propagační oprávnění — viz část 3.</p>
+  <p>U každého testovacího případu označte <strong>Prošlo</strong>, <strong>Selhalo</strong> nebo <strong>Přeskočeno</strong> a v případě potřeby přidejte poznámku.</p>
+</section>
+
+<!-- OBSAH -->
+<section>
+  <h2><span class="num">☰</span> Obsah</h2>
+  <ul class="toc">
+    <li><a href="#env"><span class="toc-num">2</span> Nastavení prostředí</a></li>
+    <li><a href="#pro-setup"><span class="toc-num">3</span> Nastavení Pro úrovně</a></li>
+    <li><a href="#reporting"><span class="toc-num">4</span> Jak nahlásit chybu</a></li>
+    <li><a href="#feed"><span class="toc-num">5</span> Přehled a procházení článků</a></li>
+    <li><a href="#search"><span class="toc-num">6</span> Vyhledávání</a></li>
+    <li><a href="#bookmarks"><span class="toc-num">7</span> Záložky</a></li>
+    <li><a href="#briefing"><span class="toc-num">8</span> Denní AI přehled</a></li>
+    <li><a href="#ocp"><span class="toc-num">9</span> Verze OCP a CVE upozornění</a></li>
+    <li><a href="#submit"><span class="toc-num">10</span> Odeslání odkazu</a></li>
+    <li><a href="#auth"><span class="toc-num">11</span> Přihlášení (magic link)</a></li>
+    <li><a href="#notifications"><span class="toc-num">12</span> Push notifikace</a></li>
+    <li><a href="#rss"><span class="toc-num">13</span> Vlastní RSS zdroje</a></li>
+    <li><a href="#paywall"><span class="toc-num">14</span> Předplatné a oprávnění</a></li>
+    <li><a href="#theme"><span class="toc-num">15</span> Vzhled a vizuální design</a></li>
+    <li><a href="#settings"><span class="toc-num">16</span> Obrazovka Nastavení</a></li>
+    <li><a href="#edge"><span class="toc-num">17</span> Hraniční případy a regrese</a></li>
+    <li><a href="#signoff"><span class="toc-num">18</span> Závěrečné zhodnocení a export</a></li>
+  </ul>
+</section>
+
+<!-- PROSTŘEDÍ -->
+<section id="env">
+  <h2><span class="num">2</span> Nastavení prostředí</h2>
+  <h3>Android</h3>
+  <ol>
+    <li>Nainstalujte sestavení z interního testování Play Store pomocí odkazu zaslaného vývojářem.</li>
+    <li>Minimální podporovaná verze: Android 7.0 (API 24). Ideálně testujte na Androidu 13+ kvůli push notifikacím.</li>
+    <li>Poznamenejte si verzi aplikace — najdete ji úplně dole na obrazovce Nastavení.</li>
+    <li>Potvrďte dostupnost Wi-Fi nebo mobilních dat.</li>
+  </ol>
+  <h3>iOS</h3>
+  <ol>
+    <li>Přijměte pozvánku do TestFlight zaslanou vývojářem a nainstalujte přes TestFlight.</li>
+    <li>Minimální podporovaná verze: iOS 13.</li>
+    <li>Poznamenejte si verzi aplikace z TestFlight nebo z Nastavení v ShiftFeed.</li>
+    <li>Potvrďte dostupnost sítě jako výše.</li>
+  </ol>
+  <div class="highlight">Webová a desktopová verze jsou v tomto kole <strong>mimo rozsah testování</strong>. Nenahlašujte chyby pro neywa.github.io/shiftfeed.</div>
+  <div class="back-to-top"><a href="#top">↑ Zpět nahoru</a></div>
+</section>
+
+<!-- PRO NASTAVENÍ -->
+<section id="pro-setup">
+  <h2><span class="num">3</span> Nastavení Pro úrovně</h2>
+  <p>Tuto sekci přeskočte, pokud testujete pouze Free funkce.</p>
+  <ol>
+    <li>Otevřete ShiftFeed → klepněte na Nastavení (ozubené kolo).</li>
+    <li>Přejděte na Účet → Přihlásit se → zadejte e-mail → klepněte na „Odeslat přihlašovací odkaz".</li>
+    <li>Otevřete e-mail s magic linkem na stejném zařízení → klepněte na odkaz → jste přihlášeni.</li>
+    <li>Zpět v Nastavení přejděte úplně dolů → klepněte na <strong>Kopírovat RevenueCat ID</strong>.</li>
+    <li>Odešlete toto ID vývojáři e-mailem nebo přes Slack. Vývojář vám přidělí Pro oprávnění.</li>
+    <li>Zcela restartujte aplikaci. V horní liště by se měl zobrazit odznak <strong>PRO</strong>.</li>
+  </ol>
+  <div class="highlight">Pokud se odznak PRO neobjeví po restartu, klepněte na Nastavení → dolů → „Obnovit nákupy" a zkuste znovu.</div>
+  <div class="back-to-top"><a href="#top">↑ Zpět nahoru</a></div>
+</section>
+
+<!-- HLÁŠENÍ CHYB -->
+<section id="reporting">
+  <h2><span class="num">4</span> Jak nahlásit chybu</h2>
+  <p>Pro každý problém uveďte: ID testu, model zařízení, verzi OS, verzi aplikace, kroky k reprodukci, očekávané vs. skutečné chování a screenshot pokud je možný.</p>
+  <div class="contact-box">
+    <span style="font-size:1.25rem;">✉</span>
+    <div>Hlášení chyb zasílejte na: <a href="mailto:neywa.blake@gmail.com">neywa.blake@gmail.com</a> nebo přes Slack dle dohody s vývojářem. Také můžete použít tlačítko <strong>Export do AppFleet CSV</strong> níže na stránce.</div>
+  </div>
+  <div class="back-to-top"><a href="#top">↑ Zpět nahoru</a></div>
+</section>
+
+<!-- PŘEHLED -->
+<section id="feed">
+  <h2><span class="num">5</span> Přehled a procházení článků</h2>
+  <div id="tc-T-FEED-01" class="test-case">
+    <div class="test-header"><span class="test-id">T-FEED-01</span><div class="test-title">Aplikace se spustí bez pádu a zobrazí přehled</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Spusťte ShiftFeed ze studena z domovské obrazovky.</li><li>Počkejte na načtení přehledu.</li><li>Táhněte dolů pro obnovení.</li></ol>
+      <div class="expected">✓ Aplikace se otevře bez pádu. Přehled načte aktuální články z více zdrojů. Obnovení táhnutím stáhne nové položky s indikátorem načítání.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-FEED-01','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-FEED-01','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-FEED-01','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-FEED-01"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-FEED-01',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-FEED-07</span>
-        <div class="test-title">Vizuální design karet — barevné akcenty a metadata</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Procházejte přehledem a vizuálně zkontrolujte několik karet z různých zdrojů.</li>
-          <li>Prohlédněte si barevný pruh na levém okraji, favicon zdroje, relativní čas a štítky.</li>
-        </ol>
-        <div class="expected">✓ Každá karta má barevný levý pruh (červený pro Red Hat, zelený pro vydání, oranžový pro CVE, jasně zelený pro HackerNoon). Favicon zdroje je viditelný. Relativní čas se zobrazuje správně („2h ago"). Štítky jsou v tlumené šedé, kromě CVE (oranžová) a vydání (zelená).</div>
-      </div>
+  </div>
+  <div id="tc-T-FEED-02" class="test-case">
+    <div class="test-header"><span class="test-id">T-FEED-02</span><div class="test-title">Přepínání mezi mřížkovým a seznamovým zobrazením</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Klepněte na ikonu přepínání mřížka/seznam v horní liště.</li><li>Přepněte mezi mřížkou a seznamem.</li><li>Přesuňte aplikaci na pozadí a vraťte se.</li></ol>
+      <div class="expected">✓ Rozložení se okamžitě změní. Zvolené rozložení se zachová po návratu do aplikace.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-FEED-02','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-FEED-02','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-FEED-02','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-FEED-02"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-FEED-02',this.value)"></textarea></div>
     </div>
-
-    <div class="back-to-top"><a href="#top">↑ Zpět nahoru</a></div>
-  </section>
-
-  <!-- SEKCE 5: VYHLEDÁVÁNÍ -->
-  <section id="search">
-    <h2><span class="num">5</span> Vyhledávání</h2>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-SRCH-01</span>
-        <div class="test-title">Vyhledávací lišta se otevírá a zavírá</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Klepněte na ikonu lupy v horní liště aplikace.</li>
-          <li>Sledujte změnu rozložení.</li>
-          <li>Klepněte na šipku zpět nebo použijte gesto zpět na Androidu.</li>
-        </ol>
-        <div class="expected">✓ Název v liště nahradí textové pole s automatickým zaměřením — klávesnice se okamžitě zobrazí. Klepnutím zpět se ukončí režim vyhledávání a vrátí normální přehled.</div>
-      </div>
+  </div>
+  <div id="tc-T-FEED-03" class="test-case">
+    <div class="test-header"><span class="test-id">T-FEED-03</span><div class="test-title">Filtrovací čipy podle zdroje</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Klepněte na čip zdroje (např. „Red Hat Blog").</li><li>Sledujte přehled.</li><li>Klepněte znovu nebo na „VŠE" pro zrušení filtru.</li></ol>
+      <div class="expected">✓ Přehled se filtruje na daný zdroj. Zrušení filtru vrátí celý přehled. Vybraný čip má výrazný vzhled.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-FEED-03','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-FEED-03','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-FEED-03','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-FEED-03"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-FEED-03',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-SRCH-02</span>
-        <div class="test-title">Klíčové slovo vrátí výsledky z celé databáze</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Otevřete vyhledávání a napište „openshift" (počkejte ~400 ms na debounce).</li>
-          <li>Prohlédněte výsledky.</li>
-          <li>Smažte a zkuste „gateway api".</li>
-        </ol>
-        <div class="expected">✓ Výsledky se zobrazí z celé databáze (nejen z aktuálně načtené stránky). Výsledky jsou relevantní k zadanému klíčovému slovu. V podtitulku se zobrazí počet výsledků.</div>
-      </div>
+  </div>
+  <div id="tc-T-FEED-04" class="test-case">
+    <div class="test-header"><span class="test-id">T-FEED-04</span><div class="test-title">Filtr podle štítku z karty článku</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Najděte kartu se štítky (např. #security, #kubernetes).</li><li>Klepněte na jeden štítek.</li></ol>
+      <div class="expected">✓ Přehled se filtruje na články s daným štítkem. Vyhledávací lišta se vyplní hodnotou #nazevstitku.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-FEED-04','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-FEED-04','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-FEED-04','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-FEED-04"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-FEED-04',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-SRCH-03</span>
-        <div class="test-title">Vyhledávání podle štítku s prefixem #</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Otevřete vyhledávání a napište „#kubernetes".</li>
-          <li>Pak zkuste „#cve".</li>
-          <li>Pak zkuste „#release".</li>
-        </ol>
-        <div class="expected">✓ Výsledky se filtrují na články označené daným štítkem. „#cve" vrátí pouze bezpečnostní upozornění. „#release" pouze oznámení o vydáních.</div>
-      </div>
+  </div>
+  <div id="tc-T-FEED-05" class="test-case">
+    <div class="test-header"><span class="test-id">T-FEED-05</span><div class="test-title">Nekonečné rolování a limit Free úrovně</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Plynule rolujte přehledem dolů.</li><li>Pokračujte za počátečních 30 článků.</li><li>Rolujte dál, dokud se nenačítají další.</li></ol>
+      <div class="expected">✓ Nové články se načítají automaticky. Po přibližně 50 článcích se zobrazí dlaždice s limitem Free. Klepnutím na Upgradovat se otevře platební obrazovka.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-FEED-05','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-FEED-05','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-FEED-05','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-FEED-05"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-FEED-05',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-SRCH-04</span>
-        <div class="test-title">Prázdný stav vyhledávání</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Otevřete vyhledávání a napište „xyzneexistujiciterm".</li>
-        </ol>
-        <div class="expected">✓ Zobrazí se přátelský prázdný stav s ikonou a zprávou „Žádné výsledky pro…". Tlačítko „Vymazat vyhledávání" je viditelné a funkční.</div>
-      </div>
+  </div>
+  <div id="tc-T-FEED-06" class="test-case">
+    <div class="test-header"><span class="test-id">T-FEED-06</span><div class="test-title">Klepnutí na článek otevře správný cíl</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Klepněte na běžný blogový článek.</li><li>Klepněte na CVE článek (tag #cve).</li><li>Klepněte na článek z GitHub Releases.</li></ol>
+      <div class="expected">✓ Články se otevírají v integrovaném WebView s názvem zdroje v liště a ikonou externího odkazu. Vše se načte do několika sekund s indikátorem průběhu.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-FEED-06','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-FEED-06','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-FEED-06','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-FEED-06"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-FEED-06',this.value)"></textarea></div>
     </div>
-
-    <div class="back-to-top"><a href="#top">↑ Zpět nahoru</a></div>
-  </section>
-
-  <!-- SEKCE 6: ZÁLOŽKY -->
-  <section id="bookmarks">
-    <h2><span class="num">6</span> Záložky</h2>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-BM-01</span>
-        <div class="test-title">Uložení a zrušení záložky</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Najděte libovolnou kartu článku v přehledu.</li>
-          <li>Klepněte na ikonu záložky na kartě.</li>
-          <li>Klepněte na ni znovu.</li>
-        </ol>
-        <div class="expected">✓ SnackBar potvrdí „Článek uložen". Ikona záložky se vyplní (plná). Opětovným klepnutím se zobrazí „Záložka odebrána" a ikona se vrátí do obrysového stavu.</div>
-      </div>
+  </div>
+  <div id="tc-T-FEED-07" class="test-case">
+    <div class="test-header"><span class="test-id">T-FEED-07</span><div class="test-title">Vizuální design karet — barevné akcenty a metadata</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Procházejte kartami z různých zdrojů.</li><li>Zkontrolujte levý barevný pruh, favicon, relativní čas a štítky.</li></ol>
+      <div class="expected">✓ Každá karta má barevný levý pruh (červený = Red Hat, zelený = vydání, oranžový = CVE, jasně zelený = HackerNoon). Favicon viditelný. Relativní čas správný. Štítky tlumená šedá kromě CVE (oranžová) a vydání (zelená).</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-FEED-07','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-FEED-07','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-FEED-07','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-FEED-07"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-FEED-07',this.value)"></textarea></div>
     </div>
+  </div>
+  <div class="back-to-top"><a href="#top">↑ Zpět nahoru</a></div>
+</section>
 
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-BM-02</span>
-        <div class="test-title">Obrazovka Uložené zobrazuje záložky a otevírá články</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Přidejte záložku ke dvěma článkům z přehledu.</li>
-          <li>Klepněte na záložku Uložené v dolní navigaci.</li>
-          <li>Klepněte na jeden ze záložkovaných článků.</li>
-        </ol>
-        <div class="expected">✓ Oba uložené články se zobrazí na obrazovce Uložené. Klepnutím na jeden se článek otevře (prohlížeč nebo WebView dle typu).</div>
-      </div>
+<!-- VYHLEDÁVÁNÍ -->
+<section id="search">
+  <h2><span class="num">6</span> Vyhledávání</h2>
+  <div id="tc-T-SRCH-01" class="test-case">
+    <div class="test-header"><span class="test-id">T-SRCH-01</span><div class="test-title">Vyhledávací lišta se otevírá a zavírá</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Klepněte na ikonu lupy v horní liště.</li><li>Klepněte na šipku zpět nebo použijte gesto zpět na Androidu.</li></ol>
+      <div class="expected">✓ Název v liště nahradí textové pole s automatickým zaměřením — klávesnice se zobrazí okamžitě. Zpět ukončí režim vyhledávání.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-SRCH-01','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-SRCH-01','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-SRCH-01','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-SRCH-01"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-SRCH-01',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-BM-03</span>
-        <div class="test-title">Potažením smazat záložku</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Na obrazovce Uložené přejeďte kartu záložky doleva.</li>
-        </ol>
-        <div class="expected">✓ Zobrazí se červený indikátor smazání. Po dokončení přejetí se záložka odstraní ze seznamu.</div>
-      </div>
+  </div>
+  <div id="tc-T-SRCH-02" class="test-case">
+    <div class="test-header"><span class="test-id">T-SRCH-02</span><div class="test-title">Klíčové slovo vrátí výsledky z celé databáze</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Otevřete vyhledávání a napište „openshift" (počkejte ~400 ms).</li><li>Smažte a zkuste „gateway api".</li></ol>
+      <div class="expected">✓ Výsledky se zobrazí z celé databáze. Výsledky relevantní ke klíčovému slovu. V podtitulku se zobrazí počet výsledků.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-SRCH-02','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-SRCH-02','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-SRCH-02','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-SRCH-02"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-SRCH-02',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-BM-04</span>
-        <div class="test-title">Vymazat všechny záložky</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>S alespoň dvěma uloženými záložkami otevřete obrazovku Uložené.</li>
-          <li>Klepněte na ikonu smazání/zametání v horní liště.</li>
-          <li>Potvrďte dialog.</li>
-        </ol>
-        <div class="expected">✓ Před vymazáním se zobrazí potvrzovací dialog. Po potvrzení jsou všechny záložky odstraněny a zobrazí se ilustrace prázdného stavu.</div>
-      </div>
+  </div>
+  <div id="tc-T-SRCH-03" class="test-case">
+    <div class="test-header"><span class="test-id">T-SRCH-03</span><div class="test-title">Vyhledávání podle štítku s prefixem #</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Otevřete vyhledávání a napište „#kubernetes".</li><li>Pak zkuste „#cve".</li><li>Pak zkuste „#release".</li></ol>
+      <div class="expected">✓ Výsledky se filtrují na články s daným štítkem. „#cve" vrátí pouze bezpečnostní upozornění. „#release" pouze vydání.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-SRCH-03','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-SRCH-03','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-SRCH-03','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-SRCH-03"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-SRCH-03',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-BM-05</span>
-        <div class="test-title">Indikátor cloudové synchronizace (Pro)</div>
-      </div>
-      <div class="badges"><span class="badge badge-pro">Pro</span></div>
-      <div class="test-body">
-        <div class="label">Předpoklad</div>
-        <p style="font-size:0.875rem;margin-bottom:0.35rem;">Přihlášeni s Pro oprávněním.</p>
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Otevřete obrazovku Uložené.</li>
-          <li>Podívejte se na oblast nadpisu obrazovky.</li>
-        </ol>
-        <div class="expected">✓ Vedle nadpisu „Uložené" se zobrazí ikona cloudu, která signalizuje synchronizaci záložek do cloudu.</div>
-      </div>
+  </div>
+  <div id="tc-T-SRCH-04" class="test-case">
+    <div class="test-header"><span class="test-id">T-SRCH-04</span><div class="test-title">Prázdný stav vyhledávání</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Otevřete vyhledávání a napište „xyzneexistujiciterm".</li></ol>
+      <div class="expected">✓ Zobrazí se přátelský prázdný stav s ikonou a zprávou „Žádné výsledky pro…". Tlačítko „Vymazat vyhledávání" je viditelné a funkční.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-SRCH-04','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-SRCH-04','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-SRCH-04','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-SRCH-04"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-SRCH-04',this.value)"></textarea></div>
     </div>
+  </div>
+  <div class="back-to-top"><a href="#top">↑ Zpět nahoru</a></div>
+</section>
 
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-BM-06</span>
-        <div class="test-title">Synchronizace záložek napříč zařízeními (Pro)</div>
-      </div>
-      <div class="badges"><span class="badge badge-pro">Pro</span></div>
-      <div class="test-body">
-        <div class="label">Předpoklad</div>
-        <p style="font-size:0.875rem;margin-bottom:0.35rem;">Přístup ke dvěma zařízením přihlášeným ke stejnému účtu s Pro.</p>
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Přidejte záložku ke třem článkům na Zařízení A.</li>
-          <li>Otevřete obrazovku Uložené na Zařízení B.</li>
-        </ol>
-        <div class="expected">✓ Stejné záložky se na Zařízení B zobrazí do několika sekund bez jakékoli ruční synchronizace.</div>
-      </div>
+<!-- ZÁLOŽKY -->
+<section id="bookmarks">
+  <h2><span class="num">7</span> Záložky</h2>
+  <div id="tc-T-BM-01" class="test-case">
+    <div class="test-header"><span class="test-id">T-BM-01</span><div class="test-title">Uložení a zrušení záložky</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Klepněte na ikonu záložky na kartě článku.</li><li>Klepněte na ni znovu.</li></ol>
+      <div class="expected">✓ SnackBar potvrdí „Článek uložen". Ikona se vyplní. Opětovným klepnutím se zobrazí „Záložka odebrána" a ikona se vrátí do obrysového stavu.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-BM-01','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-BM-01','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-BM-01','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-BM-01"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-BM-01',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-BM-07</span>
-        <div class="test-title">Export záložek (Pro)</div>
-      </div>
-      <div class="badges"><span class="badge badge-pro">Pro</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Na obrazovce Uložené klepněte na ikonu exportu v horní liště.</li>
-          <li>Zvolte Markdown nebo PDF.</li>
-        </ol>
-        <div class="expected">✓ Otevře se systémový panel sdílení s vygenerovaným souborem. Soubor obsahuje záložkované články s názvy a URL adresami.</div>
-      </div>
+  </div>
+  <div id="tc-T-BM-02" class="test-case">
+    <div class="test-header"><span class="test-id">T-BM-02</span><div class="test-title">Obrazovka Uložené zobrazuje záložky a otevírá články</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Přidejte záložku ke dvěma článkům.</li><li>Klepněte na záložku Uložené v dolní navigaci.</li><li>Klepněte na záložkovaný článek.</li></ol>
+      <div class="expected">✓ Oba uložené články se zobrazí. Klepnutím na jeden se článek otevře správně.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-BM-02','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-BM-02','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-BM-02','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-BM-02"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-BM-02',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-BM-08</span>
-        <div class="test-title">Odhlášení vrátí záložky na lokální úložiště (Pro)</div>
-      </div>
-      <div class="badges"><span class="badge badge-pro">Pro</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Zatímco jste přihlášeni s Pro, odhlaste se (Nastavení → Účet → Odhlásit se).</li>
-          <li>Otevřete obrazovku Uložené.</li>
-        </ol>
-        <div class="expected">✓ Ikona cloudu zmizí. Záložky zůstanou viditelné (uloženy lokálně). Zobrazí se banner „Upgradujte na Pro pro synchronizaci záložek".</div>
-      </div>
+  </div>
+  <div id="tc-T-BM-03" class="test-case">
+    <div class="test-header"><span class="test-id">T-BM-03</span><div class="test-title">Potažením smazat záložku</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Na obrazovce Uložené přejeďte kartu záložky doleva.</li></ol>
+      <div class="expected">✓ Zobrazí se červený indikátor smazání. Po dokončení přejetí se záložka odstraní.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-BM-03','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-BM-03','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-BM-03','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-BM-03"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-BM-03',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-BM-09</span>
-        <div class="test-title">Výzva k upgradu pro Free uživatele</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Bez přihlášení nebo s účtem bez Pro otevřete obrazovku Uložené.</li>
-        </ol>
-        <div class="expected">✓ Nad seznamem záložek se zobrazí banner „Upgradujte na Pro pro synchronizaci záložek". Klepnutím na Upgradovat se otevře platební obrazovka.</div>
-      </div>
+  </div>
+  <div id="tc-T-BM-04" class="test-case">
+    <div class="test-header"><span class="test-id">T-BM-04</span><div class="test-title">Vymazat všechny záložky</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>S alespoň dvěma záložkami klepněte na ikonu smazání v horní liště.</li><li>Potvrďte dialog.</li></ol>
+      <div class="expected">✓ Zobrazí se potvrzovací dialog. Po potvrzení jsou všechny záložky odstraněny a zobrazí se prázdný stav.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-BM-04','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-BM-04','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-BM-04','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-BM-04"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-BM-04',this.value)"></textarea></div>
     </div>
-
-    <div class="back-to-top"><a href="#top">↑ Zpět nahoru</a></div>
-  </section>
-
-  <!-- SEKCE 7: AI PŘEHLED -->
-  <section id="briefing">
-    <h2><span class="num">7</span> Denní AI přehled</h2>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-AI-01</span>
-        <div class="test-title">Přístup k přehledu — Free vs Pro brána</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span><span class="badge badge-pro">Pro</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Klepněte na ikonu jiskřičky (✨) v horní liště při Free účtu.</li>
-          <li>Opakujte po přihlášení s Pro.</li>
-        </ol>
-        <div class="expected">✓ Free: zobrazí se platební obrazovka. Pro: otevře se obrazovka s přehledem zobrazující nejnovější AI briefing.</div>
-      </div>
+  </div>
+  <div id="tc-T-BM-05" class="test-case">
+    <div class="test-header"><span class="test-id">T-BM-05</span><div class="test-title">Indikátor cloudové synchronizace (Pro)</div></div>
+    <div class="badges"><span class="badge badge-pro">Pro</span></div>
+    <div class="test-body">
+      <div class="precondition">Předpoklad: přihlášeni s Pro oprávněním</div>
+      <div class="label">Kroky</div><ol><li>Otevřete obrazovku Uložené.</li><li>Podívejte se na oblast nadpisu.</li></ol>
+      <div class="expected">✓ Vedle nadpisu „Uložené" se zobrazí ikona cloudu.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-BM-05','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-BM-05','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-BM-05','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-BM-05"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-BM-05',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-AI-02</span>
-        <div class="test-title">Obsah a formátování přehledu (Pro)</div>
-      </div>
-      <div class="badges"><span class="badge badge-pro">Pro</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Otevřete obrazovku přehledu jako Pro uživatel.</li>
-          <li>Přečtěte si obsah.</li>
-          <li>Klepněte na odkaz článku v sekci Nejdůležitější zprávy.</li>
-        </ol>
-        <div class="expected">✓ Přehled zobrazuje dnešní datum v záhlaví. Sekce zahrnují Nejdůležitější zprávy, Bezpečnostní přehled, Vydání a Komunitní dění. Tučné nadpisy sekcí jsou červené. CVE záznamy se zobrazují oranžově. Klepnutím na odkaz zprávy se otevře článek. Obnovení táhnutím znovu načte přehled.</div>
-      </div>
+  </div>
+  <div id="tc-T-BM-06" class="test-case">
+    <div class="test-header"><span class="test-id">T-BM-06</span><div class="test-title">Synchronizace záložek napříč zařízeními (Pro)</div></div>
+    <div class="badges"><span class="badge badge-pro">Pro</span></div>
+    <div class="test-body">
+      <div class="precondition">Předpoklad: dvě zařízení přihlášena ke stejnému účtu s Pro</div>
+      <div class="label">Kroky</div><ol><li>Přidejte záložku ke třem článkům na Zařízení A.</li><li>Otevřete obrazovku Uložené na Zařízení B.</li></ol>
+      <div class="expected">✓ Stejné záložky se na Zařízení B zobrazí do několika sekund bez ruční synchronizace.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-BM-06','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-BM-06','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-BM-06','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-BM-06"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-BM-06',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-AI-03</span>
-        <div class="test-title">Plánované doručení přehledu (Pro)</div>
-      </div>
-      <div class="badges"><span class="badge badge-pro">Pro</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Nastavení → Denní přehled → zapněte plánované doručení.</li>
-          <li>Nastavte hodinu doručení (pro testování zvolte hodinu, která brzy nastane).</li>
-          <li>Uložte.</li>
-        </ol>
-        <div class="expected">✓ Plán se uloží bez chyby. V nastavené hodině dorazí push notifikace s personalizovaným přehledem. Poznámka: úplné ověření end-to-end vyžaduje počkání na nastavenou hodinu.</div>
-      </div>
+  </div>
+  <div id="tc-T-BM-07" class="test-case">
+    <div class="test-header"><span class="test-id">T-BM-07</span><div class="test-title">Export záložek (Pro)</div></div>
+    <div class="badges"><span class="badge badge-pro">Pro</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Klepněte na ikonu exportu v horní liště obrazovky Uložené.</li><li>Zvolte Markdown nebo PDF.</li></ol>
+      <div class="expected">✓ Otevře se systémový panel sdílení s vygenerovaným souborem obsahujícím záložkované články s názvy a URL.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-BM-07','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-BM-07','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-BM-07','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-BM-07"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-BM-07',this.value)"></textarea></div>
     </div>
-
-    <div class="back-to-top"><a href="#top">↑ Zpět nahoru</a></div>
-  </section>
-
-  <!-- SEKCE 8: OCP + CVE -->
-  <section id="ocp">
-    <h2><span class="num">8</span> Verze OCP a CVE upozornění</h2>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-OCP-01</span>
-        <div class="test-title">Seznam verzí OCP se zobrazí správně</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Klepněte na záložku Zdroje v dolní navigaci.</li>
-          <li>Prohlédněte si seznam verzí.</li>
-        </ol>
-        <div class="expected">✓ Aktivní stabilní kanály (minimálně 4.16 až 4.21) jsou v seznamu, každý s číslem nejnovější stabilní verze. Barevné kódování: první dvě jsou zelené (NEJNOVĚJŠÍ), další dvě jantarové (PODPOROVANÉ), starší šedé (ÚDRŽBA).</div>
-      </div>
+  </div>
+  <div id="tc-T-BM-08" class="test-case">
+    <div class="test-header"><span class="test-id">T-BM-08</span><div class="test-title">Odhlášení vrátí záložky na lokální úložiště (Pro)</div></div>
+    <div class="badges"><span class="badge badge-pro">Pro</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Odhlaste se (Nastavení → Účet → Odhlásit se).</li><li>Otevřete obrazovku Uložené.</li></ol>
+      <div class="expected">✓ Ikona cloudu zmizí. Záložky zůstanou viditelné (lokálně). Zobrazí se banner pro upgrade.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-BM-08','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-BM-08','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-BM-08','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-BM-08"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-BM-08',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-OCP-02</span>
-        <div class="test-title">Kopírování souhrnu verzí</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Na obrazovce Verze OCP klepněte na tlačítko KOPÍROVAT.</li>
-          <li>Vložte do poznámkové aplikace.</li>
-        </ol>
-        <div class="expected">✓ Schránka obsahuje větu jako „Nejnovější stabilní verze jsou 4.18.37, 4.19.27, 4.20.18 a 4.21.9". Vložený text je čistý bez přebytečných znaků.</div>
-      </div>
+  </div>
+  <div id="tc-T-BM-09" class="test-case">
+    <div class="test-header"><span class="test-id">T-BM-09</span><div class="test-title">Výzva k upgradu pro Free uživatele</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Bez přihlášení nebo s účtem bez Pro otevřete obrazovku Uložené.</li></ol>
+      <div class="expected">✓ Banner „Upgradujte na Pro pro synchronizaci záložek" se zobrazí. Klepnutím na Upgradovat se otevře platební obrazovka.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-BM-09','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-BM-09','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-BM-09','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-BM-09"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-BM-09',this.value)"></textarea></div>
     </div>
+  </div>
+  <div class="back-to-top"><a href="#top">↑ Zpět nahoru</a></div>
+</section>
 
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-CVE-01</span>
-        <div class="test-title">CVE články v přehledu s odznaky závažnosti</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>V přehledu klepněte na filtrovací čip BEZPEČNOST.</li>
-          <li>Zkontrolujte výsledné karty článků.</li>
-        </ol>
-        <div class="expected">✓ Zobrazí se pouze CVE a bezpečnostní upozornění. Každá karta má oranžový levý pruh. Odznaky závažnosti (KRITICKÁ, DŮLEŽITÁ, STŘEDNÍ) jsou viditelné a barevně odlišené (červená, oranžová, jantarová).</div>
-      </div>
+<!-- AI PŘEHLED -->
+<section id="briefing">
+  <h2><span class="num">8</span> Denní AI přehled</h2>
+  <div id="tc-T-AI-01" class="test-case">
+    <div class="test-header"><span class="test-id">T-AI-01</span><div class="test-title">Přístup k přehledu — Free vs Pro brána</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span><span class="badge badge-pro">Pro</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Klepněte na ikonu jiskřičky (✨) při Free účtu.</li><li>Opakujte po přihlášení s Pro.</li></ol>
+      <div class="expected">✓ Free: zobrazí se platební obrazovka. Pro: otevře se obrazovka s přehledem zobrazující nejnovější AI briefing.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-AI-01','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-AI-01','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-AI-01','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-AI-01"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-AI-01',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-CVE-02</span>
-        <div class="test-title">CVE článek otevře upozornění Red Hat</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Klepněte na libovolný CVE článek v přehledu.</li>
-        </ol>
-        <div class="expected">✓ Otevře se v integrovaném WebView s odkazem na bezpečnostní upozornění Red Hat. URL zobrazená v liště odpovídá access.redhat.com nebo GitHubu.</div>
-      </div>
+  </div>
+  <div id="tc-T-AI-02" class="test-case">
+    <div class="test-header"><span class="test-id">T-AI-02</span><div class="test-title">Obsah a formátování přehledu (Pro)</div></div>
+    <div class="badges"><span class="badge badge-pro">Pro</span></div>
+    <div class="test-body">
+      <div class="precondition">Předpoklad: přihlášeni s Pro</div>
+      <div class="label">Kroky</div><ol><li>Otevřete obrazovku přehledu.</li><li>Přečtěte obsah.</li><li>Klepněte na odkaz článku v Nejdůležitějších zprávách.</li></ol>
+      <div class="expected">✓ Přehled zobrazuje dnešní datum. Sekce: Nejdůležitější zprávy, Bezpečnostní přehled, Vydání, Komunitní dění. Tučné nadpisy červené. CVE záznamy oranžové. Odkazy otevírají články. Obnovení táhnutím znovu načte.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-AI-02','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-AI-02','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-AI-02','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-AI-02"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-AI-02',this.value)"></textarea></div>
     </div>
-
-    <div class="back-to-top"><a href="#top">↑ Zpět nahoru</a></div>
-  </section>
-
-  <!-- SEKCE 9: ODESLÁNÍ ODKAZU -->
-  <section id="submit">
-    <h2><span class="num">9</span> Odeslání odkazu</h2>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-SUB-01</span>
-        <div class="test-title">Platná URL adresa se úspěšně odešle</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Klepněte na plovoucí tlačítko + (přidat odkaz) na obrazovce přehledu.</li>
-          <li>Vložte platnou veřejnou URL — např. https://kubernetes.io/blog/2025/01/priklad.</li>
-          <li>Volitelně přidejte název.</li>
-          <li>Klepněte na Odeslat.</li>
-        </ol>
-        <div class="expected">✓ Zobrazí se obrazovka úspěchu s potvrzovací zprávou. Odeslání se zobrazí ve frontě Supabase pro kontrolu vývojářem.</div>
-      </div>
+  </div>
+  <div id="tc-T-AI-03" class="test-case">
+    <div class="test-header"><span class="test-id">T-AI-03</span><div class="test-title">Plánované doručení přehledu (Pro)</div></div>
+    <div class="badges"><span class="badge badge-pro">Pro</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Nastavení → Denní přehled → zapněte plánované doručení.</li><li>Nastavte hodinu (pro testování zvolte hodinu, která brzy nastane).</li><li>Uložte.</li></ol>
+      <div class="expected">✓ Plán se uloží bez chyby. V nastavené hodině dorazí push notifikace s personalizovaným přehledem.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-AI-03','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-AI-03','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-AI-03','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-AI-03"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-AI-03',this.value)"></textarea></div>
     </div>
+  </div>
+  <div class="back-to-top"><a href="#top">↑ Zpět nahoru</a></div>
+</section>
 
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-SUB-02</span>
-        <div class="test-title">Duplicitní URL zobrazí přátelskou chybovou zprávu</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Odešlete stejnou URL podruhé.</li>
-        </ol>
-        <div class="expected">✓ Zobrazí se chybová zpráva „Tento odkaz byl již odeslán." Žádný duplicitní záznam není vytvořen.</div>
-      </div>
+<!-- OCP + CVE -->
+<section id="ocp">
+  <h2><span class="num">9</span> Verze OCP a CVE upozornění</h2>
+  <div id="tc-T-OCP-01" class="test-case">
+    <div class="test-header"><span class="test-id">T-OCP-01</span><div class="test-title">Seznam verzí OCP se zobrazí správně</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Klepněte na záložku Zdroje v dolní navigaci.</li><li>Prohlédněte si seznam verzí.</li></ol>
+      <div class="expected">✓ Aktivní stabilní kanály (minimálně 4.16 až 4.21) s čísly nejnovějších stabilních verzí. První dvě zelené (NEJNOVĚJŠÍ), další dvě jantarové (PODPOROVANÉ), starší šedé (ÚDRŽBA).</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-OCP-01','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-OCP-01','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-OCP-01','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-OCP-01"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-OCP-01',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-SUB-03</span>
-        <div class="test-title">Neplatná URL je blokována validací</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Zadejte „neplatnaurl" do pole URL a klepněte na Odeslat.</li>
-        </ol>
-        <div class="expected">✓ Před odesláním požadavku se zobrazí chyba validace: „Zadejte platnou URL začínající https://".</div>
-      </div>
+  </div>
+  <div id="tc-T-OCP-02" class="test-case">
+    <div class="test-header"><span class="test-id">T-OCP-02</span><div class="test-title">Kopírování souhrnu verzí</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Na obrazovce Verze OCP klepněte na tlačítko KOPÍROVAT.</li><li>Vložte do poznámek.</li></ol>
+      <div class="expected">✓ Schránka obsahuje větu jako „Nejnovější stabilní verze jsou 4.18.37, 4.19.27, 4.20.18 a 4.21.9". Čistý text bez přebytečných znaků.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-OCP-02','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-OCP-02','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-OCP-02','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-OCP-02"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-OCP-02',this.value)"></textarea></div>
     </div>
-
-    <div class="back-to-top"><a href="#top">↑ Zpět nahoru</a></div>
-  </section>
-
-  <!-- SEKCE 10: PŘIHLÁŠENÍ -->
-  <section id="auth">
-    <h2><span class="num">10</span> Přihlášení (magic link)</h2>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-AUTH-01</span>
-        <div class="test-title">Vyžádání přihlašovacího odkazu</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Nastavení → Účet → Přihlásit se.</li>
-          <li>Zadejte platnou e-mailovou adresu.</li>
-          <li>Klepněte na „Odeslat přihlašovací odkaz".</li>
-        </ol>
-        <div class="expected">✓ Zobrazí se potvrzovací obrazovka s pokyny ke kontrole doručené pošty. Žádný pád, žádný spinner běžící donekonečna.</div>
-      </div>
+  </div>
+  <div id="tc-T-CVE-01" class="test-case">
+    <div class="test-header"><span class="test-id">T-CVE-01</span><div class="test-title">CVE články v přehledu s odznaky závažnosti</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Klepněte na filtrovací čip BEZPEČNOST.</li><li>Zkontrolujte výsledné karty.</li></ol>
+      <div class="expected">✓ Zobrazí se pouze CVE a bezpečnostní upozornění. Každá karta má oranžový levý pruh. Odznaky KRITICKÁ/DŮLEŽITÁ/STŘEDNÍ viditelné a barevně odlišené.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-CVE-01','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-CVE-01','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-CVE-01','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-CVE-01"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-CVE-01',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-AUTH-02</span>
-        <div class="test-title">Otevření magic linku na stejném zařízení</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Otevřete e-mailového klienta na stejném zařízení, kde je nainstalován ShiftFeed.</li>
-          <li>Najděte e-mail s přihlášením do ShiftFeed.</li>
-          <li>Klepněte na přihlašovací odkaz.</li>
-        </ol>
-        <div class="expected">✓ ShiftFeed se otevře (nebo přejde do popředí) a přihlášený stav se zobrazí v Nastavení → Účet. Zobrazí se vaše e-mailová adresa.</div>
-      </div>
+  </div>
+  <div id="tc-T-CVE-02" class="test-case">
+    <div class="test-header"><span class="test-id">T-CVE-02</span><div class="test-title">CVE článek otevře upozornění Red Hat</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Klepněte na libovolný CVE článek v přehledu.</li></ol>
+      <div class="expected">✓ Otevře se v integrovaném WebView. URL v liště odpovídá access.redhat.com nebo GitHubu.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-CVE-02','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-CVE-02','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-CVE-02','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-CVE-02"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-CVE-02',this.value)"></textarea></div>
     </div>
+  </div>
+  <div class="back-to-top"><a href="#top">↑ Zpět nahoru</a></div>
+</section>
 
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-AUTH-03</span>
-        <div class="test-title">Expirovaný nebo již použitý odkaz</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Vyžádejte si odkaz, úspěšně se přihlaste.</li>
-          <li>Klepněte na stejný odkaz znovu z e-mailu.</li>
-        </ol>
-        <div class="expected">✓ Aplikace zobrazí inline chybovou zprávu navrhující vyžádat si nový přihlašovací odkaz. Žádný pád. Žádná prázdná bílá obrazovka.</div>
-      </div>
+<!-- ODESLÁNÍ ODKAZU -->
+<section id="submit">
+  <h2><span class="num">10</span> Odeslání odkazu</h2>
+  <div id="tc-T-SUB-01" class="test-case">
+    <div class="test-header"><span class="test-id">T-SUB-01</span><div class="test-title">Platná URL adresa se úspěšně odešle</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Klepněte na plovoucí tlačítko + na obrazovce přehledu.</li><li>Vložte platnou veřejnou URL — např. https://kubernetes.io/blog/2025/01/priklad.</li><li>Volitelně přidejte název. Klepněte na Odeslat.</li></ol>
+      <div class="expected">✓ Zobrazí se obrazovka úspěchu s potvrzovací zprávou.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-SUB-01','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-SUB-01','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-SUB-01','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-SUB-01"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-SUB-01',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-AUTH-04</span>
-        <div class="test-title">Odhlášení</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Nastavení → Účet → Odhlásit se.</li>
-          <li>Potvrďte dialog.</li>
-        </ol>
-        <div class="expected">✓ Účet se vrátí do stavu „Žádný účet / přihlásit se". Veškeré UI prvky pouze pro Pro zmizí. Lokální záložky zůstanou nedotčeny.</div>
-      </div>
+  </div>
+  <div id="tc-T-SUB-02" class="test-case">
+    <div class="test-header"><span class="test-id">T-SUB-02</span><div class="test-title">Duplicitní URL zobrazí přátelskou chybovou zprávu</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Odešlete stejnou URL podruhé.</li></ol>
+      <div class="expected">✓ Chybová zpráva „Tento odkaz byl již odeslán." Žádný duplicitní záznam.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-SUB-02','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-SUB-02','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-SUB-02','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-SUB-02"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-SUB-02',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-AUTH-05</span>
-        <div class="test-title">Platební brána spustí přihlášení před nákupem</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Bez přihlášení spusťte libovolnou Pro funkci (např. ikona AI přehledu).</li>
-        </ol>
-        <div class="expected">✓ Nejprve se zobrazí přihlašovací panel (AuthSheet). Po dokončení přihlášení se platební panel automaticky obnoví pro výběr plánu.</div>
-      </div>
+  </div>
+  <div id="tc-T-SUB-03" class="test-case">
+    <div class="test-header"><span class="test-id">T-SUB-03</span><div class="test-title">Neplatná URL je blokována validací</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Zadejte „neplatnaurl" do pole URL a klepněte na Odeslat.</li></ol>
+      <div class="expected">✓ Chyba validace před odesláním: „Zadejte platnou URL začínající https://".</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-SUB-03','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-SUB-03','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-SUB-03','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-SUB-03"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-SUB-03',this.value)"></textarea></div>
     </div>
+  </div>
+  <div class="back-to-top"><a href="#top">↑ Zpět nahoru</a></div>
+</section>
 
-    <div class="back-to-top"><a href="#top">↑ Zpět nahoru</a></div>
-  </section>
-
-  <!-- SEKCE 11: NOTIFIKACE -->
-  <section id="notifications">
-    <h2><span class="num">11</span> Push notifikace</h2>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-NOTIF-01</span>
-        <div class="test-title">Výzva k povolení notifikací při prvním spuštění</div>
-      </div>
-      <div class="badges"><span class="badge badge-native">Pouze nativní</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Proveďte čerstvou instalaci (nebo smažte data aplikace) a spusťte ShiftFeed.</li>
-        </ol>
-        <div class="expected">✓ Na Androidu 13+ nebo iOS se zobrazí systémový dialog povolení notifikací. Povolením se zařízení přihlásí k odběru témat „all", „security" a „releases".</div>
-      </div>
+<!-- PŘIHLÁŠENÍ -->
+<section id="auth">
+  <h2><span class="num">11</span> Přihlášení (magic link)</h2>
+  <div id="tc-T-AUTH-01" class="test-case">
+    <div class="test-header"><span class="test-id">T-AUTH-01</span><div class="test-title">Vyžádání přihlašovacího odkazu</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Nastavení → Účet → Přihlásit se.</li><li>Zadejte platný e-mail. Klepněte na „Odeslat přihlašovací odkaz".</li></ol>
+      <div class="expected">✓ Zobrazí se potvrzovací obrazovka s pokyny ke kontrole doručené pošty. Žádný pád, žádný spinner donekonečna.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-AUTH-01','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-AUTH-01','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-AUTH-01','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-AUTH-01"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-AUTH-01',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-NOTIF-02</span>
-        <div class="test-title">Push notifikace CVE dorazí a otevře správný obsah</div>
-      </div>
-      <div class="badges"><span class="badge badge-native">Pouze nativní</span></div>
-      <div class="test-body">
-        <div class="label">Předpoklad</div>
-        <p style="font-size:0.875rem;margin-bottom:0.35rem;">Požádejte vývojáře o odeslání testovací notifikace do tématu security.</p>
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Přesuňte aplikaci na pozadí.</li>
-          <li>Počkejte na notifikaci.</li>
-          <li>Klepněte na notifikaci.</li>
-        </ol>
-        <div class="expected">✓ Notifikace dorazí do systémové lišty s názvem jako „🔴 KRITICKÁ: CVE-XXXX-XXXX". Klepnutím se otevře ShiftFeed a naviguje na příslušný článek.</div>
-      </div>
+  </div>
+  <div id="tc-T-AUTH-02" class="test-case">
+    <div class="test-header"><span class="test-id">T-AUTH-02</span><div class="test-title">Otevření magic linku na stejném zařízení</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Otevřete e-mail s magic linkem na stejném zařízení.</li><li>Klepněte na přihlašovací odkaz.</li></ol>
+      <div class="expected">✓ ShiftFeed se otevře (nebo přejde do popředí) a přihlášený stav se zobrazí v Nastavení → Účet.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-AUTH-02','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-AUTH-02','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-AUTH-02','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-AUTH-02"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-AUTH-02',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-NOTIF-03</span>
-        <div class="test-title">Dávková notifikace pro více upozornění</div>
-      </div>
-      <div class="badges"><span class="badge badge-native">Pouze nativní</span></div>
-      <div class="test-body">
-        <div class="label">Předpoklad</div>
-        <p style="font-size:0.875rem;margin-bottom:0.35rem;">Požádejte vývojáře o odeslání dávkové testovací notifikace.</p>
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Počkejte na notifikaci, když je v jednom běhu scraperu nalezeno více CVE nebo vydání.</li>
-        </ol>
-        <div class="expected">✓ Dorazí jedna dávková notifikace (např. „🔴 3 nová bezpečnostní upozornění") místo jednotlivých notifikací pro každou položku.</div>
-      </div>
+  </div>
+  <div id="tc-T-AUTH-03" class="test-case">
+    <div class="test-header"><span class="test-id">T-AUTH-03</span><div class="test-title">Expirovaný nebo již použitý odkaz</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Úspěšně se přihlaste. Klepněte na stejný odkaz znovu.</li></ol>
+      <div class="expected">✓ Aplikace zobrazí inline chybovou zprávu navrhující vyžádat nový odkaz. Žádný pád. Žádná prázdná bílá obrazovka.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-AUTH-03','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-AUTH-03','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-AUTH-03','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-AUTH-03"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-AUTH-03',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-NOTIF-04</span>
-        <div class="test-title">Přepínač tématu se zachová (Pro)</div>
-      </div>
-      <div class="badges"><span class="badge badge-pro">Pro</span><span class="badge badge-native">Pouze nativní</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Nastavení → Notifikace → vypněte téma „releases".</li>
-          <li>Vynuťte zavření a znovu spusťte aplikaci.</li>
-          <li>Vraťte se do Nastavení → Notifikace.</li>
-        </ol>
-        <div class="expected">✓ Přepínač „releases" zůstane po restartu vypnutý. Free uživatelé při klepnutí na libovolný přepínač uvidí platební obrazovku.</div>
-      </div>
+  </div>
+  <div id="tc-T-AUTH-04" class="test-case">
+    <div class="test-header"><span class="test-id">T-AUTH-04</span><div class="test-title">Odhlášení</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Nastavení → Účet → Odhlásit se. Potvrďte dialog.</li></ol>
+      <div class="expected">✓ Účet se vrátí do stavu „Žádný účet". Pro UI zmizí. Lokální záložky zůstanou nedotčeny.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-AUTH-04','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-AUTH-04','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-AUTH-04','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-AUTH-04"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-AUTH-04',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-NOTIF-05</span>
-        <div class="test-title">Vlastní pravidlo upozornění (Pro)</div>
-      </div>
-      <div class="badges"><span class="badge badge-pro">Pro</span><span class="badge badge-native">Pouze nativní</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Nastavení → Pravidla upozornění → klepněte na „Přidat pravidlo".</li>
-          <li>Nastavte název „OCP 4.21", klíčové slovo „4.21", kategorie „release".</li>
-          <li>Uložte a povolte pravidlo.</li>
-        </ol>
-        <div class="expected">✓ Pravidlo se uloží a zobrazí se v seznamu v povoleném stavu. Když je seškrábán nový článek odpovídající klíčovému slovu „4.21", dorazí cílená notifikace pouze na toto zařízení.</div>
-      </div>
+  </div>
+  <div id="tc-T-AUTH-05" class="test-case">
+    <div class="test-header"><span class="test-id">T-AUTH-05</span><div class="test-title">Platební brána spustí přihlášení před nákupem</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Bez přihlášení spusťte libovolnou Pro funkci.</li></ol>
+      <div class="expected">✓ Nejprve se zobrazí AuthSheet. Po přihlášení se platební panel automaticky obnoví.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-AUTH-05','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-AUTH-05','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-AUTH-05','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-AUTH-05"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-AUTH-05',this.value)"></textarea></div>
     </div>
+  </div>
+  <div class="back-to-top"><a href="#top">↑ Zpět nahoru</a></div>
+</section>
 
-    <div class="back-to-top"><a href="#top">↑ Zpět nahoru</a></div>
-  </section>
-
-  <!-- SEKCE 12: VLASTNÍ RSS -->
-  <section id="rss">
-    <h2><span class="num">12</span> Vlastní RSS zdroje</h2>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-RSS-01</span>
-        <div class="test-title">Přidání platného vlastního RSS zdroje</div>
-      </div>
-      <div class="badges"><span class="badge badge-pro">Pro</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Nastavení → Vlastní zdroje → „Přidat zdroj".</li>
-          <li>Zadejte název (např. „Můj blog") a platnou RSS URL (např. https://thenewstack.io/feed/).</li>
-          <li>Uložte.</li>
-        </ol>
-        <div class="expected">✓ Zdroj se zobrazí v seznamu. Po dalším běhu scraperu (do 1 hodiny) se indikátor stavu přepne na zelený. Články z tohoto zdroje se zobrazí v hlavním přehledu označené „custom_feed".</div>
-      </div>
+<!-- NOTIFIKACE -->
+<section id="notifications">
+  <h2><span class="num">12</span> Push notifikace</h2>
+  <div id="tc-T-NOTIF-01" class="test-case">
+    <div class="test-header"><span class="test-id">T-NOTIF-01</span><div class="test-title">Výzva k povolení notifikací při prvním spuštění</div></div>
+    <div class="badges"><span class="badge badge-native">Pouze nativní</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Čerstvá instalace (nebo vymazání dat aplikace) a spuštění ShiftFeed.</li></ol>
+      <div class="expected">✓ Na Androidu 13+ nebo iOS se zobrazí systémový dialog povolení notifikací. Povolením se zařízení přihlásí k odběru témat „all", „security" a „releases".</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-NOTIF-01','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-NOTIF-01','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-NOTIF-01','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-NOTIF-01"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-NOTIF-01',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-RSS-02</span>
-        <div class="test-title">Články vlastního zdroje jsou soukromé</div>
-      </div>
-      <div class="badges"><span class="badge badge-pro">Pro</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Přidejte vlastní RSS zdroj na Účtu A.</li>
-          <li>Přihlaste se s jiným Účtem B na jiném zařízení.</li>
-          <li>Zkontrolujte přehled na Účtu B.</li>
-        </ol>
-        <div class="expected">✓ Články z vlastního RSS zdroje Účtu A se pro Účet B nezobrazí. Zabezpečení na úrovni řádků zajišťuje, že zdroje jsou vázány na uživatele.</div>
-      </div>
+  </div>
+  <div id="tc-T-NOTIF-02" class="test-case">
+    <div class="test-header"><span class="test-id">T-NOTIF-02</span><div class="test-title">Push notifikace CVE dorazí a otevře správný obsah</div></div>
+    <div class="badges"><span class="badge badge-native">Pouze nativní</span></div>
+    <div class="test-body">
+      <div class="precondition">Předpoklad: požádejte vývojáře o odeslání testovací notifikace do tématu security</div>
+      <div class="label">Kroky</div><ol><li>Přesuňte aplikaci na pozadí. Počkejte na notifikaci. Klepněte na ni.</li></ol>
+      <div class="expected">✓ Notifikace dorazí s názvem jako „🔴 KRITICKÁ: CVE-XXXX-XXXX". Klepnutím se otevře ShiftFeed a přejde na příslušný článek.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-NOTIF-02','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-NOTIF-02','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-NOTIF-02','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-NOTIF-02"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-NOTIF-02',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-RSS-03</span>
-        <div class="test-title">Neplatná URL zobrazí chybový stav</div>
-      </div>
-      <div class="badges"><span class="badge badge-pro">Pro</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Přidejte zdroj s URL „https://neexistujicirsszdroj.example.com/feed".</li>
-        </ol>
-        <div class="expected">✓ Po dalším běhu scraperu zůstane indikátor stavu červený a zobrazí chybovou zprávu parsování. Žádný pád.</div>
-      </div>
+  </div>
+  <div id="tc-T-NOTIF-03" class="test-case">
+    <div class="test-header"><span class="test-id">T-NOTIF-03</span><div class="test-title">Dávková notifikace pro více upozornění</div></div>
+    <div class="badges"><span class="badge badge-native">Pouze nativní</span></div>
+    <div class="test-body">
+      <div class="precondition">Předpoklad: požádejte vývojáře o odeslání dávkové testovací notifikace</div>
+      <div class="label">Kroky</div><ol><li>Počkejte na notifikaci při více CVE nebo vydáních v jednom běhu scraperu.</li></ol>
+      <div class="expected">✓ Dorazí jedna dávková notifikace (např. „🔴 3 nová bezpečnostní upozornění") místo jednotlivých notifikací.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-NOTIF-03','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-NOTIF-03','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-NOTIF-03','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-NOTIF-03"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-NOTIF-03',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-RSS-04</span>
-        <div class="test-title">Smazání vlastního RSS zdroje</div>
-      </div>
-      <div class="badges"><span class="badge badge-pro">Pro</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Smažte dříve přidaný vlastní zdroj.</li>
-          <li>Potvrďte dialog.</li>
-        </ol>
-        <div class="expected">✓ Zdroj zmizí ze seznamu. Dříve stažené články z tohoto zdroje zmizí z hlavního přehledu během jednoho cyklu scraperu.</div>
-      </div>
+  </div>
+  <div id="tc-T-NOTIF-04" class="test-case">
+    <div class="test-header"><span class="test-id">T-NOTIF-04</span><div class="test-title">Přepínač tématu se zachová (Pro)</div></div>
+    <div class="badges"><span class="badge badge-pro">Pro</span><span class="badge badge-native">Pouze nativní</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Nastavení → Notifikace → vypněte téma „releases".</li><li>Vynuťte zavření a znovu spusťte aplikaci.</li><li>Vraťte se do Nastavení → Notifikace.</li></ol>
+      <div class="expected">✓ Přepínač „releases" zůstane po restartu vypnutý. Free uživatelé klepnutím na přepínač uvidí platební obrazovku.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-NOTIF-04','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-NOTIF-04','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-NOTIF-04','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-NOTIF-04"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-NOTIF-04',this.value)"></textarea></div>
     </div>
-
-    <div class="back-to-top"><a href="#top">↑ Zpět nahoru</a></div>
-  </section>
-
-  <!-- SEKCE 13: PLATEBNÍ BRÁNA -->
-  <section id="paywall">
-    <h2><span class="num">13</span> Předplatné a oprávnění</h2>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-PAY-01</span>
-        <div class="test-title">Vzhled platební obrazovky</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Spusťte libovolnou Pro funkci (např. ikona AI přehledu) při Free účtu.</li>
-          <li>Pečlivě si prohlédněte platební panel.</li>
-        </ol>
-        <div class="expected">✓ Panel zobrazuje pět výhod. Přepínač měsíčně/ročně je přítomen. Odznak „Ušetříte 40 %" u roční možnosti. Ceny se zobrazují v místní měně (ne v USD, pokud nejste v USA). Výzva k „7denní bezplatné zkušební verzi" je výrazná.</div>
-      </div>
+  </div>
+  <div id="tc-T-NOTIF-05" class="test-case">
+    <div class="test-header"><span class="test-id">T-NOTIF-05</span><div class="test-title">Vlastní pravidlo upozornění (Pro)</div></div>
+    <div class="badges"><span class="badge badge-pro">Pro</span><span class="badge badge-native">Pouze nativní</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Nastavení → Pravidla upozornění → „Přidat pravidlo".</li><li>Nastavte název „OCP 4.21", klíčové slovo „4.21", kategorie „release". Uložte a povolte.</li></ol>
+      <div class="expected">✓ Pravidlo se uloží a zobrazí v seznamu. Nové odpovídající články doručí cílenou notifikaci pouze na toto zařízení.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-NOTIF-05','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-NOTIF-05','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-NOTIF-05','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-NOTIF-05"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-NOTIF-05',this.value)"></textarea></div>
     </div>
+  </div>
+  <div class="back-to-top"><a href="#top">↑ Zpět nahoru</a></div>
+</section>
 
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-PAY-02</span>
-        <div class="test-title">Zahájení zkušební verze nejprve spustí přihlášení při odhlášení</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Bez přihlášení klepněte na „Zahájit bezplatnou zkušební verzi" na platební obrazovce.</li>
-        </ol>
-        <div class="expected">✓ Zobrazí se AuthSheet pro přihlášení. Po dokončení přihlášení se platební panel automaticky obnoví — uživatel se k němu nemusí manuálně vracet.</div>
-      </div>
+<!-- VLASTNÍ RSS -->
+<section id="rss">
+  <h2><span class="num">13</span> Vlastní RSS zdroje</h2>
+  <div id="tc-T-RSS-01" class="test-case">
+    <div class="test-header"><span class="test-id">T-RSS-01</span><div class="test-title">Přidání platného vlastního RSS zdroje</div></div>
+    <div class="badges"><span class="badge badge-pro">Pro</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Nastavení → Vlastní zdroje → „Přidat zdroj".</li><li>Zadejte název a platnou RSS URL (např. https://thenewstack.io/feed/). Uložte.</li></ol>
+      <div class="expected">✓ Zdroj se zobrazí v seznamu. Po dalším běhu scraperu (do 1 hodiny) se indikátor přepne na zelený. Články se zobrazí označené „custom_feed".</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-RSS-01','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-RSS-01','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-RSS-01','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-RSS-01"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-RSS-01',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-PAY-03</span>
-        <div class="test-title">Sandboxový nákup dokončí a odemkne Pro</div>
-      </div>
-      <div class="badges"><span class="badge badge-pro">Pro</span></div>
-      <div class="test-body">
-        <div class="label">Předpoklad</div>
-        <p style="font-size:0.875rem;margin-bottom:0.35rem;">Použijte sandbox/testovací účet v Play Store nebo App Store sandboxu — nepoužívejte skutečný způsob platby.</p>
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Dokončete sandboxový nákup přes „Zahájit bezplatnou zkušební verzi".</li>
-        </ol>
-        <div class="expected">✓ Zobrazí se SnackBar „Vítejte v Pro 🎉". V horní liště se zobrazí odznak PRO. Pro funkce se odemknou okamžitě bez nutnosti restartu.</div>
-      </div>
+  </div>
+  <div id="tc-T-RSS-02" class="test-case">
+    <div class="test-header"><span class="test-id">T-RSS-02</span><div class="test-title">Články vlastního zdroje jsou soukromé</div></div>
+    <div class="badges"><span class="badge badge-pro">Pro</span></div>
+    <div class="test-body">
+      <div class="precondition">Předpoklad: přístup ke dvěma různým účtům</div>
+      <div class="label">Kroky</div><ol><li>Přidejte vlastní RSS zdroj na Účtu A.</li><li>Přihlaste se s Účtem B na jiném zařízení. Zkontrolujte přehled.</li></ol>
+      <div class="expected">✓ Články z vlastního RSS zdroje Účtu A se pro Účet B nezobrazí.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-RSS-02','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-RSS-02','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-RSS-02','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-RSS-02"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-RSS-02',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-PAY-04</span>
-        <div class="test-title">Zrušení ze systémového panelu je tiché</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Otevřete platební obrazovku, klepněte na „Zahájit bezplatnou zkušební verzi".</li>
-          <li>Když se zobrazí systémový panel nákupu, zrušte/zavřete jej.</li>
-        </ol>
-        <div class="expected">✓ Nezobrazí se žádný chybový SnackBar. Platební panel se jednoduše zavře. Uživatel se vrátí na místo, kde v aplikaci byl.</div>
-      </div>
+  </div>
+  <div id="tc-T-RSS-03" class="test-case">
+    <div class="test-header"><span class="test-id">T-RSS-03</span><div class="test-title">Neplatná URL zobrazí chybový stav</div></div>
+    <div class="badges"><span class="badge badge-pro">Pro</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Přidejte zdroj s URL „https://neexistujicirsszdroj.example.com/feed".</li></ol>
+      <div class="expected">✓ Po dalším běhu scraperu zůstane indikátor červený s chybovou zprávou. Žádný pád.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-RSS-03','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-RSS-03','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-RSS-03','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-RSS-03"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-RSS-03',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-PAY-05</span>
-        <div class="test-title">Obnovení nákupů při čerstvé instalaci</div>
-      </div>
-      <div class="badges"><span class="badge badge-pro">Pro</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Na zařízení s aktivním předplatným odinstalujte a znovu nainstalujte aplikaci.</li>
-          <li>Přihlaste se ke stejnému účtu.</li>
-          <li>Klepněte na „Obnovit nákupy" v Nastavení nebo po výzvě.</li>
-        </ol>
-        <div class="expected">✓ Zobrazí se SnackBar „Nákupy obnoveny". Odznak PRO se aktivuje. Pro funkce budou dostupné bez opakovaného nákupu.</div>
-      </div>
+  </div>
+  <div id="tc-T-RSS-04" class="test-case">
+    <div class="test-header"><span class="test-id">T-RSS-04</span><div class="test-title">Smazání vlastního RSS zdroje</div></div>
+    <div class="badges"><span class="badge badge-pro">Pro</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Smažte dříve přidaný vlastní zdroj. Potvrďte dialog.</li></ol>
+      <div class="expected">✓ Zdroj zmizí ze seznamu. Dříve stažené články zmizí z přehledu během jednoho cyklu scraperu.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-RSS-04','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-RSS-04','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-RSS-04','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-RSS-04"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-RSS-04',this.value)"></textarea></div>
     </div>
+  </div>
+  <div class="back-to-top"><a href="#top">↑ Zpět nahoru</a></div>
+</section>
 
-    <div class="back-to-top"><a href="#top">↑ Zpět nahoru</a></div>
-  </section>
-
-  <!-- SEKCE 14: VZHLED -->
-  <section id="theme">
-    <h2><span class="num">14</span> Vzhled a vizuální design</h2>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-UI-01</span>
-        <div class="test-title">Přepínač světlého a tmavého režimu</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>V liště Nastavení klepněte na ikonu slunce/měsíce.</li>
-          <li>Přepněte mezi světlým a tmavým režimem.</li>
-          <li>Vynuťte zavření a znovu spusťte aplikaci.</li>
-        </ol>
-        <div class="expected">✓ Celá aplikace okamžitě přepne motiv. Zvolený motiv se zachová po restartu. Při spuštění nedochází k záblesku nesprávného motivu.</div>
-      </div>
+<!-- PLATEBNÍ BRÁNA -->
+<section id="paywall">
+  <h2><span class="num">14</span> Předplatné a oprávnění</h2>
+  <div id="tc-T-PAY-01" class="test-case">
+    <div class="test-header"><span class="test-id">T-PAY-01</span><div class="test-title">Vzhled platební obrazovky</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Spusťte libovolnou Pro funkci při Free účtu.</li><li>Pečlivě si prohlédněte platební panel.</li></ol>
+      <div class="expected">✓ Panel zobrazuje pět výhod. Přepínač měsíčně/ročně. Odznak „Ušetříte 40 %" u roční možnosti. Ceny v místní měně. Výzva „7denní bezplatná zkušební verze" je výrazná.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-PAY-01','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-PAY-01','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-PAY-01','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-PAY-01"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-PAY-01',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-UI-02</span>
-        <div class="test-title">Kontrast světlého režimu — žádný neviditelný text</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Přepněte do světlého režimu.</li>
-          <li>Projděte: Přehled, Uložené, Verze OCP, AI přehled, Nastavení.</li>
-          <li>Vizuálně zkontrolujte každou obrazovku na černý text na černém pozadí nebo bílý na bílém.</li>
-        </ol>
-        <div class="expected">✓ Veškerý text je čitelný na každé obrazovce ve světlém režimu. Čipy štítků, odznaky a stavové popisky jsou všechny čitelné. Widget stavu systému by měl používat tmavě zelenou místo jasně zelené.</div>
-      </div>
+  </div>
+  <div id="tc-T-PAY-02" class="test-case">
+    <div class="test-header"><span class="test-id">T-PAY-02</span><div class="test-title">Zahájení zkušební verze nejprve spustí přihlášení při odhlášení</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Bez přihlášení klepněte na „Zahájit bezplatnou zkušební verzi" na platební obrazovce.</li></ol>
+      <div class="expected">✓ Zobrazí se AuthSheet. Po přihlášení se platební panel automaticky obnoví.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-PAY-02','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-PAY-02','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-PAY-02','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-PAY-02"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-PAY-02',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-UI-03</span>
-        <div class="test-title">Žádné chyby přetečení rozložení</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Přihlaste se s Pro, aby se v liště zobrazil odznak PRO.</li>
-          <li>Přejděte na každou obrazovku a zkontrolujte lištu aplikace.</li>
-        </ol>
-        <div class="expected">✓ Nikde se nezobrazí žluto-černý pruh „RenderFlex overflowed". Odznak PRO se vejde vedle názvu aplikace bez oříznutí.</div>
-      </div>
+  </div>
+  <div id="tc-T-PAY-03" class="test-case">
+    <div class="test-header"><span class="test-id">T-PAY-03</span><div class="test-title">Sandboxový nákup dokončí a odemkne Pro</div></div>
+    <div class="badges"><span class="badge badge-pro">Pro</span></div>
+    <div class="test-body">
+      <div class="precondition">Předpoklad: použijte sandbox/testovací účet — nepoužívejte skutečný způsob platby</div>
+      <div class="label">Kroky</div><ol><li>Dokončete sandboxový nákup přes „Zahájit bezplatnou zkušební verzi".</li></ol>
+      <div class="expected">✓ Zobrazí se SnackBar „Vítejte v Pro 🎉". Odznak PRO v horní liště. Pro funkce se odemknou okamžitě.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-PAY-03','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-PAY-03','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-PAY-03','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-PAY-03"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-PAY-03',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-UI-04</span>
-        <div class="test-title">Spodní panely nezakrývá systémová lišta gest</div>
-      </div>
-      <div class="badges"><span class="badge badge-native">Pouze nativní</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Spusťte platební panel, AuthSheet a panel „Přidat zdroj" pro vlastní RSS.</li>
-          <li>Zkontrolujte, zda jsou akční tlačítka v dolní části každého panelu dostupná.</li>
-        </ol>
-        <div class="expected">✓ Tlačítka nejsou skryta za lištou navigace gest Androidu ani za indikátorem Home na iOS. Všechny klepatelné prvky jsou dostupné bez zavření panelu.</div>
-      </div>
+  </div>
+  <div id="tc-T-PAY-04" class="test-case">
+    <div class="test-header"><span class="test-id">T-PAY-04</span><div class="test-title">Zrušení ze systémového panelu je tiché</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Otevřete platební obrazovku, klepněte na „Zahájit zkušební verzi".</li><li>Zrušte/zavřete systémový panel nákupu.</li></ol>
+      <div class="expected">✓ Žádný chybový SnackBar. Platební panel se jednoduše zavře. Uživatel se vrátí na původní místo.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-PAY-04','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-PAY-04','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-PAY-04','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-PAY-04"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-PAY-04',this.value)"></textarea></div>
     </div>
-
-    <div class="back-to-top"><a href="#top">↑ Zpět nahoru</a></div>
-  </section>
-
-  <!-- SEKCE 15: NASTAVENÍ -->
-  <section id="settings">
-    <h2><span class="num">15</span> Obrazovka Nastavení</h2>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-SET-01</span>
-        <div class="test-title">Všechny sekce nastavení se zobrazují a jsou klepatelné</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Otevřete Nastavení.</li>
-          <li>Klepněte na sekce Odeslat odkaz, Zdroje, Data, Odkazy.</li>
-        </ol>
-        <div class="expected">✓ Všechny sekce se zobrazí bez prázdných karet. Klepnutím na každou se buď přejde dál nebo otevře panel — nic není nefunkční. Žádné chybějící texty ani zástupné popisky.</div>
-      </div>
+  </div>
+  <div id="tc-T-PAY-05" class="test-case">
+    <div class="test-header"><span class="test-id">T-PAY-05</span><div class="test-title">Obnovení nákupů při čerstvé instalaci</div></div>
+    <div class="badges"><span class="badge badge-pro">Pro</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Odinstalujte a znovu nainstalujte aplikaci na zařízení s aktivním předplatným.</li><li>Přihlaste se ke stejnému účtu. Klepněte na „Obnovit nákupy".</li></ol>
+      <div class="expected">✓ SnackBar „Nákupy obnoveny". Odznak PRO se aktivuje. Pro funkce dostupné bez opakovaného nákupu.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-PAY-05','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-PAY-05','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-PAY-05','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-PAY-05"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-PAY-05',this.value)"></textarea></div>
     </div>
+  </div>
+  <div class="back-to-top"><a href="#top">↑ Zpět nahoru</a></div>
+</section>
 
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-SET-02</span>
-        <div class="test-title">Popisek verze aplikace je vyplněn</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Přesuňte se úplně dolů v Nastavení.</li>
-        </ol>
-        <div class="expected">✓ Popisek verze zobrazuje aktuální sestavení — např. „v1.0.0". Není prázdný a nezobrazuje „v..." jako zástupný text.</div>
-      </div>
+<!-- VZHLED -->
+<section id="theme">
+  <h2><span class="num">15</span> Vzhled a vizuální design</h2>
+  <div id="tc-T-UI-01" class="test-case">
+    <div class="test-header"><span class="test-id">T-UI-01</span><div class="test-title">Přepínač světlého a tmavého režimu</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>V liště Nastavení klepněte na ikonu slunce/měsíce.</li><li>Přepněte mezi světlým a tmavým. Vynuťte zavření a znovu spusťte.</li></ol>
+      <div class="expected">✓ Celá aplikace okamžitě přepne motiv. Motiv se zachová po restartu. Žádný záblesk nesprávného motivu při spuštění.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-UI-01','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-UI-01','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-UI-01','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-UI-01"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-UI-01',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-SET-03</span>
-        <div class="test-title">Kopírování RevenueCat ID</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Úplně dole v Nastavení klepněte na „Kopírovat RevenueCat ID".</li>
-          <li>Vložte do poznámek.</li>
-        </ol>
-        <div class="expected">✓ SnackBar potvrdí „RevenueCat ID zkopírováno". Vložený řetězec začíná „$RCAnonymousID:" (pokud nejste přihlášeni) nebo odpovídá formátu UUID (pokud jste přihlášeni). Není prázdný.</div>
-      </div>
+  </div>
+  <div id="tc-T-UI-02" class="test-case">
+    <div class="test-header"><span class="test-id">T-UI-02</span><div class="test-title">Kontrast světlého režimu — žádný neviditelný text</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Přepněte do světlého režimu.</li><li>Projděte: Přehled, Uložené, Verze OCP, AI přehled, Nastavení.</li><li>Zkontrolujte každou obrazovku na černý text na černém nebo bílý na bílém pozadí.</li></ol>
+      <div class="expected">✓ Veškerý text je čitelný na každé obrazovce ve světlém režimu. Čipy štítků, odznaky a stavové popisky jsou čitelné.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-UI-02','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-UI-02','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-UI-02','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-UI-02"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-UI-02',this.value)"></textarea></div>
     </div>
-
-    <div class="back-to-top"><a href="#top">↑ Zpět nahoru</a></div>
-  </section>
-
-  <!-- SEKCE 16: HRANIČNÍ PŘÍPADY -->
-  <section id="edge">
-    <h2><span class="num">16</span> Hraniční případy a regrese</h2>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-EDGE-01</span>
-        <div class="test-title">Chování v offline režimu</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Zapněte Letový režim.</li>
-          <li>Spusťte ShiftFeed ze studena.</li>
-          <li>Táhněte dolů pro obnovení.</li>
-        </ol>
-        <div class="expected">✓ Aplikace se spustí. Zobrazí se dříve uložené články. Při obnovení táhnutím se zobrazí jasný indikátor „bez sítě" nebo „offline". Žádný pád.</div>
-      </div>
+  </div>
+  <div id="tc-T-UI-03" class="test-case">
+    <div class="test-header"><span class="test-id">T-UI-03</span><div class="test-title">Žádné chyby přetečení rozložení</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Přihlaste se s Pro, aby se zobrazil odznak PRO.</li><li>Přejděte na každou obrazovku a zkontrolujte lištu aplikace.</li></ol>
+      <div class="expected">✓ Nikde se nezobrazí žluto-černý pruh „RenderFlex overflowed". Odznak PRO se vejde vedle názvu bez oříznutí.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-UI-03','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-UI-03','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-UI-03','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-UI-03"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-UI-03',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-EDGE-02</span>
-        <div class="test-title">Obnovení po dlouhé době na pozadí</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Přesuňte aplikaci na pozadí a 30+ minut používejte jiné aplikace.</li>
-          <li>Vraťte se do ShiftFeed.</li>
-        </ol>
-        <div class="expected">✓ Aplikace se obnoví bez pádu. Přehled znovu načte nový obsah. Žádný zastaralý spinner ani zmrzlá obrazovka.</div>
-      </div>
+  </div>
+  <div id="tc-T-UI-04" class="test-case">
+    <div class="test-header"><span class="test-id">T-UI-04</span><div class="test-title">Spodní panely nezakrývá systémová lišta gest</div></div>
+    <div class="badges"><span class="badge badge-native">Pouze nativní</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Spusťte platební panel, AuthSheet a panel „Přidat zdroj" pro vlastní RSS.</li><li>Zkontrolujte, zda jsou akční tlačítka dostupná.</li></ol>
+      <div class="expected">✓ Tlačítka nejsou skryta za lištou navigace gest Androidu ani za indikátorem Home na iOS. Všechny prvky jsou dosažitelné.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-UI-04','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-UI-04','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-UI-04','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-UI-04"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-UI-04',this.value)"></textarea></div>
     </div>
+  </div>
+  <div class="back-to-top"><a href="#top">↑ Zpět nahoru</a></div>
+</section>
 
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-EDGE-03</span>
-        <div class="test-title">Zpracování push notifikace v popředí</div>
-      </div>
-      <div class="badges"><span class="badge badge-native">Pouze nativní</span></div>
-      <div class="test-body">
-        <div class="label">Předpoklad</div>
-        <p style="font-size:0.875rem;margin-bottom:0.35rem;">Požádejte vývojáře o odeslání testovací notifikace, zatímco máte aplikaci otevřenou.</p>
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Nechte ShiftFeed v popředí.</li>
-          <li>Přijměte push notifikaci.</li>
-        </ol>
-        <div class="expected">✓ Zobrazí se in-app banner nebo SnackBar — v systémové liště se nezobrazí žádná položka notifikace. Žádný pád. Stav aplikace není ovlivněn.</div>
-      </div>
+<!-- NASTAVENÍ -->
+<section id="settings">
+  <h2><span class="num">16</span> Obrazovka Nastavení</h2>
+  <div id="tc-T-SET-01" class="test-case">
+    <div class="test-header"><span class="test-id">T-SET-01</span><div class="test-title">Všechny sekce nastavení se zobrazují a jsou klepatelné</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Otevřete Nastavení.</li><li>Klepněte na sekce Odeslat odkaz, Zdroje, Data, Odkazy.</li></ol>
+      <div class="expected">✓ Všechny sekce se zobrazí bez prázdných karet. Klepnutím se přejde dál nebo otevře panel. Nic není nefunkční.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-SET-01','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-SET-01','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-SET-01','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-SET-01"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-SET-01',this.value)"></textarea></div>
     </div>
-
-    <div class="test-case">
-      <div class="test-header">
-        <div class="test-checkbox"></div>
-        <span class="test-id">T-EDGE-04</span>
-        <div class="test-title">Zachování stavu po studeném restartu</div>
-      </div>
-      <div class="badges"><span class="badge badge-free">Free</span></div>
-      <div class="test-body">
-        <div class="label">Kroky</div>
-        <ol>
-          <li>Přidejte záložku ke dvěma článkům, přepněte na tmavý režim, přihlaste se.</li>
-          <li>Zcela ukončete aplikaci z přepínače aplikací.</li>
-          <li>Znovu spusťte.</li>
-        </ol>
-        <div class="expected">✓ Záložky jsou přítomny. Tmavý režim je aktivní. Přihlášený stav je zachován. Předvolby témat notifikací jsou beze změny.</div>
-      </div>
+  </div>
+  <div id="tc-T-SET-02" class="test-case">
+    <div class="test-header"><span class="test-id">T-SET-02</span><div class="test-title">Popisek verze aplikace je vyplněn</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Přesuňte se úplně dolů v Nastavení.</li></ol>
+      <div class="expected">✓ Popisek verze zobrazuje aktuální sestavení — např. „v1.0.0". Není prázdný a nezobrazuje „v...".</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-SET-02','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-SET-02','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-SET-02','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-SET-02"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-SET-02',this.value)"></textarea></div>
     </div>
-
-    <div class="back-to-top"><a href="#top">↑ Zpět nahoru</a></div>
-  </section>
-
-  <!-- SEKCE 17: ZÁVĚREČNÉ ZHODNOCENÍ -->
-  <section id="signoff">
-    <h2><span class="num">17</span> Závěrečné zhodnocení</h2>
-    <p>Prosím vyplňte níže uvedenou tabulku a přiložte ji ke své zpětné vazbě.</p>
-
-    <table class="signoff-table">
-      <thead>
-        <tr>
-          <th>Pole</th>
-          <th>Váš záznam</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td>Jméno testera</td><td class="write">&nbsp;</td></tr>
-        <tr><td>Model zařízení</td><td class="write">&nbsp;</td></tr>
-        <tr><td>Verze OS</td><td class="write">&nbsp;</td></tr>
-        <tr><td>Verze aplikace</td><td class="write">&nbsp;</td></tr>
-        <tr><td>Datum testování</td><td class="write">&nbsp;</td></tr>
-        <tr><td>Celkem testů prošlo</td><td class="write">&nbsp;</td></tr>
-        <tr><td>Celkem testů selhalo</td><td class="write">&nbsp;</td></tr>
-        <tr><td>Počet blokerů (pády / ztráta dat)</td><td class="write">&nbsp;</td></tr>
-        <tr><td>Celkový dojem (1–5)</td><td class="write">&nbsp;</td></tr>
-        <tr><td>Nejkritičtější nalezený problém</td><td class="write">&nbsp;</td></tr>
-      </tbody>
-    </table>
-
-    <p style="margin-top:1rem;">Po dokončení zašlete své zhodnocení a hlášení chyb na:</p>
-    <div class="contact-box">
-      <span style="font-size:1.25rem;">✉</span>
-      <a href="mailto:bobek.roman@gmail.com">bobek.roman@gmail.com</a>
+  </div>
+  <div id="tc-T-SET-03" class="test-case">
+    <div class="test-header"><span class="test-id">T-SET-03</span><div class="test-title">Kopírování RevenueCat ID</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Úplně dole v Nastavení klepněte na „Kopírovat RevenueCat ID".</li><li>Vložte do poznámek.</li></ol>
+      <div class="expected">✓ SnackBar potvrdí „RevenueCat ID zkopírováno". Vložený řetězec začíná „$RCAnonymousID:" (odhlášeni) nebo odpovídá UUID formátu (přihlášeni). Není prázdný.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-SET-03','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-SET-03','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-SET-03','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-SET-03"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-SET-03',this.value)"></textarea></div>
     </div>
+  </div>
+  <div class="back-to-top"><a href="#top">↑ Zpět nahoru</a></div>
+</section>
 
-    <p style="margin-top:1rem;color:var(--muted);font-size:0.875rem;">Děkujeme, že jste si udělali čas na testování ShiftFeed. Vaše zpětná vazba přímo ovlivňuje to, co se opraví před veřejným vydáním.</p>
+<!-- HRANIČNÍ PŘÍPADY -->
+<section id="edge">
+  <h2><span class="num">17</span> Hraniční případy a regrese</h2>
+  <div id="tc-T-EDGE-01" class="test-case">
+    <div class="test-header"><span class="test-id">T-EDGE-01</span><div class="test-title">Chování v offline režimu</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Zapněte Letový režim.</li><li>Spusťte ShiftFeed ze studena.</li><li>Táhněte dolů pro obnovení.</li></ol>
+      <div class="expected">✓ Aplikace se spustí. Zobrazí se dříve uložené články. Jasný indikátor „bez sítě" nebo „offline" při obnovení. Žádný pád.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-EDGE-01','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-EDGE-01','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-EDGE-01','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-EDGE-01"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-EDGE-01',this.value)"></textarea></div>
+    </div>
+  </div>
+  <div id="tc-T-EDGE-02" class="test-case">
+    <div class="test-header"><span class="test-id">T-EDGE-02</span><div class="test-title">Obnovení po dlouhé době na pozadí</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Přesuňte aplikaci na pozadí a 30+ minut používejte jiné aplikace.</li><li>Vraťte se do ShiftFeed.</li></ol>
+      <div class="expected">✓ Aplikace se obnoví bez pádu. Přehled znovu načte nový obsah. Žádný zastaralý spinner ani zmrzlá obrazovka.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-EDGE-02','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-EDGE-02','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-EDGE-02','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-EDGE-02"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-EDGE-02',this.value)"></textarea></div>
+    </div>
+  </div>
+  <div id="tc-T-EDGE-03" class="test-case">
+    <div class="test-header"><span class="test-id">T-EDGE-03</span><div class="test-title">Zpracování push notifikace v popředí</div></div>
+    <div class="badges"><span class="badge badge-native">Pouze nativní</span></div>
+    <div class="test-body">
+      <div class="precondition">Předpoklad: požádejte vývojáře o odeslání testovací notifikace, zatímco máte aplikaci otevřenou</div>
+      <div class="label">Kroky</div><ol><li>Nechte ShiftFeed v popředí.</li><li>Přijměte push notifikaci.</li></ol>
+      <div class="expected">✓ Zobrazí se in-app banner nebo SnackBar — v systémové liště se nezobrazí notifikace. Žádný pád. Stav aplikace není ovlivněn.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-EDGE-03','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-EDGE-03','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-EDGE-03','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-EDGE-03"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-EDGE-03',this.value)"></textarea></div>
+    </div>
+  </div>
+  <div id="tc-T-EDGE-04" class="test-case">
+    <div class="test-header"><span class="test-id">T-EDGE-04</span><div class="test-title">Zachování stavu po studeném restartu</div></div>
+    <div class="badges"><span class="badge badge-free">Free</span></div>
+    <div class="test-body">
+      <div class="label">Kroky</div><ol><li>Přidejte záložku ke dvěma článkům, přepněte na tmavý režim, přihlaste se.</li><li>Zcela ukončete aplikaci z přepínače aplikací.</li><li>Znovu spusťte.</li></ol>
+      <div class="expected">✓ Záložky jsou přítomny. Tmavý režim je aktivní. Přihlášený stav je zachován. Předvolby témat jsou beze změny.</div>
+      <div class="status-row"><span class="status-label">Výsledek:</span><button class="status-btn pass" onclick="setStatus('T-EDGE-04','pass',this)">✓ Prošlo</button><button class="status-btn fail" onclick="setStatus('T-EDGE-04','fail',this)">✗ Selhalo</button><button class="status-btn skip" onclick="setStatus('T-EDGE-04','skip',this)">— Přeskočeno</button></div>
+      <div class="note-field" id="note-T-EDGE-04"><textarea placeholder="Přidejte poznámku (povinné pro Selhalo)..." oninput="saveNote('T-EDGE-04',this.value)"></textarea></div>
+    </div>
+  </div>
+  <div class="back-to-top"><a href="#top">↑ Zpět nahoru</a></div>
+</section>
 
-    <div class="back-to-top"><a href="#top">↑ Zpět nahoru</a></div>
-  </section>
+<!-- ZÁVĚREČNÉ ZHODNOCENÍ -->
+<section id="signoff">
+  <h2><span class="num">18</span> Závěrečné zhodnocení</h2>
+  <div class="field-group">
+    <label class="field-label" for="overall-rating">Celkové hodnocení</label>
+    <select id="overall-rating">
+      <option value="">Vyberte hodnocení...</option>
+      <option value="5">5 — Výborné, připraveno k vydání</option>
+      <option value="4">4 — Dobré, pouze drobné problémy</option>
+      <option value="3">3 — Použitelné, některé problémy k opravení</option>
+      <option value="2">2 — Výrazné problémy, potřebuje práci</option>
+      <option value="1">1 — Blokující problémy, není připraveno</option>
+    </select>
+  </div>
+  <div class="field-group">
+    <label class="field-label" for="liked-most">Co se vám líbilo nejvíce?</label>
+    <textarea id="liked-most" rows="3" placeholder="Vaše odpověď..."></textarea>
+  </div>
+  <div class="field-group">
+    <label class="field-label" for="improve-most">Co nejvíce potřebuje zlepšení?</label>
+    <textarea id="improve-most" rows="3" placeholder="Vaše odpověď..."></textarea>
+  </div>
+  <div class="field-group">
+    <label class="field-label" for="recommend">Doporučili byste ShiftFeed kolegovi?</label>
+    <select id="recommend">
+      <option value="">Vyberte...</option>
+      <option>Určitě ano</option>
+      <option>Pravděpodobně ano</option>
+      <option>Nejsem si jistý/á</option>
+      <option>Pravděpodobně ne</option>
+      <option>Určitě ne</option>
+    </select>
+  </div>
+  <div class="field-group">
+    <label class="field-label" for="other-comments">Další komentáře nebo blokátory?</label>
+    <textarea id="other-comments" rows="4" placeholder="Vaše odpověď..."></textarea>
+  </div>
+</section>
 
-  <footer>
-    <p>ShiftFeed &nbsp;·&nbsp; Beta testovací plán &nbsp;·&nbsp; vydání Golden Gate &nbsp;·&nbsp; Pouze mobilní aplikace</p>
-    <p style="margin-top:0.4rem;">Platné od 7. května 2026 &nbsp;·&nbsp; Webová a desktopová verze jsou mimo rozsah tohoto kola.</p>
-  </footer>
+<!-- EXPORT -->
+<div class="export-section" id="signoff-export">
+  <h2><span class="num">⬇</span> Export výsledků</h2>
+  <p>Po dokončení testování použijte níže uvedená tlačítka pro export výsledků.</p>
+  <ul style="margin: 0.5rem 0 0; font-size: 0.9rem;">
+    <li><strong>AppFleet CSV</strong> — importuje všechny <em>selhané</em> testovací případy jako chyby do AppFleet (kód projektu: SFD). Odešlete tento soubor vývojáři.</li>
+    <li><strong>Článek do znalostní báze (Markdown)</strong> — souhrn celé testovací relace vhodný pro vložení do AppFleet Knowledge Base.</li>
+    <li><strong>Kopírovat jako text</strong> — prostý textový souhrn pro vložení do Slacku nebo e-mailu.</li>
+  </ul>
+  <div class="export-btns">
+    <button class="btn btn-primary" onclick="exportCSV()">⬇ AppFleet CSV (pouze chyby)</button>
+    <button class="btn btn-green" onclick="exportMarkdown()">⬇ Článek KB (Markdown)</button>
+    <button class="btn btn-secondary" onclick="copyText()">📋 Kopírovat jako text</button>
+  </div>
+  <p style="margin-top: 1rem; font-size: 0.85rem; color: var(--muted);">Po exportu odešlete CSV na <a href="mailto:neywa.blake@gmail.com">neywa.blake@gmail.com</a> nebo jej přímo naimportujte do AppFleet přes importer chyb aplikace ShiftFeed.</p>
+</div>
+
+<footer>
+  <p>ShiftFeed &nbsp;·&nbsp; Beta testovací plán &nbsp;·&nbsp; vydání Golden Gate &nbsp;·&nbsp; Pouze mobilní aplikace (Android + iOS)</p>
+  <p style="margin-top:0.4rem;">Platné od 8. května 2026 &nbsp;·&nbsp; Webová a desktopová verze jsou mimo rozsah tohoto kola.</p>
+</footer>
 
 </div>
+
+<script>
+const statuses = {};
+const notes = {};
+const selectedDevices = new Set();
+const PROJECT_CODE = 'SFD';
+const TODAY = '20260508';
+
+const ALL_TESTS = [
+  'T-FEED-01','T-FEED-02','T-FEED-03','T-FEED-04','T-FEED-05','T-FEED-06','T-FEED-07',
+  'T-SRCH-01','T-SRCH-02','T-SRCH-03','T-SRCH-04',
+  'T-BM-01','T-BM-02','T-BM-03','T-BM-04','T-BM-05','T-BM-06','T-BM-07','T-BM-08','T-BM-09',
+  'T-AI-01','T-AI-02','T-AI-03',
+  'T-OCP-01','T-OCP-02','T-CVE-01','T-CVE-02',
+  'T-SUB-01','T-SUB-02','T-SUB-03',
+  'T-AUTH-01','T-AUTH-02','T-AUTH-03','T-AUTH-04','T-AUTH-05',
+  'T-NOTIF-01','T-NOTIF-02','T-NOTIF-03','T-NOTIF-04','T-NOTIF-05',
+  'T-RSS-01','T-RSS-02','T-RSS-03','T-RSS-04',
+  'T-PAY-01','T-PAY-02','T-PAY-03','T-PAY-04','T-PAY-05',
+  'T-UI-01','T-UI-02','T-UI-03','T-UI-04',
+  'T-SET-01','T-SET-02','T-SET-03',
+  'T-EDGE-01','T-EDGE-02','T-EDGE-03','T-EDGE-04'
+];
+
+const TEST_TITLES = {
+  'T-FEED-01': 'Aplikace se spustí bez pádu a zobrazí přehled',
+  'T-FEED-02': 'Přepínání mezi mřížkovým a seznamovým zobrazením',
+  'T-FEED-03': 'Filtrovací čipy podle zdroje',
+  'T-FEED-04': 'Filtr podle štítku z karty článku',
+  'T-FEED-05': 'Nekonečné rolování a limit Free úrovně',
+  'T-FEED-06': 'Klepnutí na článek otevře správný cíl',
+  'T-FEED-07': 'Vizuální design karet — barevné akcenty a metadata',
+  'T-SRCH-01': 'Vyhledávací lišta se otevírá a zavírá',
+  'T-SRCH-02': 'Klíčové slovo vrátí výsledky z celé databáze',
+  'T-SRCH-03': 'Vyhledávání podle štítku s prefixem #',
+  'T-SRCH-04': 'Prázdný stav vyhledávání',
+  'T-BM-01': 'Uložení a zrušení záložky',
+  'T-BM-02': 'Obrazovka Uložené zobrazuje záložky a otevírá články',
+  'T-BM-03': 'Potažením smazat záložku',
+  'T-BM-04': 'Vymazat všechny záložky',
+  'T-BM-05': 'Indikátor cloudové synchronizace (Pro)',
+  'T-BM-06': 'Synchronizace záložek napříč zařízeními (Pro)',
+  'T-BM-07': 'Export záložek (Pro)',
+  'T-BM-08': 'Odhlášení vrátí záložky na lokální úložiště (Pro)',
+  'T-BM-09': 'Výzva k upgradu pro Free uživatele',
+  'T-AI-01': 'Přístup k přehledu — Free vs Pro brána',
+  'T-AI-02': 'Obsah a formátování přehledu (Pro)',
+  'T-AI-03': 'Plánované doručení přehledu (Pro)',
+  'T-OCP-01': 'Seznam verzí OCP se zobrazí správně',
+  'T-OCP-02': 'Kopírování souhrnu verzí',
+  'T-CVE-01': 'CVE články v přehledu s odznaky závažnosti',
+  'T-CVE-02': 'CVE článek otevře upozornění Red Hat',
+  'T-SUB-01': 'Platná URL adresa se úspěšně odešle',
+  'T-SUB-02': 'Duplicitní URL zobrazí přátelskou chybovou zprávu',
+  'T-SUB-03': 'Neplatná URL je blokována validací',
+  'T-AUTH-01': 'Vyžádání přihlašovacího odkazu',
+  'T-AUTH-02': 'Otevření magic linku na stejném zařízení',
+  'T-AUTH-03': 'Expirovaný nebo již použitý odkaz',
+  'T-AUTH-04': 'Odhlášení',
+  'T-AUTH-05': 'Platební brána spustí přihlášení před nákupem',
+  'T-NOTIF-01': 'Výzva k povolení notifikací při prvním spuštění',
+  'T-NOTIF-02': 'Push notifikace CVE dorazí a otevře správný obsah',
+  'T-NOTIF-03': 'Dávková notifikace pro více upozornění',
+  'T-NOTIF-04': 'Přepínač tématu se zachová (Pro)',
+  'T-NOTIF-05': 'Vlastní pravidlo upozornění (Pro)',
+  'T-RSS-01': 'Přidání platného vlastního RSS zdroje',
+  'T-RSS-02': 'Články vlastního zdroje jsou soukromé',
+  'T-RSS-03': 'Neplatná URL zobrazí chybový stav',
+  'T-RSS-04': 'Smazání vlastního RSS zdroje',
+  'T-PAY-01': 'Vzhled platební obrazovky',
+  'T-PAY-02': 'Zahájení zkušební verze nejprve spustí přihlášení při odhlášení',
+  'T-PAY-03': 'Sandboxový nákup dokončí a odemkne Pro',
+  'T-PAY-04': 'Zrušení ze systémového panelu je tiché',
+  'T-PAY-05': 'Obnovení nákupů při čerstvé instalaci',
+  'T-UI-01': 'Přepínač světlého a tmavého režimu',
+  'T-UI-02': 'Kontrast světlého režimu — žádný neviditelný text',
+  'T-UI-03': 'Žádné chyby přetečení rozložení',
+  'T-UI-04': 'Spodní panely nezakrývá systémová lišta gest',
+  'T-SET-01': 'Všechny sekce nastavení se zobrazují a jsou klepatelné',
+  'T-SET-02': 'Popisek verze aplikace je vyplněn',
+  'T-SET-03': 'Kopírování RevenueCat ID',
+  'T-EDGE-01': 'Chování v offline režimu',
+  'T-EDGE-02': 'Obnovení po dlouhé době na pozadí',
+  'T-EDGE-03': 'Zpracování push notifikace v popředí',
+  'T-EDGE-04': 'Zachování stavu po studeném restartu',
+};
+
+function toggleDevice(btn, device) {
+  btn.classList.toggle('active');
+  if (selectedDevices.has(device)) selectedDevices.delete(device);
+  else selectedDevices.add(device);
+}
+
+function setStatus(id, status, btn) {
+  statuses[id] = status;
+  const card = document.getElementById('tc-' + id);
+  card.classList.remove('status-pass', 'status-fail', 'status-skip');
+  card.classList.add('status-' + status);
+  const btns = card.querySelectorAll('.status-btn');
+  btns.forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const noteField = document.getElementById('note-' + id);
+  if (status === 'fail') noteField.classList.add('show');
+  else noteField.classList.remove('show');
+  updateProgress();
+}
+
+function saveNote(id, value) {
+  notes[id] = value;
+}
+
+function updateProgress() {
+  const total = ALL_TESTS.length;
+  const done = ALL_TESTS.filter(id => statuses[id]).length;
+  const passed = ALL_TESTS.filter(id => statuses[id] === 'pass').length;
+  const failed = ALL_TESTS.filter(id => statuses[id] === 'fail').length;
+  const skipped = ALL_TESTS.filter(id => statuses[id] === 'skip').length;
+  const remaining = total - done;
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = done + ' / ' + total + ' testovacích případů (' + pct + '%)';
+  document.getElementById('stat-pass').textContent = '✓ ' + passed + ' prošlo';
+  document.getElementById('stat-fail').textContent = '✗ ' + failed + ' selhalo';
+  document.getElementById('stat-skip').textContent = '— ' + skipped + ' přeskočeno';
+  document.getElementById('stat-total').textContent = remaining + ' zbývá';
+}
+
+function getTesterInfo() {
+  return {
+    name: document.getElementById('tester-name').value.trim() || 'Neznámý tester',
+    email: document.getElementById('tester-email').value.trim() || '',
+    devices: [...selectedDevices].join(', ') || document.getElementById('device-model').value.trim() || 'Neuvedeno',
+    model: document.getElementById('device-model').value.trim() || 'Neuvedeno',
+    os: document.getElementById('os-version').value.trim() || 'Neuvedeno',
+    appVersion: document.getElementById('app-version').value.trim() || 'Neuvedeno',
+    rating: document.getElementById('overall-rating').value || 'Neohodnoceno',
+    likedMost: document.getElementById('liked-most').value.trim() || '-',
+    improvemost: document.getElementById('improve-most').value.trim() || '-',
+    recommend: document.getElementById('recommend').value || '-',
+    otherComments: document.getElementById('other-comments').value.trim() || '-',
+  };
+}
+
+function exportCSV() {
+  const info = getTesterInfo();
+  const failed = ALL_TESTS.filter(id => statuses[id] === 'fail');
+  if (failed.length === 0) {
+    alert('Žádné selhané testovací případy k exportu. Nejprve označte alespoň jeden test jako Selhalo.');
+    return;
+  }
+  const rows = [['number', 'kind', 'note', 'status', 'squished_date']];
+  failed.forEach((id, i) => {
+    const title = TEST_TITLES[id] || id;
+    const note = notes[id] ? notes[id].trim() : '';
+    const noteText = '[' + id + '] ' + title +
+      ' | Tester: ' + info.name +
+      ' | Zařízení: ' + info.model + ' ' + info.os +
+      ' | Aplikace: ' + info.appVersion +
+      (note ? ' | Poznámka: ' + note : '');
+    rows.push([String(i + 1).padStart(3, '0'), 'bug', noteText, 'new', TODAY]);
+  });
+  const csv = rows.map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(',')).join('\n');
+  downloadFile(PROJECT_CODE + '_chyby_' + TODAY + '.csv', csv, 'text/csv');
+}
+
+function exportMarkdown() {
+  const info = getTesterInfo();
+  const passed = ALL_TESTS.filter(id => statuses[id] === 'pass').length;
+  const failed = ALL_TESTS.filter(id => statuses[id] === 'fail').length;
+  const skipped = ALL_TESTS.filter(id => statuses[id] === 'skip').length;
+  const total = ALL_TESTS.length;
+  const passRate = total > 0 ? Math.round((passed / total) * 100) : 0;
+  let md = '# ShiftFeed Beta Test — Golden Gate\n\n';
+  md += '## Profil testera\n\n';
+  md += '| Pole | Hodnota |\n|---|---|\n';
+  md += '| Tester | ' + info.name + ' (' + info.email + ') |\n';
+  md += '| Zařízení | ' + info.model + ' |\n';
+  md += '| OS | ' + info.os + ' |\n';
+  md += '| Verze aplikace | ' + info.appVersion + ' |\n';
+  md += '| Datum testování | ' + new Date().toLocaleDateString('cs-CZ', {day:'numeric',month:'long',year:'numeric'}) + ' |\n';
+  md += '| Celkové hodnocení | ' + info.rating + '/5 |\n';
+  md += '| Doporučení | ' + info.recommend + ' |\n\n';
+  md += '## Souhrn\n\n';
+  md += '| Výsledek | Počet |\n|---|---|\n';
+  md += '| ✓ Prošlo | ' + passed + ' |\n';
+  md += '| ✗ Selhalo | ' + failed + ' |\n';
+  md += '| — Přeskočeno | ' + skipped + ' |\n';
+  md += '| Úspěšnost | ' + passRate + '% |\n\n';
+  if (failed > 0) {
+    md += '## Selhané testovací případy\n\n';
+    ALL_TESTS.filter(id => statuses[id] === 'fail').forEach(id => {
+      md += '### ' + id + ' — ' + (TEST_TITLES[id] || id) + '\n\n';
+      if (notes[id]) md += '**Poznámka:** ' + notes[id] + '\n\n';
+    });
+  }
+  md += '## Zpětná vazba\n\n';
+  md += '**Co se líbilo nejvíce?**\n\n' + info.likedMost + '\n\n';
+  md += '**Co nejvíce potřebuje zlepšení?**\n\n' + info.improvemost + '\n\n';
+  md += '**Další komentáře:**\n\n' + info.otherComments + '\n\n';
+  md += '## Kompletní výsledky\n\n';
+  md += '| ID testu | Název | Výsledek | Poznámka |\n|---|---|---|---|\n';
+  ALL_TESTS.forEach(id => {
+    const s = statuses[id] || 'netestováno';
+    const icon = s === 'pass' ? '✓' : s === 'fail' ? '✗' : s === 'skip' ? '—' : '?';
+    const displayStatus = s === 'pass' ? 'prošlo' : s === 'fail' ? 'selhalo' : s === 'skip' ? 'přeskočeno' : 'netestováno';
+    const n = (notes[id] || '').replace(/\|/g, '\\|').replace(/\n/g, ' ');
+    md += '| ' + id + ' | ' + (TEST_TITLES[id] || id) + ' | ' + icon + ' ' + displayStatus + ' | ' + n + ' |\n';
+  });
+  downloadFile('SFD_clanek_kb_' + TODAY + '.md', md, 'text/markdown');
+}
+
+function copyText() {
+  const info = getTesterInfo();
+  const passed = ALL_TESTS.filter(id => statuses[id] === 'pass').length;
+  const failed = ALL_TESTS.filter(id => statuses[id] === 'fail').length;
+  const skipped = ALL_TESTS.filter(id => statuses[id] === 'skip').length;
+  let text = 'ShiftFeed Beta Test — Golden Gate\n';
+  text += '='.repeat(40) + '\n';
+  text += 'Tester: ' + info.name + ' | Zařízení: ' + info.model + ' ' + info.os + ' | Aplikace: ' + info.appVersion + '\n';
+  text += 'Datum: ' + new Date().toLocaleDateString('cs-CZ') + '\n\n';
+  text += 'VÝSLEDKY: ' + passed + ' prošlo / ' + failed + ' selhalo / ' + skipped + ' přeskočeno\n';
+  text += 'Celkové hodnocení: ' + info.rating + '/5\n\n';
+  if (failed > 0) {
+    text += 'SELHANÉ TESTY:\n';
+    ALL_TESTS.filter(id => statuses[id] === 'fail').forEach(id => {
+      text += '  [' + id + '] ' + (TEST_TITLES[id] || id);
+      if (notes[id]) text += '\n  → ' + notes[id];
+      text += '\n';
+    });
+    text += '\n';
+  }
+  text += 'Líbilo se nejvíce: ' + info.likedMost + '\n';
+  text += 'Potřebuje zlepšení: ' + info.improvemost + '\n';
+  text += 'Doporučení: ' + info.recommend + '\n';
+  if (info.otherComments !== '-') text += 'Další: ' + info.otherComments + '\n';
+  navigator.clipboard.writeText(text).then(() => {
+    alert('Výsledky zkopírovány do schránky!');
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    alert('Výsledky zkopírovány do schránky!');
+  });
+}
+
+function downloadFile(filename, content, type) {
+  const blob = new Blob([content], {type: type + ';charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+updateProgress();
+</script>
 </body>
 </html>
