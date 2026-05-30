@@ -248,18 +248,23 @@ class ArticleCard extends StatelessWidget {
                             style: TextStyle(color: muted, fontSize: 11),
                           ),
                           if (showBookmarkButton)
-                            GestureDetector(
-                              onTap: onBookmarkToggle,
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 8),
-                                child: Icon(
-                                  isBookmarked
-                                      ? Icons.bookmark
-                                      : Icons.bookmark_outline,
-                                  size: 16,
-                                  color: isBookmarked ? kRed : muted,
-                                ),
+                            IconButton(
+                              onPressed: onBookmarkToggle,
+                              icon: Icon(
+                                isBookmarked
+                                    ? Icons.bookmark
+                                    : Icons.bookmark_outline,
+                                color: isBookmarked ? kRed : muted,
                               ),
+                              iconSize: 22,
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(
+                                minWidth: 48,
+                                minHeight: 48,
+                              ),
+                              tooltip: isBookmarked
+                                  ? 'Remove bookmark'
+                                  : 'Save article',
                             ),
                         ],
                       ),
