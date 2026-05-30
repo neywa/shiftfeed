@@ -1185,12 +1185,51 @@ class _DigestScheduleSheetState extends State<_DigestScheduleSheet> {
   }
 
   Future<void> _pickTime() async {
-    final picked = await showTimePicker(
+    // The scraper runs hourly and only matches on `delivery_hour`, so
+    // anything finer than an hour gets silently rounded down. Use a
+    // plain hour-only list picker instead of `showTimePicker`, which
+    // would let users tap minutes the backend ignores.
+    final initial = _deliveryHour;
+    final picked = await showDialog<int>(
       context: context,
-      initialTime: TimeOfDay(hour: _deliveryHour, minute: 0),
+      builder: (ctx) {
+        // Scroll the current selection into view (each ListTile ≈ 48 px).
+        final controller = ScrollController(
+          initialScrollOffset: ((initial - 2).clamp(0, 23)) * 48.0,
+        );
+        return AlertDialog(
+          title: const Text('Delivery hour'),
+          contentPadding: const EdgeInsets.symmetric(vertical: 8),
+          content: SizedBox(
+            width: double.maxFinite,
+            height: 320,
+            child: ListView.builder(
+              controller: controller,
+              itemCount: 24,
+              itemBuilder: (_, h) {
+                final selected = h == initial;
+                return ListTile(
+                  dense: true,
+                  title: Text(_formatHour(h)),
+                  trailing: selected
+                      ? const Icon(Icons.check, size: 18)
+                      : null,
+                  onTap: () => Navigator.pop(ctx, h),
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
     );
     if (picked != null && mounted) {
-      setState(() => _deliveryHour = picked.hour);
+      setState(() => _deliveryHour = picked);
     }
   }
 
