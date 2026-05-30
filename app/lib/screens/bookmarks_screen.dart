@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../models/article.dart';
 import '../repositories/article_repository.dart';
@@ -9,6 +8,7 @@ import '../services/entitlement_service.dart';
 import '../services/export_service.dart';
 import '../services/user_service.dart';
 import '../theme/app_theme.dart';
+import '../utils/open_article.dart';
 import '../widgets/article_card.dart';
 import '../widgets/paywall_sheet.dart';
 
@@ -47,10 +47,7 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
   }
 
   void _openArticle(Article article) {
-    launchUrl(
-      Uri.parse(article.url),
-      mode: LaunchMode.externalApplication,
-    );
+    openArticle(context, article);
   }
 
   Future<void> _showExportSheet() async {

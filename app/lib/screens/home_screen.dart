@@ -19,10 +19,10 @@ import '../theme/app_theme.dart';
 import '../theme/layout_notifier.dart';
 import '../theme/theme_notifier.dart';
 import '../utils/favicons.dart';
+import '../utils/open_article.dart';
 import '../widgets/article_card.dart';
 import '../widgets/paywall_sheet.dart';
 import 'about_screen.dart';
-import 'article_detail_screen.dart';
 import 'bookmarks_screen.dart';
 import 'digest_screen.dart';
 import 'submit_screen.dart';
@@ -456,16 +456,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _onArticleTap(Article article, {required bool desktop}) {
-    if (kIsWeb || desktop) {
-      launchUrl(Uri.parse(article.url), mode: LaunchMode.externalApplication);
-    } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ArticleDetailScreen(article: article),
-        ),
-      );
-    }
+    openArticle(context, article, desktop: desktop);
   }
 
   void _openAbout() {
