@@ -147,6 +147,8 @@ Never put the service-role key in `app/assets/.env` — that file ships inside t
 
 [app/android/app/build.gradle.kts](app/android/app/build.gradle.kts) reads `app/android/key.properties` (gitignored) for the release keystore at `keystore/shiftfeed-keystore.jks` (also gitignored — both paths are explicitly excluded in `.gitignore`). If `key.properties` is absent, release builds fall back to the debug signing config — useful locally, never for Play Store uploads.
 
+When building a release AAB, follow the ritual in ~/coding/skills/flutter-aab-release.md
+
 ### CI
 
 - [.github/workflows/scrape.yml](.github/workflows/scrape.yml) runs `python -m scraper.main` hourly (`0 * * * *`) and on `workflow_dispatch`. **Deps are listed inline in the workflow's `pip install` line, not pulled from `pyproject.toml`. Adding a scraper dependency means updating BOTH [scraper/pyproject.toml](scraper/pyproject.toml) AND that pip install line.**
