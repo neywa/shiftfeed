@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import 'package:url_launcher/url_launcher.dart';
 
 import '../models/digest.dart';
 import '../repositories/article_repository.dart';
 import '../services/export_service.dart';
 import '../theme/app_theme.dart';
+import '../utils/open_article.dart';
 
 const Color _kSecurityOrange = Color(0xFFFF6600);
 const Color _kReleaseGreen = Color(0xFF00AA44);
@@ -320,9 +320,10 @@ class _DigestScreenState extends State<DigestScreen> {
               onTap: () {
                 final url = article['url'];
                 if (url == null || url.isEmpty) return;
-                launchUrl(
-                  Uri.parse(url),
-                  mode: LaunchMode.externalApplication,
+                openArticleUrl(
+                  context,
+                  url: url,
+                  title: article['title'],
                 );
               },
               child: Padding(

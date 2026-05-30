@@ -34,9 +34,41 @@ String? _releaseStatusUrl(Article article) {
 }
 
 class ArticleDetailScreen extends StatefulWidget {
-  final Article article;
+  final String url;
+  final String title;
 
-  const ArticleDetailScreen({super.key, required this.article});
+  /// The full [Article] when the reader was opened from a feed/saved
+  /// tap. Null when opened by URL only (e.g. an AI-digest "top story"
+  /// entry, which carries no source/date/summary/tags) — the body and
+  /// AppBar fall back gracefully in that case rather than displaying
+  /// fabricated values.
+  final Article? article;
+
+  const ArticleDetailScreen._({
+    super.key,
+    required this.url,
+    required this.title,
+    this.article,
+  });
+
+  factory ArticleDetailScreen({Key? key, required Article article}) =>
+      ArticleDetailScreen._(
+        key: key,
+        url: article.url,
+        title: article.title,
+        article: article,
+      );
+
+  factory ArticleDetailScreen.url({
+    Key? key,
+    required String url,
+    String? title,
+  }) =>
+      ArticleDetailScreen._(
+        key: key,
+        url: url,
+        title: title ?? '',
+      );
 
   @override
   State<ArticleDetailScreen> createState() => _ArticleDetailScreenState();
@@ -47,8 +79,11 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
   WebViewController? _controller;
 
   /// Computed once from [Article.title] + [Article.summary]. Non-null only
-  /// for OCP Versions articles where a patch version was extractable.
-  late final String? _releaseUrl = _releaseStatusUrl(widget.article);
+  /// for OCP Versions articles where a patch version was extractable —
+  /// always null when the screen was opened via [ArticleDetailScreen.url].
+  late final String? _releaseUrl = widget.article == null
+      ? null
+      : _releaseStatusUrl(widget.article!);
 
   bool get _supportsWebView =>
       !kIsWeb &&
@@ -69,13 +104,13 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
             },
           ),
         )
-        ..loadRequest(Uri.parse(widget.article.url));
+        ..loadRequest(Uri.parse(widget.url));
     }
   }
 
   Future<void> _openInBrowser() async {
     await launchUrl(
-      Uri.parse(widget.article.url),
+      Uri.parse(widget.url),
       mode: LaunchMode.externalApplication,
     );
   }
@@ -89,10 +124,11 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final appBarTitle = widget.article?.source ?? widget.title;
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.article.source,
+          appBarTitle,
           style: theme.textTheme.titleSmall,
         ),
         actions: [
@@ -142,13 +178,17 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
 
   Widget _buildFallback(ThemeData theme) {
     final article = widget.article;
-    final publishedAt = article.publishedAt ?? article.createdAt;
-    final sourceColor = HSLColor.fromAHSL(
-      1.0,
-      (article.source.hashCode % 360).toDouble().abs(),
-      0.6,
-      0.4,
-    ).toColor();
+    final publishedAt = article?.publishedAt ?? article?.createdAt;
+    final summary = article?.summary;
+    final tags = article?.tags ?? const <String>[];
+    final sourceColor = article == null
+        ? null
+        : HSLColor.fromAHSL(
+            1.0,
+            (article.source.hashCode % 360).toDouble().abs(),
+            0.6,
+            0.4,
+          ).toColor();
     final onSurface = theme.colorScheme.onSurface;
 
     return SingleChildScrollView(
@@ -167,68 +207,71 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Chip(
-                      label: Text(article.source),
-                      backgroundColor: sourceColor.withValues(alpha: 0.15),
-                      labelStyle: TextStyle(
-                        color: sourceColor,
-                        fontWeight: FontWeight.w600,
+                  if (article != null && sourceColor != null) ...[
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Chip(
+                        label: Text(article.source),
+                        backgroundColor: sourceColor.withValues(alpha: 0.15),
+                        labelStyle: TextStyle(
+                          color: sourceColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        side: BorderSide(
+                          color: sourceColor.withValues(alpha: 0.4),
+                        ),
+                        visualDensity: VisualDensity.compact,
                       ),
-                      side: BorderSide(
-                        color: sourceColor.withValues(alpha: 0.4),
-                      ),
-                      visualDensity: VisualDensity.compact,
                     ),
-                  ),
-                  const SizedBox(height: 16),
+                    const SizedBox(height: 16),
+                  ],
                   Text(
-                    article.title,
+                    widget.title,
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                       height: 1.3,
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Text(
-                        _formatDate(publishedAt),
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: onSurface.withValues(alpha: 0.7),
+                  if (publishedAt != null) ...[
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Text(
+                          _formatDate(publishedAt),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: onSurface.withValues(alpha: 0.7),
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        '·',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: onSurface.withValues(alpha: 0.4),
+                        const SizedBox(width: 8),
+                        Text(
+                          '·',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: onSurface.withValues(alpha: 0.4),
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        timeago.format(publishedAt),
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: onSurface.withValues(alpha: 0.7),
+                        const SizedBox(width: 8),
+                        Text(
+                          timeago.format(publishedAt),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: onSurface.withValues(alpha: 0.7),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  if (article.summary != null &&
-                      article.summary!.isNotEmpty) ...[
+                      ],
+                    ),
+                  ],
+                  if (summary != null && summary.isNotEmpty) ...[
                     const SizedBox(height: 20),
                     Text(
-                      article.summary!,
+                      summary,
                       style: theme.textTheme.bodyLarge?.copyWith(height: 1.5),
                     ),
                   ],
-                  if (article.tags.isNotEmpty) ...[
+                  if (tags.isNotEmpty) ...[
                     const SizedBox(height: 16),
                     Wrap(
                       spacing: 6,
                       runSpacing: 4,
-                      children: article.tags
+                      children: tags
                           .map(
                             (t) => Chip(
                               label: Text(t),

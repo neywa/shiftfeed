@@ -21,14 +21,49 @@ void openArticle(
   Article article, {
   bool desktop = false,
 }) {
+  _openInReader(
+    context,
+    url: article.url,
+    desktop: desktop,
+    detailBuilder: () => ArticleDetailScreen(article: article),
+  );
+}
+
+/// Opens an article identified only by its URL (+ optional title)
+/// through the same routing as [openArticle]. Use this when the caller
+/// doesn't have a full [Article], e.g. the AI digest "top stories" list
+/// where each item is a bare `{title, url}` map rather than a row from
+/// the `articles` table.
+///
+/// No-op when [url] is empty so callers don't have to guard a missing
+/// digest URL themselves.
+void openArticleUrl(
+  BuildContext context, {
+  required String url,
+  String? title,
+  bool desktop = false,
+}) {
+  if (url.isEmpty) return;
+  _openInReader(
+    context,
+    url: url,
+    desktop: desktop,
+    detailBuilder: () => ArticleDetailScreen.url(url: url, title: title),
+  );
+}
+
+void _openInReader(
+  BuildContext context, {
+  required String url,
+  required bool desktop,
+  required Widget Function() detailBuilder,
+}) {
   if (kIsWeb || desktop) {
-    launchUrl(Uri.parse(article.url), mode: LaunchMode.externalApplication);
+    launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
   } else {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => ArticleDetailScreen(article: article),
-      ),
+      MaterialPageRoute(builder: (_) => detailBuilder()),
     );
   }
 }
