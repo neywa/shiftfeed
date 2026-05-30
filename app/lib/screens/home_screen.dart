@@ -349,18 +349,26 @@ class _HomeScreenState extends State<HomeScreen> {
     return 'Latest stable versions are ${allButLast.join(', ')} and $last';
   }
 
-  Future<void> _loadArticles({bool reset = false}) async {
+  Future<void> _loadArticles({
+    bool reset = false,
+    bool fromPullToRefresh = false,
+  }) async {
     // On reset we do NOT wipe `_articles` up-front anymore — if the
     // fetch fails (e.g. offline), keeping the previously loaded list
     // visible is far better than blanking the screen and leaving the
     // user with a misleading "No articles yet" empty state.
+    //
+    // When the call comes from a pull-to-refresh, the `RefreshIndicator`
+    // already shows its own spinning ring, so we deliberately leave
+    // `_isLoading` alone — otherwise the in-body `_PollingIndicator`
+    // would render at the same time, producing two overlapping spinners.
     final wasReset = reset;
     final hadArticles = _articles.isNotEmpty;
     if (reset) {
       setState(() {
         _offset = 0;
         _hasMore = true;
-        _isLoading = true;
+        if (!fromPullToRefresh) _isLoading = true;
         _loadFailed = false;
       });
     } else {
@@ -611,7 +619,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 index: _bottomNavIndex,
                 children: [
                   RefreshIndicator(
-                    onRefresh: () => _loadArticles(reset: true),
+                    onRefresh: () =>
+                        _loadArticles(reset: true, fromPullToRefresh: true),
                     color: kRed,
                     backgroundColor: _surface,
                     child: _buildMobileList(),
