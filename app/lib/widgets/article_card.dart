@@ -18,6 +18,7 @@ class ArticleCard extends StatelessWidget {
   final bool showBookmarkButton;
   final bool isBookmarked;
   final VoidCallback? onBookmarkToggle;
+  final ValueChanged<String>? onTagTap;
 
   const ArticleCard({
     super.key,
@@ -27,6 +28,7 @@ class ArticleCard extends StatelessWidget {
     this.showBookmarkButton = false,
     this.isBookmarked = false,
     this.onBookmarkToggle,
+    this.onTagTap,
   });
 
   bool get _isRelease => article.tags.contains('release');
@@ -296,21 +298,16 @@ class ArticleCard extends StatelessWidget {
                         ),
                       ],
                       if (visibleTags.isNotEmpty) ...[
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 8),
                         Wrap(
-                          runSpacing: 4,
+                          spacing: 8,
                           children: [
-                            for (int i = 0; i < visibleTags.length; i++) ...[
-                              if (i > 0) const SizedBox(width: 12),
-                              Text(
-                                '#${visibleTags[i]}',
-                                style: TextStyle(
-                                  color: _tagColor(visibleTags[i]),
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                            for (final tag in visibleTags)
+                              _TagPill(
+                                tag: tag,
+                                color: _tagColor(tag),
+                                onTap: onTagTap,
                               ),
-                            ],
                           ],
                         ),
                       ],
@@ -321,6 +318,42 @@ class ArticleCard extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _TagPill extends StatelessWidget {
+  final String tag;
+  final Color color;
+  final ValueChanged<String>? onTap;
+
+  const _TagPill({
+    required this.tag,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final label = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+      child: Text(
+        '#$tag',
+        style: TextStyle(
+          color: color,
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+    if (onTap == null) return label;
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => onTap!(tag),
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: label,
       ),
     );
   }

@@ -459,6 +459,31 @@ class _HomeScreenState extends State<HomeScreen> {
     openArticle(context, article, desktop: desktop);
   }
 
+  /// Filter the feed by tapping a tag pill on an article card.
+  ///
+  /// Reuses the search box as the single filter surface (same mechanism as
+  /// the desktop "Popular tags" sidebar) so the active filter is visible and
+  /// clearable in one place. On mobile the search bar isn't shown by
+  /// default — opening it here makes the applied `#tag` discoverable.
+  void _onArticleTagTap(String tag) {
+    final tagQuery = '#$tag';
+    if (!_showSearchBar) {
+      setState(() => _showSearchBar = true);
+    }
+    _searchController.text = tagQuery;
+    _searchController.selection = TextSelection.collapsed(
+      offset: tagQuery.length,
+    );
+    _onSearchChanged(tagQuery);
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
   void _openAbout() {
     Navigator.push(
       context,
@@ -935,6 +960,7 @@ class _HomeScreenState extends State<HomeScreen> {
             showBookmarkButton: true,
             isBookmarked: _bookmarkStates[article.url] ?? false,
             onBookmarkToggle: () => _toggleBookmark(article),
+            onTagTap: _onArticleTagTap,
           ),
         );
       },
@@ -1540,6 +1566,7 @@ class _HomeScreenState extends State<HomeScreen> {
             showBookmarkButton: true,
             isBookmarked: _bookmarkStates[article.url] ?? false,
             onBookmarkToggle: () => _toggleBookmark(article),
+            onTagTap: _onArticleTagTap,
           );
         },
       );
@@ -1579,6 +1606,7 @@ class _HomeScreenState extends State<HomeScreen> {
             showBookmarkButton: true,
             isBookmarked: _bookmarkStates[article.url] ?? false,
             onBookmarkToggle: () => _toggleBookmark(article),
+            onTagTap: _onArticleTagTap,
           ),
         );
       },
