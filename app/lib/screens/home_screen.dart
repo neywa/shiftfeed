@@ -296,14 +296,17 @@ class _HomeScreenState extends State<HomeScreen> {
       SnackBar(
         content: Text(
           bookmarked ? 'Article saved' : 'Bookmark removed',
-          style: const TextStyle(fontSize: 13),
+          style: TextStyle(
+            fontSize: 13,
+            color: textPrimaryOf(context),
+          ),
         ),
-        backgroundColor: const Color(0xFF1A1A1A),
+        backgroundColor: surfaceOf(context),
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(6),
-          side: const BorderSide(color: Color(0xFF2A2A2A)),
+          side: BorderSide(color: borderOf(context)),
         ),
       ),
     );
@@ -1647,19 +1650,22 @@ class _HomeScreenState extends State<HomeScreen> {
                             Expanded(
                               child: Text(
                                 summary,
-                                style: const TextStyle(fontSize: 12),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: textPrimaryOf(context),
+                                ),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ],
                         ),
-                        backgroundColor: const Color(0xFF1A1A1A),
+                        backgroundColor: surfaceOf(context),
                         duration: const Duration(seconds: 3),
                         behavior: SnackBarBehavior.floating,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(6),
-                          side: const BorderSide(color: Color(0xFF2A2A2A)),
+                          side: BorderSide(color: borderOf(context)),
                         ),
                       ),
                     );
