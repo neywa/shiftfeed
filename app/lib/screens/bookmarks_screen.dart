@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../models/article.dart';
 import '../repositories/article_repository.dart';
+import '../services/bookmark_article_cache.dart';
 import '../services/bookmark_service.dart';
 import '../services/entitlement_service.dart';
 import '../services/export_service.dart';
@@ -10,6 +11,8 @@ import '../services/user_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/open_article.dart';
 import '../widgets/article_card.dart';
+import '../widgets/error_state.dart';
+import '../widgets/offline_banner.dart';
 import '../widgets/paywall_sheet.dart';
 
 class BookmarksScreen extends StatefulWidget {
@@ -23,6 +26,8 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
   final ArticleRepository _repo = ArticleRepository();
 
   // URL → Article cache used to render rich cards from the URL-only stream.
+  // Hydrated from [BookmarkArticleCache] on initState so the screen is
+  // immediately useful offline; live fetches update it in place.
   final Map<String, Article> _articleCache = {};
 
   // The set of URLs whose Article rows we've already requested in this
@@ -30,20 +35,56 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
   final Set<String> _fetchedUrls = {};
 
   bool _fetchingArticles = false;
+  bool _hydratedFromCache = false;
+  bool _resolveFailed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _hydrateFromCache();
+  }
+
+  Future<void> _hydrateFromCache() async {
+    final cached = await BookmarkArticleCache.instance.load();
+    if (!mounted || cached.isEmpty) {
+      if (mounted) setState(() => _hydratedFromCache = true);
+      return;
+    }
+    setState(() {
+      _articleCache.addAll(cached);
+      _hydratedFromCache = true;
+    });
+  }
 
   Future<void> _resolveMissing(List<String> urls) async {
     final missing = urls.where((u) => !_fetchedUrls.contains(u)).toList();
     if (missing.isEmpty) return;
     _fetchingArticles = true;
     _fetchedUrls.addAll(missing);
-    final articles = await _repo.fetchArticlesByUrls(missing);
-    if (!mounted) return;
-    setState(() {
-      for (final a in articles) {
-        _articleCache[a.url] = a;
-      }
-      _fetchingArticles = false;
-    });
+    try {
+      final articles = await _repo.fetchArticlesByUrls(missing);
+      if (!mounted) return;
+      setState(() {
+        for (final a in articles) {
+          _articleCache[a.url] = a;
+        }
+        _fetchingArticles = false;
+        _resolveFailed = false;
+      });
+      // Persist resolved bodies so the Saved screen is usable offline
+      // on the next cold start. Prune the on-disk cache to the current
+      // bookmark URL list so removed bookmarks don't leak storage.
+      await BookmarkArticleCache.instance.save(articles);
+      await BookmarkArticleCache.instance.pruneToUrls(urls);
+    } on RepoException {
+      if (!mounted) return;
+      // Allow a future call to retry these URLs once back online.
+      _fetchedUrls.removeAll(missing);
+      setState(() {
+        _fetchingArticles = false;
+        _resolveFailed = true;
+      });
+    }
   }
 
   void _openArticle(Article article) {
@@ -192,7 +233,14 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
               child: Container(height: 1, color: kRed),
             ),
           ),
-          body: _buildBody(urls, articles, secondary, muted),
+          body: Column(
+            children: [
+              const OfflineBanner(),
+              Expanded(
+                child: _buildBody(urls, articles, secondary, muted),
+              ),
+            ],
+          ),
         );
       },
     );
@@ -230,10 +278,30 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
       );
     }
 
-    if (articles.isEmpty && _fetchingArticles) {
-      return const Center(
-        child: CircularProgressIndicator(color: kRed),
-      );
+    // Got bookmark URLs but no rendered articles: distinguish three
+    // states so the screen never sits forever on a stuck spinner.
+    if (articles.isEmpty) {
+      // (1) Cache hydration in flight OR a fetch is in flight — short
+      // spinner. Both finish quickly in practice.
+      if (!_hydratedFromCache || _fetchingArticles) {
+        return const Center(
+          child: CircularProgressIndicator(color: kRed),
+        );
+      }
+      // (2) Cache is empty AND the network fetch failed — clear
+      // offline-unavailable message with a retry, NOT a stuck spinner
+      // or a lone upsell banner.
+      if (_resolveFailed) {
+        return ErrorState(
+          title: 'Saved articles unavailable offline',
+          body: 'Open this screen once online to cache your bookmarks '
+              'for offline reading.',
+          onRetry: () {
+            _fetchedUrls.removeAll(urls);
+            _resolveMissing(urls);
+          },
+        );
+      }
     }
 
     return ListView.builder(

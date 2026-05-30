@@ -7,6 +7,8 @@ import '../repositories/article_repository.dart';
 import '../services/export_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/open_article.dart';
+import '../widgets/error_state.dart';
+import '../widgets/offline_banner.dart';
 
 const Color _kSecurityOrange = Color(0xFFFF6600);
 const Color _kReleaseGreen = Color(0xFF00AA44);
@@ -23,6 +25,7 @@ class _DigestScreenState extends State<DigestScreen> {
 
   Digest? _digest;
   bool _isLoading = true;
+  bool _loadFailed = false;
 
   @override
   void initState() {
@@ -31,13 +34,24 @@ class _DigestScreenState extends State<DigestScreen> {
   }
 
   Future<void> _loadDigest() async {
-    setState(() => _isLoading = true);
-    final digest = await _repository.fetchLatestDigest();
-    if (!mounted) return;
     setState(() {
-      _digest = digest;
-      _isLoading = false;
+      _isLoading = true;
+      _loadFailed = false;
     });
+    try {
+      final digest = await _repository.fetchLatestDigest();
+      if (!mounted) return;
+      setState(() {
+        _digest = digest;
+        _isLoading = false;
+      });
+    } on RepoException {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _loadFailed = true;
+      });
+    }
   }
 
   @override
@@ -76,7 +90,12 @@ class _DigestScreenState extends State<DigestScreen> {
           child: Container(height: 1, color: kRed),
         ),
       ),
-      body: _buildBody(context),
+      body: Column(
+        children: [
+          const OfflineBanner(),
+          Expanded(child: _buildBody(context)),
+        ],
+      ),
     );
   }
 
@@ -84,6 +103,14 @@ class _DigestScreenState extends State<DigestScreen> {
     if (_isLoading) {
       return const Center(
         child: CircularProgressIndicator(color: kRed),
+      );
+    }
+
+    if (_loadFailed && _digest == null) {
+      return ErrorState(
+        title: "Couldn't load briefing",
+        body: 'Check your connection and try again.',
+        onRetry: _loadDigest,
       );
     }
 

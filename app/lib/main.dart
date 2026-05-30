@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'screens/home_screen.dart';
+import 'services/connectivity_notifier.dart';
 import 'services/device_token_service.dart';
 import 'services/entitlement_service.dart';
 import 'services/notification_service.dart';
@@ -59,6 +60,11 @@ Future<void> main() async {
   final initialThemeMode = await ThemeNotifier.loadInitial();
   final initialViewMode = await LayoutNotifier.loadInitial();
 
+  // Connectivity service is process-wide; init once here so the first
+  // frame already knows the online state and the offline banner doesn't
+  // flicker in after launch.
+  await ConnectivityNotifier.instance.init();
+
   if (!kIsWeb &&
       (defaultTargetPlatform == TargetPlatform.android ||
           defaultTargetPlatform == TargetPlatform.iOS)) {
@@ -95,6 +101,9 @@ Future<void> main() async {
         ),
         ChangeNotifierProvider<LayoutNotifier>(
           create: (_) => LayoutNotifier(initial: initialViewMode),
+        ),
+        ChangeNotifierProvider<ConnectivityNotifier>.value(
+          value: ConnectivityNotifier.instance,
         ),
       ],
       child: const MyApp(),

@@ -21,6 +21,8 @@ import '../theme/theme_notifier.dart';
 import '../utils/favicons.dart';
 import '../utils/open_article.dart';
 import '../widgets/article_card.dart';
+import '../widgets/error_state.dart';
+import '../widgets/offline_banner.dart';
 import '../widgets/paywall_sheet.dart';
 import 'about_screen.dart';
 import 'bookmarks_screen.dart';
@@ -65,6 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String? _tagFilter;
   String _searchQuery = '';
   bool _isLoading = true;
+  bool _loadFailed = false;
   int _offset = 0;
   bool _hasMore = true;
   int _bottomNavIndex = 0;
@@ -347,39 +350,84 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadArticles({bool reset = false}) async {
+    // On reset we do NOT wipe `_articles` up-front anymore — if the
+    // fetch fails (e.g. offline), keeping the previously loaded list
+    // visible is far better than blanking the screen and leaving the
+    // user with a misleading "No articles yet" empty state.
+    final wasReset = reset;
+    final hadArticles = _articles.isNotEmpty;
     if (reset) {
       setState(() {
-        _articles = [];
-        _filteredArticles = [];
         _offset = 0;
         _hasMore = true;
         _isLoading = true;
+        _loadFailed = false;
       });
     } else {
       setState(() => _isLoading = true);
     }
 
-    final results = await _repository.fetchArticles(
-      limit: _pageSize,
-      offset: _offset,
-      source: _selectedSource,
-      tag: _tagFilter,
-      // Web has no paywall path; treat web users as unlimited so the
-      // free-limit tile (which prompts a paywall that won't render) does
-      // not appear.
-      isPro: _isPro || kIsWeb,
-    );
+    final List<Article> results;
+    try {
+      results = await _repository.fetchArticles(
+        limit: _pageSize,
+        offset: _offset,
+        source: _selectedSource,
+        tag: _tagFilter,
+        // Web has no paywall path; treat web users as unlimited so the
+        // free-limit tile (which prompts a paywall that won't render)
+        // does not appear.
+        isPro: _isPro || kIsWeb,
+      );
+    } on RepoException {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _loadFailed = true;
+      });
+      if (wasReset && hadArticles) {
+        _showRefreshFailedSnack();
+      }
+      // Still refresh the auxiliary widgets — they fail independently
+      // and have their own catch-and-return-empty fallbacks.
+      _loadSourceCounts();
+      _loadScraperStatus();
+      return;
+    }
 
     if (!mounted) return;
     setState(() {
-      _articles.addAll(results);
-      _offset += results.length;
+      if (wasReset) {
+        _articles = List<Article>.from(results);
+      } else {
+        _articles.addAll(results);
+      }
+      _offset = _articles.length;
       _hasMore = results.length == _pageSize;
       _isLoading = false;
     });
     _filterArticles();
     _loadSourceCounts();
     _loadScraperStatus();
+  }
+
+  void _showRefreshFailedSnack() {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          "Couldn't refresh — you may be offline",
+          style: TextStyle(fontSize: 13, color: textPrimaryOf(context)),
+        ),
+        backgroundColor: surfaceOf(context),
+        duration: const Duration(seconds: 3),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(6),
+          side: BorderSide(color: borderOf(context)),
+        ),
+      ),
+    );
   }
 
   List<Article> _applyFilter(List<Article> source) {
@@ -429,7 +477,12 @@ class _HomeScreenState extends State<HomeScreen> {
       _isSearchMode = true;
       _isSearching = true;
     });
-    final results = await _repository.searchArticles(query: query);
+    List<Article> results;
+    try {
+      results = await _repository.searchArticles(query: query);
+    } on RepoException {
+      results = const [];
+    }
     if (!mounted) return;
     setState(() {
       _searchResults = results;
@@ -552,6 +605,7 @@ class _HomeScreenState extends State<HomeScreen> {
         body: Column(
           children: [
             if (isFeed && _showTrialExpiredBanner) _buildTrialBanner(),
+            const OfflineBanner(),
             Expanded(
               child: IndexedStack(
                 index: _bottomNavIndex,
@@ -897,6 +951,23 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
 
+    if (!_isSearchMode &&
+        _filteredArticles.isEmpty &&
+        !_isLoading &&
+        _loadFailed) {
+      return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: [
+          const SizedBox(height: 80),
+          ErrorState(
+            title: "Couldn't reach the server",
+            body: 'Pull to retry, or check your connection.',
+            onRetry: () => _loadArticles(reset: true),
+          ),
+        ],
+      );
+    }
+
     if (!_isSearchMode && _filteredArticles.isEmpty && !_isLoading) {
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
@@ -1012,6 +1083,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Column(
         children: [
           if (_showTrialExpiredBanner) _buildTrialBanner(),
+          const OfflineBanner(),
           Expanded(
             child: Row(
               children: [
@@ -1522,6 +1594,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (!_isSearchMode && _filteredArticles.isEmpty && _isLoading) {
       return const Center(child: _PollingIndicator());
+    }
+
+    if (!_isSearchMode && _filteredArticles.isEmpty && _loadFailed) {
+      return ErrorState(
+        title: "Couldn't reach the server",
+        body: 'Check your connection and try again.',
+        onRetry: () => _loadArticles(reset: true),
+      );
     }
 
     if (!_isSearchMode && _filteredArticles.isEmpty) {

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -7,6 +8,22 @@ import '../models/article.dart';
 import '../models/cve_alert.dart';
 import '../models/digest.dart';
 import '../models/ocp_version.dart';
+
+/// Thrown by [ArticleRepository] when an underlying Supabase / HTTP call
+/// fails. Callers that care about distinguishing "fetch failed (likely
+/// offline)" from "fetch succeeded but returned empty" should catch this
+/// — the original error is preserved in [cause]. Other call sites can
+/// ignore it and the empty/null fallback paths still work via the
+/// methods that haven't opted in to rethrow.
+class RepoException implements Exception {
+  final String operation;
+  final Object cause;
+
+  RepoException(this.operation, this.cause);
+
+  @override
+  String toString() => 'RepoException($operation): $cause';
+}
 
 class ArticleRepository {
   // Read at call time rather than caching — the Supabase Flutter client
@@ -61,9 +78,8 @@ class ArticleRepository {
           .map((row) => Article.fromJson(row as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      // ignore: avoid_print
-      print('fetchArticles error: $e');
-      return [];
+      debugPrint('fetchArticles error: $e');
+      throw RepoException('fetchArticles', e);
     }
   }
 
@@ -101,9 +117,8 @@ class ArticleRepository {
           .map((row) => Article.fromJson(row as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      // ignore: avoid_print
-      print('searchArticles error: $e');
-      return [];
+      debugPrint('searchArticles error: $e');
+      throw RepoException('searchArticles', e);
     }
   }
 
@@ -125,9 +140,8 @@ class ArticleRepository {
           .map((row) => Article.fromJson(row as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      // ignore: avoid_print
-      print('fetchArticlesByUrls error: $e');
-      return [];
+      debugPrint('fetchArticlesByUrls error: $e');
+      throw RepoException('fetchArticlesByUrls', e);
     }
   }
 
@@ -142,9 +156,8 @@ class ArticleRepository {
       if (rows.isEmpty) return null;
       return Digest.fromJson(rows.first as Map<String, dynamic>);
     } catch (e) {
-      // ignore: avoid_print
-      print('fetchLatestDigest error: $e');
-      return null;
+      debugPrint('fetchLatestDigest error: $e');
+      throw RepoException('fetchLatestDigest', e);
     }
   }
 
@@ -180,9 +193,8 @@ class ArticleRepository {
           .map((row) => OcpVersion.fromJson(row as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      // ignore: avoid_print
-      print('fetchOcpVersions error: $e');
-      return [];
+      debugPrint('fetchOcpVersions error: $e');
+      throw RepoException('fetchOcpVersions', e);
     }
   }
 

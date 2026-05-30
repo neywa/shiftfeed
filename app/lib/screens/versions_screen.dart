@@ -6,6 +6,8 @@ import 'package:url_launcher/url_launcher.dart';
 import '../models/ocp_version.dart';
 import '../repositories/article_repository.dart';
 import '../theme/app_theme.dart';
+import '../widgets/error_state.dart';
+import '../widgets/offline_banner.dart';
 
 const Color _kStatusGreen = Color(0xFF00AA44);
 const Color _kStatusAmber = Color(0xFFFFAA00);
@@ -24,6 +26,7 @@ class _VersionsScreenState extends State<VersionsScreen> {
   List<OcpVersion> _versions = [];
   List<Color> _accentColors = [];
   bool _isLoading = true;
+  bool _loadFailed = false;
 
   @override
   void initState() {
@@ -32,23 +35,34 @@ class _VersionsScreenState extends State<VersionsScreen> {
   }
 
   Future<void> _loadVersions() async {
-    setState(() => _isLoading = true);
-    final all = await _repository.fetchOcpVersions();
-    final active = all
-        .where((v) => v.minorInt >= kOcpActiveMinorMinimum)
-        .toList()
-      ..sort((a, b) => b.minorInt.compareTo(a.minorInt));
-
-    final colors = <Color>[
-      for (int i = 0; i < active.length; i++) _accentForIndex(i),
-    ];
-
-    if (!mounted) return;
     setState(() {
-      _versions = active;
-      _accentColors = colors;
-      _isLoading = false;
+      _isLoading = true;
+      _loadFailed = false;
     });
+    try {
+      final all = await _repository.fetchOcpVersions();
+      final active = all
+          .where((v) => v.minorInt >= kOcpActiveMinorMinimum)
+          .toList()
+        ..sort((a, b) => b.minorInt.compareTo(a.minorInt));
+
+      final colors = <Color>[
+        for (int i = 0; i < active.length; i++) _accentForIndex(i),
+      ];
+
+      if (!mounted) return;
+      setState(() {
+        _versions = active;
+        _accentColors = colors;
+        _isLoading = false;
+      });
+    } on RepoException {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _loadFailed = true;
+      });
+    }
   }
 
   Color _accentForIndex(int index) {
@@ -86,7 +100,12 @@ class _VersionsScreenState extends State<VersionsScreen> {
           child: Container(height: 1, color: kRed),
         ),
       ),
-      body: _buildBody(),
+      body: Column(
+        children: [
+          const OfflineBanner(),
+          Expanded(child: _buildBody()),
+        ],
+      ),
     );
   }
 
@@ -94,6 +113,14 @@ class _VersionsScreenState extends State<VersionsScreen> {
     if (_isLoading) {
       return const Center(
         child: CircularProgressIndicator(color: kRed),
+      );
+    }
+
+    if (_loadFailed && _versions.isEmpty) {
+      return ErrorState(
+        title: "Couldn't load versions",
+        body: 'Check your connection and try again.',
+        onRetry: _loadVersions,
       );
     }
 
