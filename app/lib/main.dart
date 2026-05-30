@@ -16,6 +16,7 @@ import 'services/entitlement_service.dart';
 import 'services/notification_service.dart';
 import 'services/user_service.dart';
 import 'theme/app_theme.dart';
+import 'theme/layout_notifier.dart';
 import 'theme/theme_notifier.dart';
 
 // RevenueCat publishable SDK keys — safe to ship in source (mobile SDK keys
@@ -53,6 +54,11 @@ Future<void> main() async {
 
   await Supabase.initialize(url: url, anonKey: anonKey);
 
+  // Load persisted UI prefs before runApp so the first frame already
+  // reflects the user's saved theme + layout — no flash of defaults.
+  final initialThemeMode = await ThemeNotifier.loadInitial();
+  final initialViewMode = await LayoutNotifier.loadInitial();
+
   if (!kIsWeb &&
       (defaultTargetPlatform == TargetPlatform.android ||
           defaultTargetPlatform == TargetPlatform.iOS)) {
@@ -82,8 +88,15 @@ Future<void> main() async {
   }
 
   runApp(
-    ChangeNotifierProvider<ThemeNotifier>(
-      create: (_) => ThemeNotifier(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider<ThemeNotifier>(
+          create: (_) => ThemeNotifier(initial: initialThemeMode),
+        ),
+        ChangeNotifierProvider<LayoutNotifier>(
+          create: (_) => LayoutNotifier(initial: initialViewMode),
+        ),
+      ],
       child: const MyApp(),
     ),
   );

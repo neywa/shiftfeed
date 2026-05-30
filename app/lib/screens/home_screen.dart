@@ -16,6 +16,7 @@ import '../repositories/article_repository.dart';
 import '../services/bookmark_service.dart';
 import '../services/entitlement_service.dart';
 import '../theme/app_theme.dart';
+import '../theme/layout_notifier.dart';
 import '../theme/theme_notifier.dart';
 import '../utils/favicons.dart';
 import '../widgets/article_card.dart';
@@ -32,7 +33,6 @@ const Color _kReleaseGreen = Color(0xFF00AA44);
 const Color _kSecurityOrange = Color(0xFFFF6600);
 const String _kOcpVersionsSource = 'OCP Versions';
 
-enum ViewMode { grid, list }
 
 enum _ScraperStatus { ok, delayed, issue, unknown }
 
@@ -68,7 +68,12 @@ class _HomeScreenState extends State<HomeScreen> {
   int _offset = 0;
   bool _hasMore = true;
   int _bottomNavIndex = 0;
-  ViewMode _viewMode = ViewMode.grid;
+
+  /// Layout mode is owned by [LayoutNotifier] (persisted across launches).
+  /// Reading via [context.watch] in build registers the home screen as a
+  /// dependent so toggling the notifier triggers a rebuild without a
+  /// local setState.
+  ViewMode get _viewMode => context.watch<LayoutNotifier>().mode;
 
   bool _isSearchMode = false;
   List<Article> _searchResults = [];
@@ -629,10 +634,12 @@ class _HomeScreenState extends State<HomeScreen> {
             size: 20,
             color: _textSecondary,
           ),
-          onPressed: () => setState(
-            () => _viewMode =
-                _viewMode == ViewMode.grid ? ViewMode.list : ViewMode.grid,
-          ),
+          onPressed: () {
+            final notifier = context.read<LayoutNotifier>();
+            notifier.setMode(
+              notifier.mode == ViewMode.grid ? ViewMode.list : ViewMode.grid,
+            );
+          },
         ),
         IconButton(
           icon: Stack(
@@ -1375,7 +1382,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(width: 8),
           _ViewToggle(
             viewMode: _viewMode,
-            onChanged: (mode) => setState(() => _viewMode = mode),
+            onChanged: (mode) => context.read<LayoutNotifier>().setMode(mode),
           ),
           const SizedBox(width: 4),
           IconButton(
