@@ -91,6 +91,39 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
     );
   }
 
+  /// Removes [url] from bookmarks and shows a theme-aware SnackBar with
+  /// an Undo action that re-adds it via [BookmarkService.addBookmark].
+  /// Used by both the in-card bookmark icon and the swipe-to-dismiss
+  /// gesture so the two removal paths behave consistently.
+  void _removeWithUndo(BuildContext context, String url) {
+    final messenger = ScaffoldMessenger.of(context);
+    BookmarkService.instance.removeBookmark(url);
+    messenger.hideCurrentSnackBar();
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(
+          'Removed from saved',
+          style: TextStyle(
+            fontSize: 13,
+            color: textPrimaryOf(context),
+          ),
+        ),
+        backgroundColor: surfaceOf(context),
+        duration: const Duration(seconds: 4),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(6),
+          side: BorderSide(color: borderOf(context)),
+        ),
+        action: SnackBarAction(
+          label: 'Undo',
+          textColor: kRed,
+          onPressed: () => BookmarkService.instance.addBookmark(url),
+        ),
+      ),
+    );
+  }
+
   Future<void> _showClearConfirmation() async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -223,14 +256,15 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
             color: Colors.red.withValues(alpha: 0.8),
             child: const Icon(Icons.delete_outline, color: Colors.white),
           ),
-          onDismissed: (_) {
-            BookmarkService.instance.removeBookmark(article.url);
-          },
+          onDismissed: (_) => _removeWithUndo(context, article.url),
           child: Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: ArticleCard(
               article: article,
               onTap: () => _openArticle(article),
+              showBookmarkButton: true,
+              isBookmarked: true,
+              onBookmarkToggle: () => _removeWithUndo(context, article.url),
             ),
           ),
         );
