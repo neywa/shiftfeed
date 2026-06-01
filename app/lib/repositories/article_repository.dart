@@ -8,6 +8,7 @@ import '../models/article.dart';
 import '../models/cve_alert.dart';
 import '../models/digest.dart';
 import '../models/ocp_version.dart';
+import '../services/user_service.dart';
 
 /// Thrown by [ArticleRepository] when an underlying Supabase / HTTP call
 /// fails. Callers that care about distinguishing "fetch failed (likely
@@ -34,17 +35,40 @@ class ArticleRepository {
 
   bool _hasReachedFreeLimit = false;
 
+  // Defense-in-depth visibility filter for `articles` reads. This MIRRORS
+  // the two Supabase RLS select policies on the table — global rows
+  // (`submitted_by IS NULL`) plus the signed-in user's own custom-feed
+  // rows (`submitted_by = auth.uid()`) — so the client never even
+  // requests another user's custom-feed rows. RLS remains the
+  // authoritative security boundary; this is a second layer so a future
+  // RLS misconfiguration can't silently leak custom feeds. The current
+  // user is re-read at call time (like `_client`) so a mid-session
+  // sign-in / sign-out is reflected immediately.
+  PostgrestFilterBuilder<T> _visibleToCurrentUser<T>(
+    PostgrestFilterBuilder<T> query,
+  ) {
+    final uid = UserService.instance.currentUser?.id;
+    if (uid == null) {
+      // Signed out: global rows only.
+      return query.filter('submitted_by', 'is', null);
+    }
+    // Signed in: global rows + this user's own custom rows.
+    return query.or('submitted_by.is.null,submitted_by.eq.$uid');
+  }
+
   /// True when a free-tier caller hit the page-2 wall on the most recent
   /// [fetchArticles] call. Reset whenever a fresh `offset = 0` page is
   /// fetched.
   bool get hasReachedFreeLimit => _hasReachedFreeLimit;
 
-  // Feed visibility is controlled by Supabase RLS on the articles table:
+  // Feed visibility is enforced by Supabase RLS on the articles table:
   //   - Unauthenticated / free users: only global articles
   //     (submitted_by IS NULL).
   //   - Authenticated Pro users: global + their own custom-feed articles.
-  // No explicit filter needed here — the JWT in the Supabase client
-  // determines what rows are returned.
+  // RLS (via the JWT in the Supabase client) is authoritative; the
+  // `_visibleToCurrentUser` filter applied below mirrors those policies as
+  // a defense-in-depth guardrail so a future RLS regression can't leak
+  // another user's custom feed.
   Future<List<Article>> fetchArticles({
     int limit = 50,
     int offset = 0,
@@ -60,7 +84,7 @@ class ArticleRepository {
       _hasReachedFreeLimit = false;
     }
     try {
-      var query = _client.from('articles').select();
+      var query = _visibleToCurrentUser(_client.from('articles').select());
 
       if (source != null) {
         query = query.eq('source', source);
@@ -91,9 +115,9 @@ class ArticleRepository {
       if (query.startsWith('#')) {
         final tag = query.substring(1).toLowerCase().trim();
         if (tag.isEmpty) return [];
-        final response = await _client
-            .from('articles')
-            .select()
+        final response = await _visibleToCurrentUser(
+          _client.from('articles').select(),
+        )
             .contains('tags', [tag])
             .order('published_at', ascending: false)
             .limit(limit);
@@ -102,9 +126,9 @@ class ArticleRepository {
             .toList();
       }
 
-      final response = await _client
-          .from('articles')
-          .select()
+      final response = await _visibleToCurrentUser(
+        _client.from('articles').select(),
+      )
           .textSearch(
             'search_vector',
             query,
@@ -131,9 +155,9 @@ class ArticleRepository {
   Future<List<Article>> fetchArticlesByUrls(List<String> urls) async {
     if (urls.isEmpty) return [];
     try {
-      final response = await _client
-          .from('articles')
-          .select()
+      final response = await _visibleToCurrentUser(
+        _client.from('articles').select(),
+      )
           .inFilter('url', urls)
           .order('published_at', ascending: false, nullsFirst: false);
       return (response as List)
@@ -203,10 +227,9 @@ class ArticleRepository {
           .subtract(Duration(days: days))
           .toUtc()
           .toIso8601String();
-      final response = await _client
-          .from('articles')
-          .select('source')
-          .gte('published_at', since);
+      final response = await _visibleToCurrentUser(
+        _client.from('articles').select('source'),
+      ).gte('published_at', since);
       final list = response as List;
       final counts = <String, int>{};
       for (final row in list) {
@@ -227,10 +250,9 @@ class ArticleRepository {
           .subtract(Duration(days: days))
           .toUtc()
           .toIso8601String();
-      final response = await _client
-          .from('articles')
-          .select('tags')
-          .gte('published_at', since);
+      final response = await _visibleToCurrentUser(
+        _client.from('articles').select('tags'),
+      ).gte('published_at', since);
 
       final list = response as List;
       final tagCounts = <String, int>{};
@@ -299,7 +321,9 @@ class ArticleRepository {
 
   Future<List<String>> fetchSources() async {
     try {
-      final response = await _client.from('articles').select('source');
+      final response = await _visibleToCurrentUser(
+        _client.from('articles').select('source'),
+      );
       final sources = (response as List)
           .map((row) => (row as Map<String, dynamic>)['source'] as String)
           .toSet()
