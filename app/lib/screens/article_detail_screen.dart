@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_android/webview_flutter_android.dart';
 
 import '../models/article.dart';
 
@@ -20,6 +21,21 @@ String _formatDate(DateTime d) {
 // articles (see scraper/sources/ocp_versions.py).
 const String _kOcpVersionsSource = 'OCP Versions';
 final RegExp _kOcpPatchVersionPattern = RegExp(r'\b4\.\d+\.\d+\b');
+
+/// Whether [raw] is an `http`/`https` URL that is safe to load in the
+/// WebView or hand to the external browser.
+///
+/// A custom-feed article's link is the feed entry `<link>`, controlled by
+/// a third-party feed operator. A `javascript:`, `data:`, `file://` or
+/// custom-scheme link would otherwise execute inside the WebView (JS is
+/// enabled) or read local files, so every other scheme is refused — both
+/// for the initial load and for in-page navigations/redirects.
+bool _isSafeWebUrl(String raw) {
+  final uri = Uri.tryParse(raw);
+  if (uri == null) return false;
+  final scheme = uri.scheme.toLowerCase();
+  return scheme == 'http' || scheme == 'https';
+}
 
 /// Returns the OpenShift Release Status dashboard URL for [article], or
 /// null if the article isn't from the OCP Versions scraper or no
@@ -78,6 +94,11 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
   bool _isLoading = true;
   WebViewController? _controller;
 
+  /// True when the article URL used an unsupported (non-http/https) scheme
+  /// so we refused to load it into the WebView and showed the safe
+  /// fallback card instead. Only ever set on WebView-capable platforms.
+  bool _blockedUnsafeScheme = false;
+
   /// Computed once from [Article.title] + [Article.summary]. Non-null only
   /// for OCP Versions articles where a patch version was extractable —
   /// always null when the screen was opened via [ArticleDetailScreen.url].
@@ -94,21 +115,71 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
   void initState() {
     super.initState();
     if (_supportsWebView) {
-      _controller = WebViewController()
-        ..setJavaScriptMode(JavaScriptMode.unrestricted)
-        ..setNavigationDelegate(
-          NavigationDelegate(
-            onPageFinished: (_) {
-              if (!mounted) return;
-              setState(() => _isLoading = false);
-            },
-          ),
-        )
-        ..loadRequest(Uri.parse(widget.url));
+      _initWebView();
     }
   }
 
+  void _initWebView() {
+    // Refuse to load anything but http/https. The article URL can be an
+    // attacker-controlled custom-feed link; loading a javascript:/data:/
+    // file:// scheme here would execute it in the WebView. Fall back to
+    // the article card + "open in browser" affordance instead.
+    if (!_isSafeWebUrl(widget.url)) {
+      _blockedUnsafeScheme = true;
+      return;
+    }
+
+    // Use Android-specific creation params so file access can be locked
+    // down below; other platforms get the default params.
+    final params = WebViewPlatform.instance is AndroidWebViewPlatform
+        ? AndroidWebViewControllerCreationParams()
+        : const PlatformWebViewControllerCreationParams();
+
+    final controller = WebViewController.fromPlatformCreationParams(params)
+      // Many article pages need JS to render (lazy images, CMS shells), so
+      // JS stays unrestricted for readability — but the scheme check above
+      // and the onNavigationRequest below bound what URLs can ever load.
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          // Block in-page redirects/links to non-http(s) schemes
+          // (javascript:, data:, file://, intent://, custom schemes);
+          // allow normal http/https article browsing.
+          onNavigationRequest: (request) => _isSafeWebUrl(request.url)
+              ? NavigationDecision.navigate
+              : NavigationDecision.prevent,
+          onPageFinished: (_) {
+            if (!mounted) return;
+            setState(() => _isLoading = false);
+          },
+        ),
+      );
+
+    // Android: disable filesystem access so a file:// URL that somehow
+    // reaches the WebView can't read local files. The related
+    // allowFileAccessFromFileURLs / allowUniversalAccessFromFileURLs
+    // settings aren't surfaced by webview_flutter_android and already
+    // default to false on modern Android; file:// is also blocked at the
+    // navigation layer above.
+    final platform = controller.platform;
+    if (platform is AndroidWebViewController) {
+      platform.setAllowFileAccess(false);
+    }
+
+    controller.loadRequest(Uri.parse(widget.url));
+    _controller = controller;
+  }
+
   Future<void> _openInBrowser() async {
+    // The escape hatch must not become a bypass: never hand a non-http(s)
+    // (e.g. javascript:/file://) article URL to the external launcher.
+    if (!_isSafeWebUrl(widget.url)) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("This link can't be opened safely.")),
+      );
+      return;
+    }
     await launchUrl(
       Uri.parse(widget.url),
       mode: LaunchMode.externalApplication,
@@ -148,7 +219,9 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
           ),
         ],
       ),
-      body: _supportsWebView ? _buildWebView() : _buildFallback(theme),
+      body: (_supportsWebView && _controller != null)
+          ? _buildWebView()
+          : _buildFallback(theme),
     );
   }
 
@@ -196,6 +269,37 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          if (_blockedUnsafeScheme) ...[
+            Card(
+              elevation: 0,
+              color: theme.colorScheme.errorContainer,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.shield_outlined,
+                      color: theme.colorScheme.onErrorContainer,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'This link uses an unsupported address and was not '
+                        'opened in the reader for your safety.',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onErrorContainer,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
           Card(
             elevation: 0,
             shape: RoundedRectangleBorder(
