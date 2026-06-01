@@ -4,6 +4,7 @@ import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../release_info.dart';
 import '../services/alert_rule_service.dart';
 import '../services/custom_rss_service.dart';
 import '../services/digest_pref_service.dart';
@@ -342,8 +343,12 @@ class _AppVersionText extends StatelessWidget {
         }
         // package_info_plus already separates `version` (semver) from
         // `buildNumber`, but defensively split on '+' in case a future
-        // platform returns a combined string.
-        return Text('v${raw.split('+').first}', style: style);
+        // platform returns a combined string. The release codename comes
+        // from the ritual-owned constant in release_info.dart.
+        return Text(
+          'v${raw.split('+').first} · $kReleaseName',
+          style: style,
+        );
       },
     );
   }
