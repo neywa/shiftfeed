@@ -82,8 +82,10 @@ Two stacked auth systems on the app side:
 
 RLS rules:
 - All `user_*` tables: `select`/`all` policy = `auth.uid() = user_id`. The anon key sees nothing without a session JWT.
-- `articles` (after [phase6_custom_rss.sql](app/lib/sql/phase6_custom_rss.sql)): two select policies — global rows where `submitted_by IS NULL` are visible to everyone; rows where `submitted_by = auth.uid()` are visible only to the owner.
+- `articles` (after [phase6_custom_rss.sql](app/lib/sql/phase6_custom_rss.sql)): two select policies — global rows where `submitted_by IS NULL` are visible to everyone; rows where `submitted_by = auth.uid()` are visible only to the owner. **History:** a legacy broad `using (true)` select policy once OR-combined with these and leaked one user's custom feed into the global firehose — when touching `articles` policies, make sure no permissive `using (true)` survives alongside them.
 - The scraper uses the service-role key (`SUPABASE_SECRET_KEY`) which bypasses RLS entirely — no insert/update policies are needed for it.
+
+**Client-side mirror of the `articles` RLS policies.** Every `articles` read in [article_repository.dart](app/lib/repositories/article_repository.dart) is wrapped in `_visibleToCurrentUser()`, which applies `submitted_by IS NULL` (signed out) or `submitted_by.is.null,submitted_by.eq.<uid>` (signed in) as defense-in-depth. RLS is still authoritative — this is a second layer so a future RLS regression can't silently leak custom feeds. If you change the `articles` select policies, change this helper to match (and vice-versa); they are a paired contract.
 
 When adding a new per-user feature: add the table with `user_id uuid references auth.users(id) on delete cascade`, the matching RLS policy, and a singleton service that guards every method on `UserService.instance.currentUser?.id` (no-op when null). Pattern: see [alert_rule_service.dart](app/lib/services/alert_rule_service.dart) or [custom_rss_service.dart](app/lib/services/custom_rss_service.dart).
 
@@ -147,7 +149,7 @@ Never put the service-role key in `app/assets/.env` — that file ships inside t
 
 [app/android/app/build.gradle.kts](app/android/app/build.gradle.kts) reads `app/android/key.properties` (gitignored) for the release keystore at `keystore/shiftfeed-keystore.jks` (also gitignored — both paths are explicitly excluded in `.gitignore`). If `key.properties` is absent, release builds fall back to the debug signing config — useful locally, never for Play Store uploads.
 
-When building a release AAB, follow the ritual in ~/coding/skills/flutter-aab-release.md
+When building a release AAB, follow the ritual in ~/coding/skills/flutter-aab-release.md. The version is tracked in three places that the ritual keeps in sync: `version: x.y.z+b` in [app/pubspec.yaml](app/pubspec.yaml), the `kAppVersion` / `kBuildNumber` / `kReleaseName` constants in [app/lib/release_info.dart](app/lib/release_info.dart) (rendered on the About screen alongside the live `package_info_plus` version), and a new row in [app/RELEASES.md](app/RELEASES.md). Codenames are alliterative and advance one letter per release.
 
 ### CI
 
