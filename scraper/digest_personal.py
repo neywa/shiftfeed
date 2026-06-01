@@ -52,6 +52,9 @@ def _deliver_for_user(
     digest_text = generator.generate_filtered(
         categories=pref.categories or None,  # None ⇒ all
         target_date=date.today(),
+        # Scope custom-feed visibility to this recipient: their own feeds
+        # are eligible, no one else's leaks into their briefing.
+        owner_id=pref.user_id,
     )
 
     if not digest_text:

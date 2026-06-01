@@ -8,11 +8,11 @@ version = "0.1.0"
 description = "OpenShift News Aggregator scraper"
 requires-python = ">=3.11"
 dependencies = [
-    "feedparser>=6.0,<7",
+    "feedparser>=6.0.12,<7",
     "httpx>=0.27,<0.28",
     "supabase>=2.0,<3",
     "python-dotenv>=1.0,<2",
-    "beautifulsoup4>=4.12,<5",
+    "beautifulsoup4>=4.14.3,<5",
     "google-auth>=2.0",
     "pyyaml>=6.0",
 ]

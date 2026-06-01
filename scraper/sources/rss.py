@@ -10,6 +10,7 @@ import feedparser
 from bs4 import BeautifulSoup
 
 from scraper.models import Article
+from scraper.sources.safe_fetch import FeedFetchError, fetch_feed_bytes
 
 _logger = logging.getLogger(__name__)
 
@@ -83,10 +84,24 @@ def _html_to_plain_text(html: str) -> str | None:
 
 def fetch_rss_articles(url: str, source: str, tags: list[str]) -> list[Article]:
     articles: list[Article] = []
+    # Fetch the bytes ourselves through the SSRF/DoS guard rather than
+    # letting feedparser do unguarded network I/O (it would follow
+    # redirects, ignore timeouts, and resolve file://). Returns [] on any
+    # blocked/failed fetch — never raises — so curated fetch_all_rss and
+    # per-user feeds keep their existing failure-isolation contract.
     try:
-        feed = feedparser.parse(url)
+        content = fetch_feed_bytes(url)
+    except FeedFetchError as e:
+        _logger.warning("Blocked or failed feed fetch %s: %s", url, e)
+        return articles
     except Exception:
-        _logger.exception("Failed to fetch or parse RSS feed: %s", url)
+        _logger.exception("Failed to fetch RSS feed: %s", url)
+        return articles
+
+    try:
+        feed = feedparser.parse(content)
+    except Exception:
+        _logger.exception("Failed to parse RSS feed: %s", url)
         return articles
 
     for entry in feed.entries:
