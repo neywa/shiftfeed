@@ -55,7 +55,23 @@
       "Bash(python -m py_compile scraper/sources/security.py scraper/sources/digest_prefs.py scraper/digest.py scraper/digest_personal.py scraper/main.py)",
       "Bash(find ~/.pub-cache/hosted/pub.dev/flutter_timezone-* -maxdepth 2 -name \"flutter_timezone.dart\")",
       "Bash(python -m py_compile scraper/models.py scraper/sources/rss.py scraper/sources/user_rss.py scraper/main.py)",
-      "Bash(xargs cat *)"
+      "Bash(xargs cat *)",
+      "Bash(magick -list format)",
+      "Bash(magick assets/icon.svg -background white -alpha remove -resize 1024x1024 -strip assets/icon.png)",
+      "Bash(magick identify *)",
+      "Bash(magick assets/icon.svg -background white -alpha remove -resize 1024x1024 -depth 8 -strip assets/icon.png)",
+      "Bash(magick assets/icon.png -resize 32x32 -depth 8 -strip web/favicon.png)",
+      "Bash(magick assets/icon.png -resize 192x192 -depth 8 -strip web/icons/Icon-192.png)",
+      "Bash(magick assets/icon.png -resize 512x512 -depth 8 -strip web/icons/Icon-512.png)",
+      "Bash(magick assets/icon.png -resize 154x154 -background white -gravity center -extent 192x192 -depth 8 -strip web/icons/Icon-maskable-192.png)",
+      "Bash(magick assets/icon.png -resize 410x410 -background white -gravity center -extent 512x512 -depth 8 -strip web/icons/Icon-maskable-512.png)",
+      "Bash(magick assets/icon.png -format \"%[pixel:p{0,0}] %[pixel:p{1023,0}] %[pixel:p{0,1023}] %[pixel:p{1023,1023}]\\\\n\" info:)",
+      "Bash(magick assets/icon.png -format \"left-mid: %[pixel:p{5,512}] right-mid: %[pixel:p{1018,512}] top-mid: %[pixel:p{512,5}] bottom-mid: %[pixel:p{512,1018}]\\\\n\" info:)",
+      "Bash(git commit *)",
+      "Bash(ls lib/utils/)",
+      "Bash(head -10 lib/utils/favicons.dart)",
+      "Bash(git stash *)",
+      "Bash(git restore *)"
     ]
   }
 }
