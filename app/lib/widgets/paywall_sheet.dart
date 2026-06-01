@@ -176,13 +176,22 @@ class _PaywallSheetState extends State<PaywallSheet> {
 
   Future<void> _onRestore() async {
     if (_busy) return;
+    // Pro requires a signed-in session (see EntitlementService.isPro), so a
+    // restore on an anonymous session would report success yet leave every
+    // gated feature locked. Force sign-in first — mirrors _onStartTrial — so
+    // the restored entitlement is aliased to the Supabase user via linkUser.
+    if (!UserService.instance.isSignedIn) {
+      final didSignIn = await AuthSheet.show(context);
+      if (!mounted) return;
+      if (!didSignIn) return;
+    }
     setState(() => _busy = true);
     final messenger = ScaffoldMessenger.of(context);
     try {
       final info = await EntitlementService.instance.restorePurchases();
       if (!mounted) return;
       final hasPro =
-          info.entitlements.active.containsKey('shiftfed-pro-entitlement');
+          info.entitlements.active.containsKey(kProEntitlementId);
       messenger.showSnackBar(
         SnackBar(
           content: Text(

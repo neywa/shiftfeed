@@ -17,7 +17,7 @@ import 'user_service.dart';
 
 /// Identifier of the single Pro entitlement configured in the RevenueCat
 /// dashboard.
-const String _kProEntitlementId = 'shiftfed-pro-entitlement';
+const String kProEntitlementId = 'shiftfed-pro-entitlement';
 
 /// SharedPreferences key for the debug-only PRO override flag.
 const String _kDevProOverridePref = 'dev_pro_override';
@@ -151,7 +151,7 @@ class EntitlementService extends ChangeNotifier {
     if (UserService.instance.currentUser == null) return false;
     try {
       final info = await Purchases.getCustomerInfo();
-      return info.entitlements.active.containsKey(_kProEntitlementId);
+      return info.entitlements.active.containsKey(kProEntitlementId);
     } catch (_) {
       return false;
     }
@@ -168,7 +168,7 @@ class EntitlementService extends ChangeNotifier {
     try {
       final info = await Purchases.getCustomerInfo();
       final hasActivePro =
-          info.entitlements.active.containsKey(_kProEntitlementId);
+          info.entitlements.active.containsKey(kProEntitlementId);
       if (hasActivePro) return false;
       return info.allPurchasedProductIdentifiers.isNotEmpty;
     } catch (_) {

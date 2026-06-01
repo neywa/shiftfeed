@@ -89,6 +89,12 @@ Future<void> main() async {
     final isPro = await EntitlementService.instance.isPro();
     await NotificationService.applyTopicSubscriptions(isPro: isPro);
 
+    // Pro can now flip mid-session (sign-in/out as well as purchase/restore),
+    // so keep FCM topic subscriptions reconciled with entitlement instead of
+    // only applying them once at startup. Registered after the line above so
+    // the startup linkUser inside UserService.init() doesn't double-trigger.
+    EntitlementService.instance.addListener(_reapplyTopicSubscriptions);
+
     final token = await messaging.getToken();
     debugPrint('FCM Token: $token');
   }
@@ -109,6 +115,29 @@ Future<void> main() async {
       child: const MyApp(),
     ),
   );
+}
+
+// Serializes topic reconciliation triggered by EntitlementService changes.
+// _topicsDirty re-runs the loop if another change lands mid-reconcile so the
+// last-applied state always reflects the latest entitlement.
+bool _reapplyingTopics = false;
+bool _topicsDirty = false;
+
+Future<void> _reapplyTopicSubscriptions() async {
+  _topicsDirty = true;
+  if (_reapplyingTopics) return;
+  _reapplyingTopics = true;
+  try {
+    while (_topicsDirty) {
+      _topicsDirty = false;
+      final isPro = await EntitlementService.instance.isPro();
+      await NotificationService.applyTopicSubscriptions(isPro: isPro);
+    }
+  } catch (e) {
+    debugPrint('Topic re-subscription failed: $e');
+  } finally {
+    _reapplyingTopics = false;
+  }
 }
 
 class MyApp extends StatefulWidget {
