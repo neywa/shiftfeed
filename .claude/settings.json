@@ -71,7 +71,15 @@
       "Bash(ls lib/utils/)",
       "Bash(head -10 lib/utils/favicons.dart)",
       "Bash(git stash *)",
-      "Bash(git restore *)"
+      "Bash(git restore *)",
+      "Bash(grep -E '\\\\.env$|firebase-service-account|key\\\\.properties|\\\\.jks$|google-services\\\\.json|GoogleService-Info')",
+      "Bash(git grep *)",
+      "Bash(python -c \"import supabase,postgrest,httpx,feedparser,bs4; print\\('supabase',supabase.__version__\\); print\\('postgrest',postgrest.__version__\\); print\\('httpx',httpx.__version__\\); print\\('feedparser',feedparser.__version__\\); print\\('bs4',bs4.__version__\\)\")",
+      "Bash(python -m py_compile scraper/sources/safe_fetch.py scraper/sources/rss.py scraper/digest.py scraper/digest_personal.py)",
+      "Bash(python -)",
+      "Bash(grep -nA3 \"webview_flutter_android:\" pubspec.lock)",
+      "Bash(git --no-pager log --oneline -3)",
+      "Bash(git --no-pager log --oneline -6)"
     ]
   }
 }
