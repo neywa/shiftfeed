@@ -36,3 +36,6 @@ keystore/
 
 # Supabase RLS hardening — keep private to avoid publishing the attack surface
 supabase/rls_policies.sql
+
+# Local manual testing notes — not shared
+manual_testing.md
