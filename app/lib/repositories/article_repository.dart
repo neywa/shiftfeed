@@ -189,9 +189,8 @@ class ArticleRepository {
       // lex sort puts '4.9' before '4.18'. Both call sites (versions
       // screen, home sidebar) re-sort numerically by `minorInt` anyway.
       final response = await _client.from('ocp_versions').select();
-      return (response as List)
-          .map((row) => OcpVersion.fromJson(row as Map<String, dynamic>))
-          .toList();
+      // Tolerant per-row parse: one malformed row is skipped, not fatal.
+      return OcpVersion.parseList(response as List);
     } catch (e) {
       debugPrint('fetchOcpVersions error: $e');
       throw RepoException('fetchOcpVersions', e);

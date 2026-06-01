@@ -289,9 +289,17 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadOcpVersions() async {
-    final versions = await _repository.fetchOcpVersions();
-    if (!mounted) return;
-    setState(() => _ocpVersions = versions);
+    // Mirror the Versions screen's error handling: a failed fetch must not
+    // become an uncaught throw in this fire-and-forget future. On failure the
+    // sidebar keeps whatever it had (empty at launch) and logs, rather than
+    // silently swallowing an exception or disagreeing unpredictably.
+    try {
+      final versions = await _repository.fetchOcpVersions();
+      if (!mounted) return;
+      setState(() => _ocpVersions = versions);
+    } on RepoException catch (e) {
+      debugPrint('HomeScreen: OCP versions load failed: $e');
+    }
   }
 
   Future<void> _loadCveAlerts() async {
@@ -644,7 +652,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     backgroundColor: _surface,
                     child: _buildMobileList(),
                   ),
-                  const VersionsScreen(),
+                  VersionsScreen(isActive: _bottomNavIndex == 1),
                   const BookmarksScreen(),
                   const AboutScreen(),
                 ],

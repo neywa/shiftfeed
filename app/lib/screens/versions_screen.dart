@@ -14,7 +14,14 @@ const Color _kStatusAmber = Color(0xFFFFAA00);
 const Color _kStatusGrey = Color(0xFF555555);
 
 class VersionsScreen extends StatefulWidget {
-  const VersionsScreen({super.key});
+  /// Whether this screen is the visible tab. Inside the mobile
+  /// `IndexedStack` the State is kept alive, so `initState` runs only once
+  /// at launch; the parent flips this when the Versions tab is selected so a
+  /// previously-empty/failed load can self-heal on revisit. Defaults to true
+  /// for the desktop push-route case where the screen is built fresh.
+  final bool isActive;
+
+  const VersionsScreen({super.key, this.isActive = true});
 
   @override
   State<VersionsScreen> createState() => _VersionsScreenState();
@@ -34,6 +41,22 @@ class _VersionsScreenState extends State<VersionsScreen> {
     _loadVersions();
   }
 
+  @override
+  void didUpdateWidget(VersionsScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Self-heal: the IndexedStack keeps this State alive, so initState only
+    // ran once at launch. When the tab becomes visible again, re-attempt a
+    // load that previously came up empty or failed. Skip the refetch when
+    // data is already valid or a load is in flight (avoids hammering on
+    // every tab tap).
+    if (!oldWidget.isActive &&
+        widget.isActive &&
+        !_isLoading &&
+        (_versions.isEmpty || _loadFailed)) {
+      _loadVersions();
+    }
+  }
+
   Future<void> _loadVersions() async {
     setState(() {
       _isLoading = true;
@@ -41,6 +64,9 @@ class _VersionsScreenState extends State<VersionsScreen> {
     });
     try {
       final all = await _repository.fetchOcpVersions();
+      // All post-fetch transformation lives inside the try so any throw here
+      // (an unexpected row shape, a bad minor) routes to the recoverable
+      // ErrorState rather than falling through to a silent grey blank.
       final active = all
           .where((v) => v.minorInt >= kOcpActiveMinorMinimum)
           .toList()
@@ -57,6 +83,15 @@ class _VersionsScreenState extends State<VersionsScreen> {
         _isLoading = false;
       });
     } on RepoException {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _loadFailed = true;
+      });
+    } catch (e) {
+      // Any non-repo failure (post-fetch transformation error) — surface as
+      // the recoverable error state, never a silent blank or stuck spinner.
+      debugPrint('VersionsScreen: load transform error: $e');
       if (!mounted) return;
       setState(() {
         _isLoading = false;
@@ -134,6 +169,16 @@ class _VersionsScreenState extends State<VersionsScreen> {
             Text(
               'No version data available',
               style: TextStyle(color: textSecondaryOf(context)),
+            ),
+            const SizedBox(height: 16),
+            OutlinedButton.icon(
+              onPressed: _loadVersions,
+              icon: const Icon(Icons.refresh, size: 16),
+              label: const Text('Retry'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: kRed,
+                side: BorderSide(color: kRed.withValues(alpha: 0.5)),
+              ),
             ),
           ],
         ),
