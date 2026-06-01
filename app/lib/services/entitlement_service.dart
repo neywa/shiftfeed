@@ -13,6 +13,8 @@ import 'package:flutter/services.dart' show PlatformException;
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'user_service.dart';
+
 /// Identifier of the single Pro entitlement configured in the RevenueCat
 /// dashboard.
 const String _kProEntitlementId = 'shiftfed-pro-entitlement';
@@ -55,7 +57,14 @@ class EntitlementUnknownException extends EntitlementException {
   const EntitlementUnknownException(super.message);
 }
 
-class EntitlementService {
+/// Extends [ChangeNotifier] so paywall-gated UI can refresh the moment
+/// entitlement may have changed. [notifyListeners] is fired after every
+/// operation that can flip Pro — [linkUser] / [unlinkUser] (sign-in /
+/// sign-out) and [purchasePackage] / [restorePurchases]. Crucially the
+/// sign-in notification fires *after* `Purchases.logIn` has settled the
+/// RevenueCat identity, so a listener that re-reads [isPro] sees the
+/// signed-in user's entitlement rather than a stale anonymous one.
+class EntitlementService extends ChangeNotifier {
   EntitlementService._();
   static final EntitlementService _instance = EntitlementService._();
   static EntitlementService get instance => _instance;
@@ -120,6 +129,15 @@ class EntitlementService {
   /// Returns true if the user currently has the `pro` entitlement active
   /// (covers both an active free trial and a paid subscription).
   ///
+  /// Pro follows the authenticated user: Pro is granted only when a Supabase
+  /// user is signed in AND RevenueCat reports the entitlement active. An
+  /// anonymous (signed-out) session is never Pro — otherwise a reinstall
+  /// would let the store auto-restore a purchase onto a fresh anonymous
+  /// RevenueCat ID and unlock Pro without anyone signing in. Every paying
+  /// user is aliased to their Supabase id via [linkUser] at purchase time,
+  /// so requiring a session never locks out a legitimate buyer (they just
+  /// sign back in, or tap Restore which leads to the same place).
+  ///
   /// In debug builds, the dev override (toggled via the long-press on
   /// the app title) short-circuits to true. Returns false on web or on
   /// any error querying RevenueCat — callers should treat false as
@@ -130,6 +148,7 @@ class EntitlementService {
       if (_devProOverride) return true;
     }
     if (!_supported) return false;
+    if (UserService.instance.currentUser == null) return false;
     try {
       final info = await Purchases.getCustomerInfo();
       return info.entitlements.active.containsKey(_kProEntitlementId);
@@ -140,9 +159,12 @@ class EntitlementService {
 
   /// Returns true if the user previously purchased something but no longer
   /// holds the `pro` entitlement — i.e. a trial or subscription that has
-  /// expired.
+  /// expired. Gated on a signed-in session for the same reason as [isPro]:
+  /// a signed-out user must not see a trial-expired banner derived from an
+  /// anonymous, store-restored purchase history.
   Future<bool> hasExpiredTrial() async {
     if (!_supported) return false;
+    if (UserService.instance.currentUser == null) return false;
     try {
       final info = await Purchases.getCustomerInfo();
       final hasActivePro =
@@ -170,7 +192,9 @@ class EntitlementService {
   /// [EntitlementException] for any other failure.
   Future<CustomerInfo> purchasePackage(Package package) async {
     try {
-      return await Purchases.purchasePackage(package);
+      final info = await Purchases.purchasePackage(package);
+      notifyListeners();
+      return info;
     } catch (e) {
       throw _mapPurchaseError(e);
     }
@@ -179,6 +203,10 @@ class EntitlementService {
   /// Links this device's RevenueCat anonymous ID to the authenticated
   /// Supabase user. Must be called after a successful Supabase sign-in.
   /// Safe to call multiple times — RC deduplicates.
+  ///
+  /// Notifies listeners once `logIn` has settled so gated UI re-reads
+  /// [isPro] against the now-identified RevenueCat user (not the anonymous
+  /// one). Fires even if `logIn` failed so listeners still re-evaluate.
   Future<void> linkUser(String userId) async {
     if (kIsWeb) return;
     try {
@@ -186,9 +214,11 @@ class EntitlementService {
     } catch (e) {
       debugPrint('[EntitlementService] logIn failed: $e');
     }
+    notifyListeners();
   }
 
   /// Unlinks the user from RevenueCat on sign-out, reverting to anonymous.
+  /// Notifies listeners so gated UI re-locks immediately.
   Future<void> unlinkUser() async {
     if (kIsWeb) return;
     try {
@@ -196,6 +226,7 @@ class EntitlementService {
     } catch (e) {
       debugPrint('[EntitlementService] logOut failed: $e');
     }
+    notifyListeners();
   }
 
   /// Returns the current RevenueCat App User ID — the value testers
@@ -216,7 +247,9 @@ class EntitlementService {
   /// Restores prior purchases for the current store account.
   Future<CustomerInfo> restorePurchases() async {
     try {
-      return await Purchases.restorePurchases();
+      final info = await Purchases.restorePurchases();
+      notifyListeners();
+      return info;
     } catch (e) {
       throw _mapPurchaseError(e);
     }

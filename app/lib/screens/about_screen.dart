@@ -599,6 +599,31 @@ class _TopicRow {
   const _TopicRow(this.topic, this.label, this.icon);
 }
 
+/// Mixin for paywall-gated sections that cache an [EntitlementService.isPro]
+/// future in `_proCheck`. Re-reads that future whenever entitlement may have
+/// changed (sign-in / sign-out, purchase, restore) via the
+/// [EntitlementService] notifier — Pro now requires an authenticated session,
+/// so the gated UI must lock on sign-out and unlock on sign-in without
+/// restarting the app. Listening to the notifier (rather than the raw auth
+/// stream) means the refresh fires after `Purchases.logIn` has settled, so a
+/// returning Pro user's entitlement resolves correctly on sign-in.
+mixin _EntitlementRefresh<T extends StatefulWidget> on State<T> {
+  /// Re-read and store the entitlement future, inside a setState.
+  void _refreshProCheck();
+
+  void _listenForEntitlementChanges() {
+    EntitlementService.instance.addListener(_onEntitlementChanged);
+  }
+
+  void _stopListeningForEntitlementChanges() {
+    EntitlementService.instance.removeListener(_onEntitlementChanged);
+  }
+
+  void _onEntitlementChanged() {
+    if (mounted) _refreshProCheck();
+  }
+}
+
 class _AlertRulesSection extends StatefulWidget {
   const _AlertRulesSection();
 
@@ -606,15 +631,24 @@ class _AlertRulesSection extends StatefulWidget {
   State<_AlertRulesSection> createState() => _AlertRulesSectionState();
 }
 
-class _AlertRulesSectionState extends State<_AlertRulesSection> {
+class _AlertRulesSectionState extends State<_AlertRulesSection>
+    with _EntitlementRefresh {
   Future<bool>? _proCheck;
 
   @override
   void initState() {
     super.initState();
     _proCheck = EntitlementService.instance.isPro();
+    _listenForEntitlementChanges();
   }
 
+  @override
+  void dispose() {
+    _stopListeningForEntitlementChanges();
+    super.dispose();
+  }
+
+  @override
   void _refreshProCheck() {
     setState(() {
       _proCheck = EntitlementService.instance.isPro();
@@ -1017,7 +1051,8 @@ class _DigestScheduleSection extends StatefulWidget {
   State<_DigestScheduleSection> createState() => _DigestScheduleSectionState();
 }
 
-class _DigestScheduleSectionState extends State<_DigestScheduleSection> {
+class _DigestScheduleSectionState extends State<_DigestScheduleSection>
+    with _EntitlementRefresh {
   Future<bool>? _proCheck;
   Future<DigestPrefs>? _prefsFuture;
 
@@ -1026,6 +1061,20 @@ class _DigestScheduleSectionState extends State<_DigestScheduleSection> {
     super.initState();
     _proCheck = EntitlementService.instance.isPro();
     _prefsFuture = DigestPrefService.instance.getPrefs();
+    _listenForEntitlementChanges();
+  }
+
+  @override
+  void dispose() {
+    _stopListeningForEntitlementChanges();
+    super.dispose();
+  }
+
+  @override
+  void _refreshProCheck() {
+    setState(() {
+      _proCheck = EntitlementService.instance.isPro();
+    });
   }
 
   void _refreshPrefs() {
@@ -1037,9 +1086,7 @@ class _DigestScheduleSectionState extends State<_DigestScheduleSection> {
   Future<void> _showPaywall() async {
     await PaywallSheet.show(context, reason: PaywallReason.briefing);
     if (!mounted) return;
-    setState(() {
-      _proCheck = EntitlementService.instance.isPro();
-    });
+    _refreshProCheck();
   }
 
   Future<void> _openSheet(DigestPrefs prefs) async {
@@ -1445,21 +1492,34 @@ class _CustomFeedsSection extends StatefulWidget {
   State<_CustomFeedsSection> createState() => _CustomFeedsSectionState();
 }
 
-class _CustomFeedsSectionState extends State<_CustomFeedsSection> {
+class _CustomFeedsSectionState extends State<_CustomFeedsSection>
+    with _EntitlementRefresh {
   Future<bool>? _proCheck;
 
   @override
   void initState() {
     super.initState();
     _proCheck = EntitlementService.instance.isPro();
+    _listenForEntitlementChanges();
+  }
+
+  @override
+  void dispose() {
+    _stopListeningForEntitlementChanges();
+    super.dispose();
+  }
+
+  @override
+  void _refreshProCheck() {
+    setState(() {
+      _proCheck = EntitlementService.instance.isPro();
+    });
   }
 
   Future<void> _showPaywall() async {
     await PaywallSheet.show(context, reason: PaywallReason.briefing);
     if (!mounted) return;
-    setState(() {
-      _proCheck = EntitlementService.instance.isPro();
-    });
+    _refreshProCheck();
   }
 
   Future<void> _confirmDelete(CustomRssSource source) async {

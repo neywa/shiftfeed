@@ -113,6 +113,24 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadScraperStatus();
     _bootstrapEntitlement();
     _loadBookmarkStates();
+    EntitlementService.instance.addListener(_onEntitlementChanged);
+  }
+
+  /// Fired by [EntitlementService] when entitlement may have changed
+  /// (sign-in / sign-out, purchase, restore). Pro now requires an
+  /// authenticated session, so a sign-out re-locks gated UI and a sign-in
+  /// unlocks it — without restarting the app.
+  void _onEntitlementChanged() {
+    if (mounted) _refreshProAndReload();
+  }
+
+  /// Re-reads entitlement and reloads the feed so history pagination and any
+  /// Pro-gated rows reflect the new state.
+  Future<void> _refreshProAndReload() async {
+    final isPro = await EntitlementService.instance.isPro();
+    if (!mounted) return;
+    if (isPro != _isPro) setState(() => _isPro = isPro);
+    await _loadArticles(reset: true);
   }
 
   Future<void> _bootstrapEntitlement() async {
@@ -239,6 +257,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _scrollController.dispose();
     _searchController.dispose();
     _searchDebounce?.cancel();
+    EntitlementService.instance.removeListener(_onEntitlementChanged);
     super.dispose();
   }
 
