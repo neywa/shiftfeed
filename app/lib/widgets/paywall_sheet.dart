@@ -7,6 +7,8 @@
 /// brand red used as the accent.
 library;
 
+import 'dart:io' show Platform;
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
@@ -60,12 +62,8 @@ class PaywallSheet extends StatefulWidget {
       'Get alerted the moment a critical CVE drops.';
   static const String _kReasonSync = 'Your bookmarks, everywhere you are.';
 
-  // ---- Renewal disclosure (Google Play Subscriptions policy) ----
+  // ---- Renewal disclosure (store subscription policy) ----
 
-  static const String _kSmallPrint =
-      'Subscription auto-renews unless cancelled at least 24 hours before '
-      'the end of the current period. Manage or cancel in your Google Play '
-      'account settings.';
   static const String _kPrivacyLabel = 'Privacy Policy';
   static const String _kPrivacyUrl =
       'https://neywa.github.io/app-privacy-policies/shiftfeed/';
@@ -558,8 +556,22 @@ class _PaywallSheetState extends State<PaywallSheet> {
     );
   }
 
-  /// Google-Play-compliant renewal disclosure for the selected plan, built
-  /// from live store data. Only rendered once offerings have loaded
+  /// Store name for the renewal disclosure, named per platform so the copy is
+  /// store-policy compliant. Returns a form that slots after "in ...".
+  String get _storeName {
+    if (kIsWeb) return 'your account settings'; // sheet never renders on web
+    if (Platform.isIOS) return 'the App Store';
+    if (Platform.isAndroid) return 'Google Play';
+    return 'your account settings'; // neutral fallback — never name a wrong store
+  }
+
+  /// Auto-renewal small print, with the store name resolved per platform.
+  String get _smallPrint =>
+      'Subscription auto-renews unless cancelled at least 24 hours before '
+      'the end of the current period. Manage or cancel in $_storeName.';
+
+  /// Store-compliant renewal disclosure for the selected plan, built from live
+  /// store data. Only rendered once offerings have loaded
   /// ([_PlanPricing.fromSdk]).
   Widget _disclosure(
     _PlanPricing pricing,
@@ -570,9 +582,9 @@ class _PaywallSheetState extends State<PaywallSheet> {
     final renewal = trial != null
         ? '${trial.label} free trial, then '
             '${pricing.priceString}/${pricing.periodLabel}. Auto-renews. '
-            'Cancel anytime in Google Play before the trial ends.'
+            'Cancel anytime in $_storeName before the trial ends.'
         : '${pricing.priceString}/${pricing.periodLabel}. Auto-renews. '
-            'Cancel anytime in Google Play.';
+            'Cancel anytime in $_storeName.';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -582,7 +594,7 @@ class _PaywallSheetState extends State<PaywallSheet> {
         ),
         const SizedBox(height: 6),
         Text(
-          PaywallSheet._kSmallPrint,
+          _smallPrint,
           style: TextStyle(color: textMuted, fontSize: 10, height: 1.4),
         ),
         const SizedBox(height: 6),
