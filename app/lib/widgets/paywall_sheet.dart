@@ -10,6 +10,7 @@ library;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../services/entitlement_service.dart';
 import '../services/user_service.dart';
@@ -27,7 +28,6 @@ class PaywallSheet extends StatefulWidget {
   // ---- User-visible strings (kept static for easy future l10n) ----
 
   static const String _kTitle = 'ShiftFeed Pro';
-  static const String _kSubtitle = '14-day free trial';
 
   static const String _kBulletNotifications =
       'Custom CVE & release alerts — your rules, your signal';
@@ -45,6 +45,7 @@ class PaywallSheet extends StatefulWidget {
   static const String _kSavingsBadge = 'Save 40%';
 
   static const String _kCtaStartTrial = 'Start Free Trial';
+  static const String _kCtaSubscribe = 'Subscribe';
   static const String _kCtaRestore = 'Restore purchase';
 
   static const String _kSnackWelcome = 'Welcome to Pro 🎉';
@@ -58,6 +59,16 @@ class PaywallSheet extends StatefulWidget {
   static const String _kReasonNotifications =
       'Get alerted the moment a critical CVE drops.';
   static const String _kReasonSync = 'Your bookmarks, everywhere you are.';
+
+  // ---- Renewal disclosure (Google Play Subscriptions policy) ----
+
+  static const String _kSmallPrint =
+      'Subscription auto-renews unless cancelled at least 24 hours before '
+      'the end of the current period. Manage or cancel in your Google Play '
+      'account settings.';
+  static const String _kPrivacyLabel = 'Privacy Policy';
+  static const String _kPrivacyUrl =
+      'https://neywa.github.io/app-privacy-policies/shiftfeed/';
 
   /// Shows the paywall as a modal bottom sheet. No-op on web — the SDK
   /// short-circuits Pro to false there and the magic-link auth flow is
@@ -82,6 +93,79 @@ class PaywallSheet extends StatefulWidget {
 }
 
 enum _PlanChoice { monthly, annual }
+
+/// Per-package free-trial descriptor derived from the live store product.
+/// [label] is display-ready, e.g. "14-day", "2-week".
+class _TrialInfo {
+  final String label;
+  final bool isFree;
+  const _TrialInfo(this.label, this.isFree);
+}
+
+/// Display-ready pricing for one plan, assembled from the RevenueCat
+/// [StoreProduct]. [fromSdk] is false while offerings are still loading — in
+/// that placeholder state a trial is never reported.
+class _PlanPricing {
+  final String priceString;
+  final String periodLabel;
+  final _TrialInfo? trial;
+  final bool fromSdk;
+  const _PlanPricing({
+    required this.priceString,
+    required this.periodLabel,
+    required this.trial,
+    required this.fromSdk,
+  });
+}
+
+/// Singular noun for a billing-period unit.
+String _unitSingular(PeriodUnit unit) {
+  switch (unit) {
+    case PeriodUnit.day:
+      return 'day';
+    case PeriodUnit.week:
+      return 'week';
+    case PeriodUnit.month:
+      return 'month';
+    case PeriodUnit.year:
+      return 'year';
+    case PeriodUnit.unknown:
+      return 'period';
+  }
+}
+
+/// Formats a trial duration as `n-unit` (e.g. "14-day", "2-week").
+String _trialLabel(PeriodUnit unit, int value) =>
+    '$value-${_unitSingular(unit)}';
+
+/// Noun form of a recurring billing period for display after "/": singular
+/// for a single unit ("month"), pluralised otherwise ("3 months").
+String _periodNoun(PeriodUnit unit, int value) {
+  final singular = _unitSingular(unit);
+  return value == 1 ? singular : '$value ${singular}s';
+}
+
+/// Parses an ISO-8601 subscription period ("P14D", "P2W", "P1M", "P1Y")
+/// into a (unit, value) pair, or null if unrecognised. Used for the
+/// String-only SDK fields (StoreProduct.subscriptionPeriod,
+/// IntroductoryPrice.period).
+(PeriodUnit, int)? _parseIsoPeriod(String iso) {
+  final match = RegExp(r'^P(\d+)([DWMY])$').firstMatch(iso);
+  if (match == null) return null;
+  final value = int.tryParse(match.group(1)!);
+  if (value == null) return null;
+  switch (match.group(2)) {
+    case 'D':
+      return (PeriodUnit.day, value);
+    case 'W':
+      return (PeriodUnit.week, value);
+    case 'M':
+      return (PeriodUnit.month, value);
+    case 'Y':
+      return (PeriodUnit.year, value);
+  }
+  return null;
+}
 
 class _PaywallSheetState extends State<PaywallSheet> {
   _PlanChoice _plan = _PlanChoice.annual;
@@ -112,17 +196,108 @@ class _PaywallSheetState extends State<PaywallSheet> {
     return null;
   }
 
-  /// Store-localised price for [choice], falling back to the hardcoded
-  /// USD strings while offerings are still loading or if RevenueCat fails.
-  String _priceFor(_PlanChoice choice) {
+  /// Assembles display-ready pricing for [choice] from the live store
+  /// product. While offerings are still loading (or RevenueCat failed) the
+  /// result is a placeholder — [_PlanPricing.fromSdk] is false and no trial
+  /// is ever reported.
+  _PlanPricing _pricingFor(_PlanChoice choice) {
     final pkg = _packageFor(choice);
-    if (pkg != null) {
-      final unit = choice == _PlanChoice.annual ? 'year' : 'month';
-      return '${pkg.storeProduct.priceString} / $unit';
+    if (pkg == null) {
+      return _PlanPricing(
+        priceString: choice == _PlanChoice.annual
+            ? PaywallSheet._kPriceAnnual
+            : PaywallSheet._kPriceMonthly,
+        periodLabel: '',
+        trial: null,
+        fromSdk: false,
+      );
     }
-    return choice == _PlanChoice.annual
-        ? PaywallSheet._kPriceAnnual
-        : PaywallSheet._kPriceMonthly;
+    final sp = pkg.storeProduct;
+    return _PlanPricing(
+      priceString: sp.priceString,
+      periodLabel: _recurringPeriodLabel(sp, choice),
+      trial: _detectTrial(sp),
+      fromSdk: true,
+    );
+  }
+
+  /// Store-localised "price / period" for [choice]. Falls back to the
+  /// hardcoded USD placeholder (which already carries its own "/ unit"
+  /// suffix) while offerings load.
+  String _priceFor(_PlanChoice choice) {
+    final p = _pricingFor(choice);
+    if (!p.fromSdk) return p.priceString;
+    return '${p.priceString} / ${p.periodLabel}';
+  }
+
+  /// First subscription option for [sp] (Android), or null on iOS / when the
+  /// product exposes none. Prefers the SDK's [StoreProduct.defaultOption].
+  SubscriptionOption? _primaryOption(StoreProduct sp) {
+    final options = sp.subscriptionOptions;
+    return sp.defaultOption ??
+        (options != null && options.isNotEmpty ? options.first : null);
+  }
+
+  /// Returns the free-trial descriptor for [sp], or null when the product has
+  /// no trial. Reads Android base-plan pricing phases first, then falls back
+  /// to the iOS [StoreProduct.introductoryPrice].
+  _TrialInfo? _detectTrial(StoreProduct sp) {
+    final option = _primaryOption(sp);
+    if (option != null) {
+      PricingPhase? freePhase = option.freePhase;
+      if (freePhase == null) {
+        for (final phase in option.pricingPhases) {
+          if (phase.offerPaymentMode == OfferPaymentMode.freeTrial ||
+              phase.price.amountMicros == 0) {
+            freePhase = phase;
+            break;
+          }
+        }
+      }
+      final period = freePhase?.billingPeriod;
+      if (period != null) {
+        return _TrialInfo(_trialLabel(period.unit, period.value), true);
+      }
+    }
+    final intro = sp.introductoryPrice;
+    if (intro != null && intro.price == 0) {
+      return _TrialInfo(
+        _trialLabel(intro.periodUnit, intro.periodNumberOfUnits),
+        true,
+      );
+    }
+    return null;
+  }
+
+  /// Human-readable recurring billing period ("month", "year", "3 months")
+  /// derived from the SDK — only falls back to the plan suffix when every SDK
+  /// source is missing.
+  String _recurringPeriodLabel(StoreProduct sp, _PlanChoice choice) {
+    final option = _primaryOption(sp);
+    if (option != null) {
+      Period? period = option.fullPricePhase?.billingPeriod;
+      if (period == null) {
+        for (final phase in option.pricingPhases) {
+          if (phase.price.amountMicros > 0 && phase.billingPeriod != null) {
+            period = phase.billingPeriod;
+          }
+        }
+      }
+      if (period != null) return _periodNoun(period.unit, period.value);
+    }
+    final iso = sp.subscriptionPeriod;
+    if (iso != null) {
+      final parsed = _parseIsoPeriod(iso);
+      if (parsed != null) return _periodNoun(parsed.$1, parsed.$2);
+    }
+    return choice == _PlanChoice.annual ? 'year' : 'month';
+  }
+
+  Future<void> _openPrivacy() async {
+    await launchUrl(
+      Uri.parse(PaywallSheet._kPrivacyUrl),
+      mode: LaunchMode.externalApplication,
+    );
   }
 
   String get _reasonTagline {
@@ -233,6 +408,11 @@ class _PaywallSheetState extends State<PaywallSheet> {
     final textMuted = isDark ? kTextMuted : kLightTextMuted;
     final border = isDark ? kBorder : kLightBorder;
 
+    // Drives the trial subtitle, CTA label and renewal disclosure entirely
+    // from the selected plan's live store data. Recomputed every build, so
+    // switching Monthly/Annual tiles updates all three.
+    final selected = _pricingFor(_plan);
+
     return Container(
       decoration: BoxDecoration(
         color: surface,
@@ -284,13 +464,14 @@ class _PaywallSheetState extends State<PaywallSheet> {
                         fontWeight: FontWeight.w800,
                       ),
                     ),
-                    Text(
-                      PaywallSheet._kSubtitle,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: kRed,
-                        fontWeight: FontWeight.w600,
+                    if (selected.trial != null)
+                      Text(
+                        '${selected.trial!.label} free trial',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: kRed,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),
@@ -330,6 +511,10 @@ class _PaywallSheetState extends State<PaywallSheet> {
             isDark: isDark,
           ),
           const SizedBox(height: 16),
+          if (selected.fromSdk) ...[
+            _disclosure(selected, textSecondary, textMuted),
+            const SizedBox(height: 14),
+          ],
           SizedBox(
             height: 48,
             child: FilledButton(
@@ -355,7 +540,9 @@ class _PaywallSheetState extends State<PaywallSheet> {
                         strokeWidth: 2,
                       ),
                     )
-                  : const Text(PaywallSheet._kCtaStartTrial),
+                  : Text(selected.trial != null
+                      ? PaywallSheet._kCtaStartTrial
+                      : PaywallSheet._kCtaSubscribe),
             ),
           ),
           const SizedBox(height: 4),
@@ -368,6 +555,50 @@ class _PaywallSheetState extends State<PaywallSheet> {
           ),
         ],
       ),
+    );
+  }
+
+  /// Google-Play-compliant renewal disclosure for the selected plan, built
+  /// from live store data. Only rendered once offerings have loaded
+  /// ([_PlanPricing.fromSdk]).
+  Widget _disclosure(
+    _PlanPricing pricing,
+    Color textSecondary,
+    Color textMuted,
+  ) {
+    final trial = pricing.trial;
+    final renewal = trial != null
+        ? '${trial.label} free trial, then '
+            '${pricing.priceString}/${pricing.periodLabel}. Auto-renews. '
+            'Cancel anytime in Google Play before the trial ends.'
+        : '${pricing.priceString}/${pricing.periodLabel}. Auto-renews. '
+            'Cancel anytime in Google Play.';
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          renewal,
+          style: TextStyle(color: textSecondary, fontSize: 11, height: 1.4),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          PaywallSheet._kSmallPrint,
+          style: TextStyle(color: textMuted, fontSize: 10, height: 1.4),
+        ),
+        const SizedBox(height: 6),
+        GestureDetector(
+          onTap: _openPrivacy,
+          child: Text(
+            PaywallSheet._kPrivacyLabel,
+            style: const TextStyle(
+              color: kRed,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              decoration: TextDecoration.underline,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
