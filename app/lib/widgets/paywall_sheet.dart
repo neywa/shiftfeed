@@ -44,7 +44,6 @@ class PaywallSheet extends StatefulWidget {
   static const String _kPlanAnnualLabel = 'Annual';
   static const String _kPriceMonthly = '\$8.99 / month';
   static const String _kPriceAnnual = '\$64.99 / year';
-  static const String _kSavingsBadge = 'Save 40%';
 
   static const String _kCtaStartTrial = 'Start Free Trial';
   static const String _kCtaSubscribe = 'Subscribe';
@@ -650,7 +649,6 @@ class _PaywallSheetState extends State<PaywallSheet> {
             choice: _PlanChoice.monthly,
             label: PaywallSheet._kPlanMonthlyLabel,
             price: _priceFor(_PlanChoice.monthly),
-            badge: null,
             textPrimary: textPrimary,
             textSecondary: textSecondary,
             border: border,
@@ -663,7 +661,6 @@ class _PaywallSheetState extends State<PaywallSheet> {
             choice: _PlanChoice.annual,
             label: PaywallSheet._kPlanAnnualLabel,
             price: _priceFor(_PlanChoice.annual),
-            badge: PaywallSheet._kSavingsBadge,
             textPrimary: textPrimary,
             textSecondary: textSecondary,
             border: border,
@@ -678,7 +675,6 @@ class _PaywallSheetState extends State<PaywallSheet> {
     required _PlanChoice choice,
     required String label,
     required String price,
-    required String? badge,
     required Color textPrimary,
     required Color textSecondary,
     required Color border,
@@ -704,40 +700,14 @@ class _PaywallSheetState extends State<PaywallSheet> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Text(
-                    label,
-                    style: TextStyle(
-                      color: textPrimary,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                  if (badge != null) ...[
-                    const SizedBox(width: 6),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: kRed,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        badge,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 9,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
+              Text(
+                label,
+                style: TextStyle(
+                  color: textPrimary,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.5,
+                ),
               ),
               const SizedBox(height: 6),
               Text(
