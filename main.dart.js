@@ -101536,7 +101536,7 @@ if(q!=null){A.fm().$1("[About] PackageInfo.fromPlatform failed: "+A.h(q))
 return B.b_}q=b.b
 s=q==null?r:q.c
 if(s==null)return A.ax(" ",r,r,r,r,this.a.c,r,r)
-return A.ax("v"+B.l.gR(s.split("+"))+" \xb7 Jetstream Junction",r,r,r,r,this.a.c,r,r)},
+return A.ax("v"+B.l.gR(s.split("+"))+" \xb7 Kubelet Keystone",r,r,r,r,this.a.c,r,r)},
 $S:637}
 A.Kk.prototype={
 ai(){return new A.a1S()}}
