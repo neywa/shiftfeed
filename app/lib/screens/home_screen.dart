@@ -26,8 +26,8 @@ import '../widgets/error_state.dart';
 import '../widgets/main_app_bar.dart';
 import '../widgets/offline_banner.dart';
 import '../widgets/paywall_sheet.dart';
-import 'about_screen.dart';
 import 'bookmarks_screen.dart';
+import 'settings_screen.dart';
 import 'submit_screen.dart';
 import 'versions_screen.dart';
 
@@ -573,10 +573,10 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void _openAbout() {
+  void _openSettings() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => const AboutScreen()),
+      MaterialPageRoute(builder: (_) => const SettingsScreen()),
     );
   }
 
@@ -646,7 +646,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     isActive: _bottomNavIndex == 2,
                     isTab: true,
                   ),
-                  const AboutScreen(isTab: true),
+                  const SettingsScreen(isTab: true),
                 ],
               ),
             ),
@@ -1428,7 +1428,7 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
             icon: Icon(Icons.settings, color: _textSecondary),
             tooltip: 'About',
-            onPressed: _openAbout,
+            onPressed: _openSettings,
           ),
           const SizedBox(width: 8),
           Consumer<ThemeNotifier>(

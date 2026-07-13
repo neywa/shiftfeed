@@ -3,6 +3,7 @@ import 'package:timeago/timeago.dart' as timeago;
 
 import '../models/article.dart';
 import '../theme/app_theme.dart';
+import '../theme/text_metrics.dart';
 import '../utils/favicons.dart';
 
 const _kReleaseGreen = Color(0xFF00AA44);
@@ -31,28 +32,12 @@ const _kSummaryHeight = 1.5;
 const _kGapCompact = 8.0;
 const _kGapFull = 16.0;
 
-// The strips, per em, for text with an explicit `height` — measured off a device
-// screenshot rather than derived from IBM Plex Sans's nominal metrics. As
-// google_fonts renders it, the visible top is the ascender (~0.73em, not the
-// 0.698em cap height) and the descent runs deeper than nominal; deriving these
-// from the published numbers was wrong by up to 0.9dp.
-const _kFontBox = 1.3; // the font's natural line box
-const _kInkTopEm = 0.292; // ascent -> first glyph row
-const _kInkBottomEm = 0.32; // baseline -> box bottom
-
-/// Blank strip inside a [Text]'s line box, above its glyphs.
-/// [height] is the style's line-height multiplier; its extra leading splits
-/// evenly top and bottom (every [Text] here sets leadingDistribution.even).
-double _inkTop(double size, double height) =>
-    (height - _kFontBox) * size / 2 + _kInkTopEm * size;
-
-/// Blank strip inside a [Text]'s line box, below its baseline.
-double _inkBottom(double size, double height) =>
-    (height - _kFontBox) * size / 2 + _kInkBottomEm * size;
+// The ink strips inside a line box — see theme/text_metrics.dart, which the
+// Settings screen shares.
 
 // The tag pill sets no `height`, so Flutter uses the font's own line metrics
-// (which carry a leading the multiplier would otherwise replace) and the two
-// formulas above do not apply. Measured directly instead.
+// (which carry a leading the multiplier would otherwise replace) and
+// inkTop/inkBottom do not apply. Measured directly instead.
 const _kTagInkTop = 3.60;
 const _kTagInkBottom = 3.56;
 
@@ -249,10 +234,10 @@ class ArticleCard extends StatelessWidget {
     // and the card edges are real boxes, so they contribute no strip.
     final gap = compact ? _kGapCompact : _kGapFull;
     final titleHeight = compact ? _kTitleHeightCompact : _kTitleHeightFull;
-    final titleInkTop = _inkTop(_kTitleSize, titleHeight);
-    final titleInkBottom = _inkBottom(_kTitleSize, titleHeight);
-    final summaryInkTop = _inkTop(_kSummarySize, _kSummaryHeight);
-    final summaryInkBottom = _inkBottom(_kSummarySize, _kSummaryHeight);
+    final titleInkTop = inkTop(_kTitleSize, titleHeight);
+    final titleInkBottom = inkBottom(_kTitleSize, titleHeight);
+    final summaryInkTop = inkTop(_kSummarySize, _kSummaryHeight);
+    final summaryInkBottom = inkBottom(_kSummarySize, _kSummaryHeight);
     // The full card keeps the tag pill's 4dp padding (16dp of space can absorb
     // it); the compact card drops it — see _TagPill.
     final tagPadding = compact ? 0.0 : 4.0;
