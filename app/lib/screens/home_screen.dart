@@ -23,11 +23,11 @@ import '../utils/open_article.dart';
 import '../widgets/article_card.dart';
 import '../widgets/brand_title.dart';
 import '../widgets/error_state.dart';
+import '../widgets/main_app_bar.dart';
 import '../widgets/offline_banner.dart';
 import '../widgets/paywall_sheet.dart';
 import 'about_screen.dart';
 import 'bookmarks_screen.dart';
-import 'digest_screen.dart';
 import 'submit_screen.dart';
 import 'versions_screen.dart';
 
@@ -580,22 +580,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Future<void> _openDigest() async {
-    final isPro = await EntitlementService.instance.isPro();
-    if (!mounted) return;
-    // On web there is no functional paywall and Pro is unattainable;
-    // the curated daily briefing is otherwise free content, so just let
-    // web users through to the digest screen.
-    if (!isPro && !kIsWeb) {
-      await PaywallSheet.show(context, reason: PaywallReason.briefing);
-      await _refreshProAfterPaywall();
-      return;
-    }
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const DigestScreen()),
-    );
-  }
+  Future<void> _openDigest() => openDigest(context);
 
   void _openVersions() {
     Navigator.push(
@@ -655,13 +640,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   VersionsScreen(
                     isActive: _bottomNavIndex == 1,
-                    showBrandTitle: true,
+                    isTab: true,
                   ),
                   BookmarksScreen(
                     isActive: _bottomNavIndex == 2,
-                    showBrandTitle: true,
+                    isTab: true,
                   ),
-                  const AboutScreen(showBrandTitle: true),
+                  const AboutScreen(isTab: true),
                 ],
               ),
             ),
@@ -705,76 +690,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   PreferredSizeWidget _buildMobileAppBar() {
     if (_showSearchBar) return _buildMobileSearchAppBar();
-    return AppBar(
-      automaticallyImplyLeading: false,
-      titleSpacing: 16,
-      title: BrandTitle(onLongPress: kDebugMode ? _toggleDevPro : null),
-      actions: [
-        IconButton(
-          icon: Icon(Icons.search, color: _textSecondary, size: 20),
-          onPressed: () => setState(() => _showSearchBar = true),
-          tooltip: 'Search',
-        ),
-        IconButton(
-          icon: Icon(
-            _viewMode == ViewMode.grid
-                ? Icons.view_list_rounded
-                : Icons.grid_view_rounded,
-            size: 20,
-            color: _textSecondary,
-          ),
-          onPressed: () {
-            final notifier = context.read<LayoutNotifier>();
-            notifier.setMode(
-              notifier.mode == ViewMode.grid ? ViewMode.list : ViewMode.grid,
-            );
-          },
-        ),
-        IconButton(
-          icon: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Icon(Icons.auto_awesome, size: 20, color: _textSecondary),
-              Positioned(
-                top: 0,
-                right: 0,
-                child: Container(
-                  width: 6,
-                  height: 6,
-                  decoration: const BoxDecoration(
-                    color: kRed,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          onPressed: _openDigest,
-          tooltip: 'AI Briefing',
-        ),
-        Consumer<ThemeNotifier>(
-          builder: (context, notifier, _) => IconButton(
-            icon: Icon(
-              notifier.isDark ? Icons.light_mode : Icons.dark_mode,
-              size: 20,
-              color: _textSecondary,
-            ),
-            onPressed: notifier.toggle,
-          ),
-        ),
-        const SizedBox(width: 8),
-      ],
-      bottom: PreferredSize(
-        // 1px divider + the chip row's 8px top/bottom padding + the chips.
-        preferredSize: Size.fromHeight(1 + 16 + _mobileChipHeight),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(height: 1, color: kRed),
-            _buildMobileFilterChips(),
-          ],
-        ),
-      ),
+    return MainAppBar(
+      onSearch: () => setState(() => _showSearchBar = true),
+      viewToggleEnabled: true,
+      onBrandLongPress: kDebugMode ? _toggleDevPro : null,
+      bottom: _buildMobileFilterChips(),
+      // The chip row's 8px top/bottom padding plus the chips themselves.
+      bottomHeight: 16 + _mobileChipHeight,
     );
   }
 

@@ -235,30 +235,6 @@ class BookmarkService {
     }
   }
 
-  /// Removes every bookmark from the active backend.
-  Future<void> clearAll() async {
-    if (!_initialised) await init();
-    final previous = List<String>.from(_cache);
-    _cache = const [];
-    _controller.add(List.unmodifiable(_cache));
-    try {
-      if (_useCloud) {
-        final uid = UserService.instance.currentUser!.id;
-        await Supabase.instance.client
-            .from(_kCloudTable)
-            .delete()
-            .eq('user_id', uid);
-      } else {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setStringList(_kPrefsBookmarksKey, const []);
-      }
-    } catch (e) {
-      debugPrint('[BookmarkService] clearAll failed: $e');
-      _cache = previous;
-      _controller.add(List.unmodifiable(_cache));
-    }
-  }
-
   /// Reactive view of the bookmark URL list. Emits the current cache on
   /// subscribe and again on every successful or rolled-back mutation.
   Stream<List<String>> watchBookmarks() async* {

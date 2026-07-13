@@ -6,8 +6,8 @@ import 'package:url_launcher/url_launcher.dart';
 import '../models/ocp_version.dart';
 import '../repositories/article_repository.dart';
 import '../theme/app_theme.dart';
-import '../widgets/brand_title.dart';
 import '../widgets/error_state.dart';
+import '../widgets/main_app_bar.dart';
 import '../widgets/offline_banner.dart';
 
 const Color _kStatusGreen = Color(0xFF00AA44);
@@ -22,15 +22,15 @@ class VersionsScreen extends StatefulWidget {
   /// for the desktop push-route case where the screen is built fresh.
   final bool isActive;
 
-  /// Show the ShiftFeed wordmark instead of the screen name. True when the
-  /// screen is a bottom-nav tab; false on the desktop push-route, which has
-  /// a back arrow and needs the screen name for context.
-  final bool showBrandTitle;
+  /// True when this screen is a bottom-nav tab: it then wears the shared
+  /// [MainAppBar] (wordmark + the four actions). False on the desktop
+  /// push-route, which keeps its own descriptive title and back arrow.
+  final bool isTab;
 
   const VersionsScreen({
     super.key,
     this.isActive = true,
-    this.showBrandTitle = false,
+    this.isTab = false,
   });
 
   @override
@@ -129,10 +129,12 @@ class _VersionsScreenState extends State<VersionsScreen> {
 
     return Scaffold(
       backgroundColor: bg,
-      appBar: AppBar(
-        title: widget.showBrandTitle
-            ? const BrandTitle()
-            : Text(
+      appBar: widget.isTab
+          // Nothing here responds to search or the card view mode, so both
+          // stay greyed out.
+          ? const MainAppBar()
+          : AppBar(
+              title: Text(
                 'OCP VERSIONS',
                 style: TextStyle(
                   fontSize: 11,
@@ -141,12 +143,12 @@ class _VersionsScreenState extends State<VersionsScreen> {
                   color: textPrimary,
                 ),
               ),
-        backgroundColor: bg,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Container(height: 1, color: kRed),
-        ),
-      ),
+              backgroundColor: bg,
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(1),
+                child: Container(height: 1, color: kRed),
+              ),
+            ),
       body: Column(
         children: [
           const OfflineBanner(),

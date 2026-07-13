@@ -14,16 +14,17 @@ import '../services/user_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/auth_sheet.dart';
 import '../widgets/brand_title.dart';
+import '../widgets/main_app_bar.dart';
 import '../widgets/paywall_sheet.dart';
 import 'submit_screen.dart';
 
 class AboutScreen extends StatelessWidget {
-  /// Show the ShiftFeed wordmark instead of the screen name. True when the
-  /// screen is a bottom-nav tab; false on the desktop push-route, which has
-  /// a back arrow and needs the screen name for context.
-  final bool showBrandTitle;
+  /// True when this screen is a bottom-nav tab: it then wears the shared
+  /// [MainAppBar] (wordmark + the four actions). False on the desktop
+  /// push-route, which keeps its own descriptive title and back arrow.
+  final bool isTab;
 
-  const AboutScreen({super.key, this.showBrandTitle = false});
+  const AboutScreen({super.key, this.isTab = false});
 
   static const _sources = <_SourceItem>[
     _SourceItem('Red Hat Blog', Icons.rss_feed),
@@ -90,9 +91,11 @@ class AboutScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(
-        title: showBrandTitle ? const BrandTitle() : const Text('About'),
-      ),
+      // Nothing here responds to search or the card view mode, so both stay
+      // greyed out.
+      appBar: isTab
+          ? const MainAppBar()
+          : AppBar(title: const Text('About')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

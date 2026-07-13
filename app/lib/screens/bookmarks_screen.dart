@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/article.dart';
@@ -7,21 +8,21 @@ import '../repositories/article_repository.dart';
 import '../services/bookmark_article_cache.dart';
 import '../services/bookmark_service.dart';
 import '../services/entitlement_service.dart';
-import '../services/export_service.dart';
 import '../services/user_service.dart';
 import '../theme/app_theme.dart';
+import '../theme/layout_notifier.dart';
 import '../utils/open_article.dart';
 import '../widgets/article_card.dart';
-import '../widgets/brand_title.dart';
 import '../widgets/error_state.dart';
+import '../widgets/main_app_bar.dart';
 import '../widgets/offline_banner.dart';
 import '../widgets/paywall_sheet.dart';
 
 class BookmarksScreen extends StatefulWidget {
-  /// Show the ShiftFeed wordmark instead of the screen name. True when the
-  /// screen is a bottom-nav tab; false on the desktop push-route, which has
-  /// a back arrow and needs the screen name for context.
-  final bool showBrandTitle;
+  /// True when this screen is a bottom-nav tab: it then wears the shared
+  /// [MainAppBar] (wordmark + the four actions). False on the desktop
+  /// push-route, which keeps its own descriptive title and back arrow.
+  final bool isTab;
 
   /// Whether this screen is the visible tab. Inside the mobile `IndexedStack`
   /// the State is kept alive, so `initState` runs only once at launch; the
@@ -32,7 +33,7 @@ class BookmarksScreen extends StatefulWidget {
 
   const BookmarksScreen({
     super.key,
-    this.showBrandTitle = false,
+    this.isTab = false,
     this.isActive = true,
   });
 
@@ -212,44 +213,6 @@ class _BookmarksScreenState extends State<BookmarksScreen>
     openArticle(context, article);
   }
 
-  Future<void> _showExportSheet() async {
-    final scaffoldContext = context;
-    await showModalBottomSheet<void>(
-      context: context,
-      builder: (sheetContext) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: const Icon(Icons.text_snippet_outlined),
-                title: const Text('Export as Markdown'),
-                onTap: () {
-                  Navigator.of(sheetContext).pop();
-                  ExportService.instance.shareBookmarks(
-                    scaffoldContext,
-                    asPdf: false,
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.picture_as_pdf_outlined),
-                title: const Text('Export as PDF'),
-                onTap: () {
-                  Navigator.of(sheetContext).pop();
-                  ExportService.instance.shareBookmarks(
-                    scaffoldContext,
-                    asPdf: true,
-                  );
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
   /// Removes [url] from bookmarks and shows a theme-aware SnackBar with
   /// an Undo action that re-adds it via [BookmarkService.addBookmark].
   /// Used by both the in-card bookmark icon and the swipe-to-dismiss
@@ -283,33 +246,12 @@ class _BookmarksScreenState extends State<BookmarksScreen>
     );
   }
 
-  Future<void> _showClearConfirmation() async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Clear all bookmarks?'),
-        content: const Text('This will remove all saved articles.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: FilledButton.styleFrom(backgroundColor: kRed),
-            child: const Text('Clear all'),
-          ),
-        ],
-      ),
-    );
-    if (confirmed != true) return;
-    await BookmarkService.instance.clearAll();
-  }
-
   @override
   Widget build(BuildContext context) {
     final secondary = textSecondaryOf(context);
     final muted = textMutedOf(context);
+    // Saved honours the app bar's view-mode toggle, same as the feed.
+    final compact = context.watch<LayoutNotifier>().mode == ViewMode.list;
 
     return StreamBuilder<List<String>>(
       stream: BookmarkService.instance.watchBookmarks(),
@@ -329,38 +271,33 @@ class _BookmarksScreenState extends State<BookmarksScreen>
 
         return Scaffold(
           backgroundColor: bgOf(context),
-          appBar: AppBar(
-            backgroundColor: bgOf(context),
-            title: widget.showBrandTitle
-                ? const BrandTitle()
-                : const Text(
+          appBar: widget.isTab
+              // The cards here honour the view mode, so that toggle stays
+              // live; there is no search on this screen, so it greys out.
+              ? const MainAppBar(
+                  viewToggleEnabled: true,
+                  leadingActions: [_SyncIndicator()],
+                )
+              : AppBar(
+                  backgroundColor: bgOf(context),
+                  title: const Text(
                     'SAVED',
                     style: TextStyle(
                       fontSize: 11,
                       letterSpacing: 2,
                     ),
                   ),
-            actions: [
-              if (urls.isNotEmpty)
-                _ExportAction(onTriggered: _showExportSheet),
-              const _SyncIndicator(),
-              if (urls.isNotEmpty)
-                IconButton(
-                  icon: Icon(Icons.delete_sweep_outlined, color: secondary),
-                  tooltip: 'Clear all',
-                  onPressed: _showClearConfirmation,
+                  actions: const [_SyncIndicator()],
+                  bottom: PreferredSize(
+                    preferredSize: const Size.fromHeight(1),
+                    child: Container(height: 1, color: kRed),
+                  ),
                 ),
-            ],
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(1),
-              child: Container(height: 1, color: kRed),
-            ),
-          ),
           body: Column(
             children: [
               const OfflineBanner(),
               Expanded(
-                child: _buildBody(urls, articles, secondary, muted),
+                child: _buildBody(urls, articles, secondary, muted, compact),
               ),
             ],
           ),
@@ -374,6 +311,7 @@ class _BookmarksScreenState extends State<BookmarksScreen>
     List<Article> articles,
     Color secondary,
     Color muted,
+    bool compact,
   ) {
     if (urls.isEmpty) {
       return Center(
@@ -447,6 +385,7 @@ class _BookmarksScreenState extends State<BookmarksScreen>
         Widget card = ArticleCard(
           article: article,
           onTap: () => _openArticle(article),
+          compact: compact,
           showBookmarkButton: true,
           isBookmarked: true,
           onBookmarkToggle: () => _removeWithUndo(context, article.url),
@@ -506,33 +445,6 @@ class _BookmarksScreenState extends State<BookmarksScreen>
         },
         child: card,
       ),
-    );
-  }
-}
-
-class _ExportAction extends StatelessWidget {
-  final VoidCallback onTriggered;
-  const _ExportAction({required this.onTriggered});
-
-  @override
-  Widget build(BuildContext context) {
-    if (kIsWeb) return const SizedBox.shrink();
-    return FutureBuilder<bool>(
-      future: EntitlementService.instance.isPro(),
-      builder: (context, snap) {
-        final isPro = snap.data ?? false;
-        return IconButton(
-          icon: Icon(Icons.ios_share, color: textSecondaryOf(context)),
-          tooltip: 'Export bookmarks',
-          onPressed: () {
-            if (isPro) {
-              onTriggered();
-            } else {
-              PaywallSheet.show(context, reason: PaywallReason.briefing);
-            }
-          },
-        );
-      },
     );
   }
 }

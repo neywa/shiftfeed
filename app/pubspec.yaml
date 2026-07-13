@@ -51,8 +51,6 @@ dependencies:
   purchases_flutter: ^8.0.0
   app_links: ^6.0.0
   share_plus: ^10.0.0
-  pdf: ^3.11.0
-  path_provider: ^2.1.0
   flutter_timezone: ^3.0.0
   package_info_plus: ^8.0.0
   connectivity_plus: ^6.0.0
