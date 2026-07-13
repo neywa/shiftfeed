@@ -12,30 +12,49 @@ const _kCriticalRed = Color(0xFFFF0000);
 const _kModerateAmber = Color(0xFFFFAA00);
 
 const _kTitleSize = 15.0;
+const _kSummarySize = 13.0;
 const _kTagSize = 11.0;
 
-// The full card keeps generous line spacing. The compact card trims the title's
-// line box down to roughly the glyph box: a height below the font's natural
-// 1.3em means the glyphs overflow their box slightly, which is safe here (one
-// line, no clipping) and is what keeps the gaps below positive.
+// The full card keeps generous line spacing (its title can wrap to two lines).
+// The compact card trims the title's line box down to roughly the glyph box: a
+// height below the font's natural 1.3em means the glyphs overflow their box
+// slightly, which is safe there (one line, no clipping) and is what keeps its
+// 8dp gaps from going negative.
 const _kTitleHeightFull = 1.5;
 const _kTitleHeightCompact = 1.0;
+const _kSummaryHeight = 1.5;
 
-// Compact spacing is optical — the 8dp gaps are measured to the glyphs, not to
-// the line boxes. A line box carries a blank strip above the glyphs and another
-// below the baseline, so each gap subtracts the strips of its neighbours.
-//
-// These four are those strips, measured off a device screenshot rather than
-// derived from IBM Plex Sans's nominal metrics: as google_fonts renders it, the
-// visible top is the ascender (~0.73em, not the 0.698em cap height) and the
-// descent runs deeper than nominal. Deriving them was wrong by up to 0.9dp.
-// To re-measure after a font or size change, screenshot the feed and compare
-// glyph rows against the card edges.
-const _kGap = 8.0;
-const _kTitleInkTop = 2.13; // 15dp title at height 1.0
-const _kTitleInkBottom = 2.06;
-const _kTagInkTop = 3.60; // 11dp tag at its natural line height
-const _kTagInkBottom = 3.92;
+// Both cards space their contents optically: the gap is measured to the glyphs,
+// not to the line boxes. A line box carries a blank strip above the glyphs and
+// another below the baseline, so each gap subtracts the strips of its
+// neighbours. The compact card uses 8dp, the full card 16dp.
+const _kGapCompact = 8.0;
+const _kGapFull = 16.0;
+
+// The strips, per em, for text with an explicit `height` — measured off a device
+// screenshot rather than derived from IBM Plex Sans's nominal metrics. As
+// google_fonts renders it, the visible top is the ascender (~0.73em, not the
+// 0.698em cap height) and the descent runs deeper than nominal; deriving these
+// from the published numbers was wrong by up to 0.9dp.
+const _kFontBox = 1.3; // the font's natural line box
+const _kInkTopEm = 0.292; // ascent -> first glyph row
+const _kInkBottomEm = 0.32; // baseline -> box bottom
+
+/// Blank strip inside a [Text]'s line box, above its glyphs.
+/// [height] is the style's line-height multiplier; its extra leading splits
+/// evenly top and bottom (every [Text] here sets leadingDistribution.even).
+double _inkTop(double size, double height) =>
+    (height - _kFontBox) * size / 2 + _kInkTopEm * size;
+
+/// Blank strip inside a [Text]'s line box, below its baseline.
+double _inkBottom(double size, double height) =>
+    (height - _kFontBox) * size / 2 + _kInkBottomEm * size;
+
+// The tag pill sets no `height`, so Flutter uses the font's own line metrics
+// (which carry a leading the multiplier would otherwise replace) and the two
+// formulas above do not apply. Measured directly instead.
+const _kTagInkTop = 3.60;
+const _kTagInkBottom = 3.56;
 
 class ArticleCard extends StatelessWidget {
   final Article article;
@@ -223,12 +242,35 @@ class ArticleCard extends StatelessWidget {
         article.summary!.isNotEmpty;
     final titleMaxLines = compact ? 1 : 2;
     final badge = _buildBadge();
+    final hasTags = visibleTags.isNotEmpty;
 
-    // Compact: 8dp of visible space above the icon, and below whichever text
-    // ends the card — minus that text's blank strip below its baseline.
-    final bottomPad = visibleTags.isNotEmpty
-        ? _kGap - _kTagInkBottom
-        : _kGap - _kTitleInkBottom;
+    // Every gap below is `gap` of *visible* space: the nominal value minus the
+    // blank strips inside the line boxes on either side of it. The source icon
+    // and the card edges are real boxes, so they contribute no strip.
+    final gap = compact ? _kGapCompact : _kGapFull;
+    final titleHeight = compact ? _kTitleHeightCompact : _kTitleHeightFull;
+    final titleInkTop = _inkTop(_kTitleSize, titleHeight);
+    final titleInkBottom = _inkBottom(_kTitleSize, titleHeight);
+    final summaryInkTop = _inkTop(_kSummarySize, _kSummaryHeight);
+    final summaryInkBottom = _inkBottom(_kSummarySize, _kSummaryHeight);
+    // The full card keeps the tag pill's 4dp padding (16dp of space can absorb
+    // it); the compact card drops it — see _TagPill.
+    final tagPadding = compact ? 0.0 : 4.0;
+    final tagInkTop = _kTagInkTop + tagPadding;
+    final tagInkBottom = _kTagInkBottom + tagPadding;
+
+    final topPad = gap;
+    final headerToTitle = gap - titleInkTop;
+    final titleToNext = hasSummary
+        ? gap - titleInkBottom - summaryInkTop
+        : gap - titleInkBottom - tagInkTop;
+    final summaryToTags = gap - summaryInkBottom - tagInkTop;
+    // Whatever ends the card sets the bottom padding.
+    final bottomPad = hasTags
+        ? gap - tagInkBottom
+        : hasSummary
+            ? gap - summaryInkBottom
+            : gap - titleInkBottom;
 
     return Material(
       color: theme.cardColor,
@@ -246,12 +288,7 @@ class ArticleCard extends StatelessWidget {
               Container(width: 3, color: _accentColor()),
               Expanded(
                 child: Padding(
-                  padding: EdgeInsets.fromLTRB(
-                    16,
-                    compact ? _kGap : 16,
-                    16,
-                    compact ? bottomPad : 20,
-                  ),
+                  padding: EdgeInsets.fromLTRB(16, topPad, 16, bottomPad),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
@@ -290,38 +327,32 @@ class ArticleCard extends StatelessWidget {
                                     : Icons.bookmark_outline,
                                 color: isBookmarked ? kRed : muted,
                               ),
-                              iconSize: compact ? 20 : 22,
+                              iconSize: 20,
                               padding: EdgeInsets.zero,
-                              // In compact mode the button must not exceed the
-                              // 20dp source icon, or it drives the header row's
-                              // height and the 8dp gaps around the icon stop
-                              // holding. `constraints` alone is not enough:
-                              // IconButton's ButtonStyle enforces a 48dp tap
-                              // target on top of it, so shrinkWrap it too.
-                              constraints: compact
-                                  ? const BoxConstraints(
-                                      minWidth: 40,
-                                      minHeight: 20,
-                                    )
-                                  : const BoxConstraints(
-                                      minWidth: 48,
-                                      minHeight: 48,
-                                    ),
-                              style: compact
-                                  ? IconButton.styleFrom(
-                                      minimumSize: const Size(40, 20),
-                                      padding: EdgeInsets.zero,
-                                      tapTargetSize:
-                                          MaterialTapTargetSize.shrinkWrap,
-                                    )
-                                  : null,
+                              // The button must not exceed the 20dp source
+                              // icon, or it drives the header row's height and
+                              // the gaps around the icon stop holding — the row
+                              // has to be exactly as tall as the icon.
+                              // `constraints` alone is not enough: IconButton's
+                              // ButtonStyle enforces a 48dp tap target on top of
+                              // it, so shrinkWrap it too.
+                              constraints: const BoxConstraints(
+                                minWidth: 40,
+                                minHeight: 20,
+                              ),
+                              style: IconButton.styleFrom(
+                                minimumSize: const Size(40, 20),
+                                padding: EdgeInsets.zero,
+                                tapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap,
+                              ),
                               tooltip: isBookmarked
                                   ? 'Remove bookmark'
                                   : 'Save article',
                             ),
                         ],
                       ),
-                      SizedBox(height: compact ? _kGap - _kTitleInkTop : 10),
+                      SizedBox(height: headerToTitle),
                       Text(
                         article.title,
                         maxLines: titleMaxLines,
@@ -330,31 +361,27 @@ class ArticleCard extends StatelessWidget {
                           color: titleColor,
                           fontSize: _kTitleSize,
                           fontWeight: FontWeight.w700,
-                          height: compact
-                              ? _kTitleHeightCompact
-                              : _kTitleHeightFull,
+                          height: titleHeight,
                           leadingDistribution: TextLeadingDistribution.even,
                         ),
                       ),
                       if (hasSummary) ...[
-                        const SizedBox(height: 8),
+                        SizedBox(height: titleToNext),
                         Text(
                           article.summary!,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             color: secondary,
-                            fontSize: 13,
-                            height: 1.5,
+                            fontSize: _kSummarySize,
+                            height: _kSummaryHeight,
                             leadingDistribution: TextLeadingDistribution.even,
                           ),
                         ),
                       ],
-                      if (visibleTags.isNotEmpty) ...[
+                      if (hasTags) ...[
                         SizedBox(
-                          height: compact
-                              ? _kGap - _kTitleInkBottom - _kTagInkTop
-                              : 8,
+                          height: hasSummary ? summaryToTags : titleToNext,
                         ),
                         Wrap(
                           spacing: 8,
