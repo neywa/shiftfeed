@@ -387,7 +387,9 @@ class ArticleCard extends StatelessWidget {
                           height: hasSummary ? summaryToTags : titleToNext,
                         ),
                         Wrap(
-                          spacing: 8,
+                          // The pills carry no padding of their own, so the
+                          // Wrap owns the whole gap between them.
+                          spacing: 16,
                           children: [
                             for (final tag in visibleTags)
                               _TagPill(
@@ -427,10 +429,12 @@ class _TagPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final label = Padding(
-      // The pill has no visible box, so in compact mode its vertical padding
-      // would just read as extra space around the glyphs — the card measures
-      // the 8dp gaps to the glyphs themselves and owns that spacing instead.
-      padding: EdgeInsets.symmetric(horizontal: 4, vertical: compact ? 0 : 4),
+      // The pill has no visible box, so any padding just reads as space around
+      // the glyphs — and horizontally it would shove the '#' off the card's
+      // text axis, which the icon, title and summary all sit on. So the pill's
+      // box *is* its glyph box: the Wrap owns the gap between tags, and in
+      // compact mode the card owns the vertical gaps (measured to the glyphs).
+      padding: EdgeInsets.symmetric(vertical: compact ? 0 : 4),
       child: Text(
         '#$tag',
         style: TextStyle(
