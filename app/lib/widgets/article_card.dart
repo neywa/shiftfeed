@@ -278,7 +278,10 @@ class ArticleCard extends StatelessWidget {
         side: BorderSide(color: border, width: 0.5),
         borderRadius: BorderRadius.circular(8),
       ),
-      clipBehavior: Clip.none,
+      // The accent stripe below is a square-cornered box flush with the card's
+      // left edge, so it has to be clipped to the rounded shape or its corners
+      // poke out past the card's.
+      clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
         child: IntrinsicHeight(
