@@ -11,6 +11,32 @@ const _kGitHubGreen = Color(0xFF238636);
 const _kCriticalRed = Color(0xFFFF0000);
 const _kModerateAmber = Color(0xFFFFAA00);
 
+const _kTitleSize = 15.0;
+const _kTagSize = 11.0;
+
+// The full card keeps generous line spacing. The compact card trims the title's
+// line box down to roughly the glyph box: a height below the font's natural
+// 1.3em means the glyphs overflow their box slightly, which is safe here (one
+// line, no clipping) and is what keeps the gaps below positive.
+const _kTitleHeightFull = 1.5;
+const _kTitleHeightCompact = 1.0;
+
+// Compact spacing is optical — the 8dp gaps are measured to the glyphs, not to
+// the line boxes. A line box carries a blank strip above the glyphs and another
+// below the baseline, so each gap subtracts the strips of its neighbours.
+//
+// These four are those strips, measured off a device screenshot rather than
+// derived from IBM Plex Sans's nominal metrics: as google_fonts renders it, the
+// visible top is the ascender (~0.73em, not the 0.698em cap height) and the
+// descent runs deeper than nominal. Deriving them was wrong by up to 0.9dp.
+// To re-measure after a font or size change, screenshot the feed and compare
+// glyph rows against the card edges.
+const _kGap = 8.0;
+const _kTitleInkTop = 2.13; // 15dp title at height 1.0
+const _kTitleInkBottom = 2.06;
+const _kTagInkTop = 3.60; // 11dp tag at its natural line height
+const _kTagInkBottom = 3.92;
+
 class ArticleCard extends StatelessWidget {
   final Article article;
   final VoidCallback onTap;
@@ -198,6 +224,12 @@ class ArticleCard extends StatelessWidget {
     final titleMaxLines = compact ? 1 : 2;
     final badge = _buildBadge();
 
+    // Compact: 8dp of visible space above the icon, and below whichever text
+    // ends the card — minus that text's blank strip below its baseline.
+    final bottomPad = visibleTags.isNotEmpty
+        ? _kGap - _kTagInkBottom
+        : _kGap - _kTitleInkBottom;
+
     return Material(
       color: theme.cardColor,
       shape: RoundedRectangleBorder(
@@ -216,9 +248,9 @@ class ArticleCard extends StatelessWidget {
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(
                     16,
-                    compact ? 10 : 16,
+                    compact ? _kGap : 16,
                     16,
-                    compact ? 14 : 20,
+                    compact ? bottomPad : 20,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -258,28 +290,49 @@ class ArticleCard extends StatelessWidget {
                                     : Icons.bookmark_outline,
                                 color: isBookmarked ? kRed : muted,
                               ),
-                              iconSize: 22,
+                              iconSize: compact ? 20 : 22,
                               padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(
-                                minWidth: 48,
-                                minHeight: 48,
-                              ),
+                              // In compact mode the button must not exceed the
+                              // 20dp source icon, or it drives the header row's
+                              // height and the 8dp gaps around the icon stop
+                              // holding. `constraints` alone is not enough:
+                              // IconButton's ButtonStyle enforces a 48dp tap
+                              // target on top of it, so shrinkWrap it too.
+                              constraints: compact
+                                  ? const BoxConstraints(
+                                      minWidth: 40,
+                                      minHeight: 20,
+                                    )
+                                  : const BoxConstraints(
+                                      minWidth: 48,
+                                      minHeight: 48,
+                                    ),
+                              style: compact
+                                  ? IconButton.styleFrom(
+                                      minimumSize: const Size(40, 20),
+                                      padding: EdgeInsets.zero,
+                                      tapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                    )
+                                  : null,
                               tooltip: isBookmarked
                                   ? 'Remove bookmark'
                                   : 'Save article',
                             ),
                         ],
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: compact ? _kGap - _kTitleInkTop : 10),
                       Text(
                         article.title,
                         maxLines: titleMaxLines,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           color: titleColor,
-                          fontSize: 15,
+                          fontSize: _kTitleSize,
                           fontWeight: FontWeight.w700,
-                          height: 1.5,
+                          height: compact
+                              ? _kTitleHeightCompact
+                              : _kTitleHeightFull,
                           leadingDistribution: TextLeadingDistribution.even,
                         ),
                       ),
@@ -298,7 +351,11 @@ class ArticleCard extends StatelessWidget {
                         ),
                       ],
                       if (visibleTags.isNotEmpty) ...[
-                        const SizedBox(height: 8),
+                        SizedBox(
+                          height: compact
+                              ? _kGap - _kTitleInkBottom - _kTagInkTop
+                              : 8,
+                        ),
                         Wrap(
                           spacing: 8,
                           children: [
@@ -307,6 +364,7 @@ class ArticleCard extends StatelessWidget {
                                 tag: tag,
                                 color: _tagColor(tag),
                                 onTap: onTagTap,
+                                compact: compact,
                               ),
                           ],
                         ),
@@ -327,22 +385,27 @@ class _TagPill extends StatelessWidget {
   final String tag;
   final Color color;
   final ValueChanged<String>? onTap;
+  final bool compact;
 
   const _TagPill({
     required this.tag,
     required this.color,
     required this.onTap,
+    this.compact = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final label = Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+      // The pill has no visible box, so in compact mode its vertical padding
+      // would just read as extra space around the glyphs — the card measures
+      // the 8dp gaps to the glyphs themselves and owns that spacing instead.
+      padding: EdgeInsets.symmetric(horizontal: 4, vertical: compact ? 0 : 4),
       child: Text(
         '#$tag',
         style: TextStyle(
           color: color,
-          fontSize: 11,
+          fontSize: _kTagSize,
           fontWeight: FontWeight.w600,
         ),
       ),

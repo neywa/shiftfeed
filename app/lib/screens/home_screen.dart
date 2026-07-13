@@ -785,7 +785,8 @@ class _HomeScreenState extends State<HomeScreen> {
         const SizedBox(width: 8),
       ],
       bottom: PreferredSize(
-        preferredSize: const Size.fromHeight(54),
+        // 1px divider + the chip row's 8px top/bottom padding + the chips.
+        preferredSize: Size.fromHeight(1 + 16 + _mobileChipHeight),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -796,6 +797,11 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  /// 11px IBM Plex Sans (line height 1.3) plus the chip's 6px vertical padding.
+  /// Must stay >= the chips' natural height or the AppBar bottom overflows.
+  double get _mobileChipHeight =>
+      MediaQuery.textScalerOf(context).scale(11) * 1.3 + 12;
 
   PreferredSizeWidget _buildMobileSearchAppBar() {
     return AppBar(
@@ -1040,10 +1046,12 @@ class _HomeScreenState extends State<HomeScreen> {
         (showLoader ? 1 : 0) +
         (showFreeLimit ? 1 : 0);
 
-    return ListView.builder(
+    return ListView.separated(
       controller: _scrollController,
       physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.only(bottom: 12),
       itemCount: itemCount,
+      separatorBuilder: (_, __) => const SizedBox(height: 8),
       itemBuilder: (context, index) {
         if (index >= _displayArticles.length) {
           if (showFreeLimit && index == _displayArticles.length) {
@@ -1056,10 +1064,7 @@ class _HomeScreenState extends State<HomeScreen> {
         }
         final article = _displayArticles[index];
         return Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: 12,
-            vertical: _viewMode == ViewMode.grid ? 6 : 4,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           child: ArticleCard(
             article: article,
             onTap: () => _onArticleTap(article, desktop: false),
