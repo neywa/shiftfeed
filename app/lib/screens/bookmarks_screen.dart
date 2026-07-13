@@ -304,14 +304,19 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
       }
     }
 
+    // 8dp rhythm, matching the feed: divider -> banner -> card -> card, with
+    // 12dp of run-off under the last card. The gap sits below each item
+    // rather than in a separator so the upsell banner — which collapses to
+    // nothing for Pro users and on web — leaves no ghost gap when hidden.
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
       itemCount: articles.length + 1, // +1 for the upsell banner slot
       itemBuilder: (context, index) {
         if (index == 0) {
           return const _UpsellBanner();
         }
         final article = articles[index - 1];
+        final isLast = index == articles.length;
         return Dismissible(
           key: Key(article.url),
           direction: DismissDirection.endToStart,
@@ -323,7 +328,7 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
           ),
           onDismissed: (_) => _removeWithUndo(context, article.url),
           child: Padding(
-            padding: const EdgeInsets.only(bottom: 12),
+            padding: EdgeInsets.only(bottom: isLast ? 0 : 8),
             child: ArticleCard(
               article: article,
               onTap: () => _openArticle(article),
@@ -407,7 +412,8 @@ class _UpsellBanner extends StatelessWidget {
         if (snap.data == true) return const SizedBox.shrink();
         final theme = Theme.of(context);
         return Padding(
-          padding: const EdgeInsets.only(bottom: 12),
+          // Owns the gap to the first card, so a hidden banner leaves none.
+          padding: const EdgeInsets.only(bottom: 8),
           child: Card(
             elevation: 0,
             shape: RoundedRectangleBorder(

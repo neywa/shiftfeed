@@ -189,14 +189,19 @@ class _VersionsScreenState extends State<VersionsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _buildHeaderCard(),
+          // 8dp rhythm, matching the feed: divider -> header -> cards -> cards.
+          // The gaps live here rather than in the cards' own margins so a
+          // single value governs the whole column.
           const SizedBox(height: 8),
-          for (int i = 0; i < _versions.length; i++)
+          _buildHeaderCard(),
+          for (int i = 0; i < _versions.length; i++) ...[
+            const SizedBox(height: 8),
             _VersionCard(
               version: _versions[i],
               accentColor: _accentColors[i],
               statusLabel: _statusLabel(i),
             ),
+          ],
           const SizedBox(height: 16),
           _buildFooter(),
           const SizedBox(height: 20),
@@ -212,7 +217,7 @@ class _VersionsScreenState extends State<VersionsScreen> {
     final textMuted = textMutedOf(context);
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: surface,
@@ -440,7 +445,7 @@ class _VersionCard extends StatelessWidget {
     );
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(6),
         child: Container(
