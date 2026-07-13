@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../models/ocp_version.dart';
 import '../repositories/article_repository.dart';
 import '../theme/app_theme.dart';
+import '../widgets/brand_title.dart';
 import '../widgets/error_state.dart';
 import '../widgets/offline_banner.dart';
 
@@ -21,7 +22,16 @@ class VersionsScreen extends StatefulWidget {
   /// for the desktop push-route case where the screen is built fresh.
   final bool isActive;
 
-  const VersionsScreen({super.key, this.isActive = true});
+  /// Show the ShiftFeed wordmark instead of the screen name. True when the
+  /// screen is a bottom-nav tab; false on the desktop push-route, which has
+  /// a back arrow and needs the screen name for context.
+  final bool showBrandTitle;
+
+  const VersionsScreen({
+    super.key,
+    this.isActive = true,
+    this.showBrandTitle = false,
+  });
 
   @override
   State<VersionsScreen> createState() => _VersionsScreenState();
@@ -120,15 +130,17 @@ class _VersionsScreenState extends State<VersionsScreen> {
     return Scaffold(
       backgroundColor: bg,
       appBar: AppBar(
-        title: Text(
-          'OCP VERSIONS',
-          style: TextStyle(
-            fontSize: 11,
-            letterSpacing: 2,
-            fontWeight: FontWeight.w800,
-            color: textPrimary,
-          ),
-        ),
+        title: widget.showBrandTitle
+            ? const BrandTitle()
+            : Text(
+                'OCP VERSIONS',
+                style: TextStyle(
+                  fontSize: 11,
+                  letterSpacing: 2,
+                  fontWeight: FontWeight.w800,
+                  color: textPrimary,
+                ),
+              ),
         backgroundColor: bg,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),

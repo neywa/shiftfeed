@@ -21,6 +21,7 @@ import '../theme/theme_notifier.dart';
 import '../utils/favicons.dart';
 import '../utils/open_article.dart';
 import '../widgets/article_card.dart';
+import '../widgets/brand_title.dart';
 import '../widgets/error_state.dart';
 import '../widgets/offline_banner.dart';
 import '../widgets/paywall_sheet.dart';
@@ -652,9 +653,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     backgroundColor: _surface,
                     child: _buildMobileList(),
                   ),
-                  VersionsScreen(isActive: _bottomNavIndex == 1),
-                  const BookmarksScreen(),
-                  const AboutScreen(),
+                  VersionsScreen(
+                    isActive: _bottomNavIndex == 1,
+                    showBrandTitle: true,
+                  ),
+                  BookmarksScreen(
+                    isActive: _bottomNavIndex == 2,
+                    showBrandTitle: true,
+                  ),
+                  const AboutScreen(showBrandTitle: true),
                 ],
               ),
             ),
@@ -701,34 +708,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return AppBar(
       automaticallyImplyLeading: false,
       titleSpacing: 16,
-      title: GestureDetector(
-        onLongPress: kDebugMode ? _toggleDevPro : null,
-        behavior: HitTestBehavior.opaque,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Flexible + ellipsis so the title yields width to the PRO
-            // badge on narrow AppBar layouts instead of overflowing.
-            Flexible(
-              child: Text(
-                'ShiftFeed',
-                overflow: TextOverflow.ellipsis,
-                softWrap: false,
-                style: TextStyle(
-                  color: _textPrimary,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 1.5,
-                ),
-              ),
-            ),
-            if (_isPro) ...[
-              const SizedBox(width: 8),
-              const _ProBadge(),
-            ],
-          ],
-        ),
-      ),
+      title: BrandTitle(onLongPress: kDebugMode ? _toggleDevPro : null),
       actions: [
         IconButton(
           icon: Icon(Icons.search, color: _textSecondary, size: 20),
@@ -1287,7 +1267,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   if (_isPro) ...[
                     const SizedBox(width: 8),
-                    const _ProBadge(),
+                    const ProBadge(),
                   ],
                 ],
               ),
@@ -2314,29 +2294,3 @@ class _ToggleBtn extends StatelessWidget {
   }
 }
 
-/// Tiny red "PRO" pill rendered next to the app title when
-/// [EntitlementService.isPro] is true (including the debug-only
-/// override toggled by long-pressing the title).
-class _ProBadge extends StatelessWidget {
-  const _ProBadge();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(
-        color: kRed,
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: const Text(
-        'PRO',
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 9,
-          fontWeight: FontWeight.w800,
-          letterSpacing: 0.8,
-        ),
-      ),
-    );
-  }
-}

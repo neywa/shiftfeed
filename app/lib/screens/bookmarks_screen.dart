@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/article.dart';
 import '../repositories/article_repository.dart';
@@ -11,18 +12,48 @@ import '../services/user_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/open_article.dart';
 import '../widgets/article_card.dart';
+import '../widgets/brand_title.dart';
 import '../widgets/error_state.dart';
 import '../widgets/offline_banner.dart';
 import '../widgets/paywall_sheet.dart';
 
 class BookmarksScreen extends StatefulWidget {
-  const BookmarksScreen({super.key});
+  /// Show the ShiftFeed wordmark instead of the screen name. True when the
+  /// screen is a bottom-nav tab; false on the desktop push-route, which has
+  /// a back arrow and needs the screen name for context.
+  final bool showBrandTitle;
+
+  /// Whether this screen is the visible tab. Inside the mobile `IndexedStack`
+  /// the State is kept alive, so `initState` runs only once at launch; the
+  /// parent flips this when the Saved tab is selected so the swipe-to-delete
+  /// hint replays on every visit. Defaults to true for the desktop
+  /// push-route case where the screen is built fresh.
+  final bool isActive;
+
+  const BookmarksScreen({
+    super.key,
+    this.showBrandTitle = false,
+    this.isActive = true,
+  });
 
   @override
   State<BookmarksScreen> createState() => _BookmarksScreenState();
 }
 
-class _BookmarksScreenState extends State<BookmarksScreen> {
+/// SharedPreferences flag: set once the user has swipe-deleted a saved
+/// article. Until then the first card demos the gesture on every visit.
+const String _kSwipeHintDonePref = 'saved_swipe_hint_done';
+
+/// How far left the first card slides during the hint — clears the 24px
+/// trash icon plus its 20px right padding.
+const double _kHintPeek = 88.0;
+
+/// Beat between the screen settling and the hint playing, so the user's eyes
+/// are on the list before the card moves.
+const Duration _kHintDelay = Duration(milliseconds: 400);
+
+class _BookmarksScreenState extends State<BookmarksScreen>
+    with SingleTickerProviderStateMixin {
   final ArticleRepository _repo = ArticleRepository();
 
   // URL → Article cache used to render rich cards from the URL-only stream.
@@ -38,10 +69,100 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
   bool _hydratedFromCache = false;
   bool _resolveFailed = false;
 
+  // Swipe-to-delete hint. `_hintDone` is the persisted "user has learned the
+  // gesture" flag; `_hintArmed` means a visit is pending a demo — it is set
+  // on activation and cleared when the animation is scheduled, so a single
+  // visit plays the hint exactly once even though `build` runs many times.
+  late final AnimationController _hintController;
+  late final Animation<double> _hint;
+  bool _hintDone = true;
+  bool _hintArmed = false;
+
   @override
   void initState() {
     super.initState();
+    _hintController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    );
+    // Slide out, then bounce home. `bounceOut` (not `elasticOut`) because it
+    // never overshoots past its end value: the card settles at rest without
+    // ever sliding right of its origin, and the trash icon stays visible
+    // through the bounces — which is the point of the demo.
+    _hint = TweenSequence<double>([
+      TweenSequenceItem(
+        tween: Tween(begin: 0.0, end: 1.0).chain(
+          CurveTween(curve: Curves.easeOut),
+        ),
+        weight: 30,
+      ),
+      TweenSequenceItem(
+        tween: Tween(begin: 1.0, end: 0.0).chain(
+          CurveTween(curve: Curves.bounceOut),
+        ),
+        weight: 70,
+      ),
+    ]).animate(_hintController);
     _hydrateFromCache();
+    _loadHintState();
+  }
+
+  @override
+  void didUpdateWidget(BookmarksScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // The IndexedStack keeps this State alive, so initState only ran once at
+    // launch. Re-arm on the false -> true edge so the demo replays every time
+    // the user comes back to the tab.
+    if (!oldWidget.isActive && widget.isActive) {
+      _hintArmed = true;
+    }
+  }
+
+  @override
+  void dispose() {
+    _hintController.dispose();
+    super.dispose();
+  }
+
+  /// Reads the persisted "already learned it" flag. Starts pessimistic
+  /// (`_hintDone = true`) so a slow prefs read can't flash the hint at a user
+  /// who has already dismissed an article by swiping.
+  Future<void> _loadHintState() async {
+    final prefs = await SharedPreferences.getInstance();
+    final done = prefs.getBool(_kSwipeHintDonePref) ?? false;
+    if (!mounted || done) return;
+    setState(() {
+      _hintDone = false;
+      _hintArmed = widget.isActive;
+    });
+  }
+
+  /// Records that the user swiped an article away — the gesture is learned,
+  /// so the hint retires for good. Called only from the Dismissible's
+  /// `onDismissed`; removing a bookmark with the in-card icon is a different
+  /// gesture and must not count.
+  Future<void> _markHintDone() async {
+    if (_hintDone) return;
+    setState(() {
+      _hintDone = true;
+      _hintArmed = false;
+    });
+    _hintController.reset();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_kSwipeHintDonePref, true);
+  }
+
+  /// Plays the demo once the list actually has a card to move. Called from
+  /// `_buildBody`, since articles resolve asynchronously and the first card
+  /// may not exist yet at the moment the tab becomes active.
+  void _maybePlayHint() {
+    if (!_hintArmed || _hintDone) return;
+    _hintArmed = false;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await Future<void>.delayed(_kHintDelay);
+      if (!mounted || _hintDone || !widget.isActive) return;
+      _hintController.forward(from: 0);
+    });
   }
 
   Future<void> _hydrateFromCache() async {
@@ -210,13 +331,15 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
           backgroundColor: bgOf(context),
           appBar: AppBar(
             backgroundColor: bgOf(context),
-            title: const Text(
-              'SAVED',
-              style: TextStyle(
-                fontSize: 11,
-                letterSpacing: 2,
-              ),
-            ),
+            title: widget.showBrandTitle
+                ? const BrandTitle()
+                : const Text(
+                    'SAVED',
+                    style: TextStyle(
+                      fontSize: 11,
+                      letterSpacing: 2,
+                    ),
+                  ),
             actions: [
               if (urls.isNotEmpty)
                 _ExportAction(onTriggered: _showExportSheet),
@@ -304,6 +427,10 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
       }
     }
 
+    // Only once there is a card to demo the gesture on: a bookmark whose
+    // Article row hasn't resolved yet renders nothing to slide.
+    if (articles.isNotEmpty) _maybePlayHint();
+
     // 8dp rhythm, matching the feed: divider -> banner -> card -> card, with
     // 12dp of run-off under the last card. The gap sits below each item
     // rather than in a separator so the upsell banner — which collapses to
@@ -317,28 +444,68 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
         }
         final article = articles[index - 1];
         final isLast = index == articles.length;
+        Widget card = ArticleCard(
+          article: article,
+          onTap: () => _openArticle(article),
+          showBookmarkButton: true,
+          isBookmarked: true,
+          onBookmarkToggle: () => _removeWithUndo(context, article.url),
+        );
+        if (index == 1 && !_hintDone) {
+          card = _wrapWithHint(card);
+        }
         return Dismissible(
           key: Key(article.url),
           direction: DismissDirection.endToStart,
-          background: Container(
-            alignment: Alignment.centerRight,
-            padding: const EdgeInsets.only(right: 20),
-            color: Colors.red.withValues(alpha: 0.8),
-            child: const Icon(Icons.delete_outline, color: Colors.white),
-          ),
-          onDismissed: (_) => _removeWithUndo(context, article.url),
+          background: _deleteReveal(context),
+          onDismissed: (_) {
+            _removeWithUndo(context, article.url);
+            _markHintDone();
+          },
           child: Padding(
             padding: EdgeInsets.only(bottom: isLast ? 0 : 8),
-            child: ArticleCard(
-              article: article,
-              onTap: () => _openArticle(article),
-              showBookmarkButton: true,
-              isBookmarked: true,
-              onBookmarkToggle: () => _removeWithUndo(context, article.url),
-            ),
+            child: card,
           ),
         );
       },
+    );
+  }
+
+  /// What sits behind a card as it slides left — the plain screen background
+  /// with a trash icon on it. Shared by the Dismissible's drag reveal and the
+  /// hint animation so the demo shows exactly what the real gesture shows.
+  Widget _deleteReveal(BuildContext context) => Container(
+    alignment: Alignment.centerRight,
+    padding: const EdgeInsets.only(right: 20),
+    child: Icon(Icons.delete_outline, color: textMutedOf(context)),
+  );
+
+  /// Drives the first card through the swipe demo. The overlay only exists
+  /// while the animation is running — at rest the card is returned untouched,
+  /// so nothing interferes with the Dismissible's own drag.
+  Widget _wrapWithHint(Widget card) {
+    return Listener(
+      // A real touch always wins: yield instantly rather than fighting the
+      // Dismissible's drag offset with our own transform.
+      onPointerDown: (_) {
+        if (_hintController.isAnimating) _hintController.reset();
+      },
+      child: AnimatedBuilder(
+        animation: _hint,
+        builder: (context, child) {
+          if (_hint.value == 0) return child!;
+          return Stack(
+            children: [
+              Positioned.fill(child: _deleteReveal(context)),
+              Transform.translate(
+                offset: Offset(-_hint.value * _kHintPeek, 0),
+                child: child,
+              ),
+            ],
+          );
+        },
+        child: card,
+      ),
     );
   }
 }

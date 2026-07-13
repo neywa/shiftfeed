@@ -13,11 +13,17 @@ import '../services/notification_service.dart';
 import '../services/user_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/auth_sheet.dart';
+import '../widgets/brand_title.dart';
 import '../widgets/paywall_sheet.dart';
 import 'submit_screen.dart';
 
 class AboutScreen extends StatelessWidget {
-  const AboutScreen({super.key});
+  /// Show the ShiftFeed wordmark instead of the screen name. True when the
+  /// screen is a bottom-nav tab; false on the desktop push-route, which has
+  /// a back arrow and needs the screen name for context.
+  final bool showBrandTitle;
+
+  const AboutScreen({super.key, this.showBrandTitle = false});
 
   static const _sources = <_SourceItem>[
     _SourceItem('Red Hat Blog', Icons.rss_feed),
@@ -84,7 +90,9 @@ class AboutScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('About')),
+      appBar: AppBar(
+        title: showBrandTitle ? const BrandTitle() : const Text('About'),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -168,7 +176,7 @@ class AboutScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  const _ProBadge(),
+                  const ProBadge(),
                 ],
               ),
             ),
@@ -191,7 +199,7 @@ class AboutScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  const _ProBadge(),
+                  const ProBadge(),
                 ],
               ),
             ),
@@ -214,7 +222,7 @@ class AboutScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  const _ProBadge(),
+                  const ProBadge(),
                 ],
               ),
             ),
@@ -237,7 +245,7 @@ class AboutScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  const _ProBadge(),
+                  const ProBadge(),
                 ],
               ),
             ),
@@ -493,30 +501,6 @@ class _AccountSection extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-}
-
-class _ProBadge extends StatelessWidget {
-  const _ProBadge();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(
-        color: const Color(0xFFEE0000),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: const Text(
-        'PRO',
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 9,
-          fontWeight: FontWeight.w800,
-          letterSpacing: 0.8,
-        ),
-      ),
     );
   }
 }
