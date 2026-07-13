@@ -7,3 +7,4 @@
 | 1.2.5     | 10 | I      | Ingress Insight |
 | 1.2.6     | 11 | J      | Jetstream Junction |
 | 1.2.7     | 12 | K      | Kubelet Keystone |
+| 1.2.8     | 13 | L      | Lattice Launchpad |
