@@ -17,7 +17,8 @@ They never import from each other. The contract is the Supabase schema (curated 
 
 ```bash
 # Install deps. The CI workflow installs them inline; pyproject.toml lists the same set.
-pip install httpx feedparser supabase python-dotenv beautifulsoup4 google-auth anthropic pyyaml
+# google-auth needs the [requests] extra — the FCM sender uses google.auth.transport.requests.
+pip install httpx feedparser supabase python-dotenv beautifulsoup4 "google-auth[requests]" anthropic pyyaml
 # or
 pip install -e scraper/
 
@@ -114,6 +115,8 @@ Tags on `articles.tags` aren't just labels — several are read by other modules
 
 For curated sources there is no config file — everything is in code. **Per-user RSS feeds (Phase 6) are different:** they live in `user_rss_sources` and are added by Pro users via the app, not in code. The scraper picks them up automatically each run via [`fetch_user_sources()`](scraper/sources/user_rss.py).
 
+**Untrusted-URL safety.** Because Pro users supply arbitrary feed URLs, [`sources/rss.py`](scraper/sources/rss.py) fetches feed bytes through [`sources/safe_fetch.py::fetch_feed_bytes()`](scraper/sources/safe_fetch.py) — a scheme allowlist (http/https only), DNS+IP guard that rejects loopback/link-local/private/cloud-metadata addresses, redirect re-validation on every hop, and connect/read timeouts plus a hard response-size cap. feedparser is deliberately handed the already-fetched bytes, **never the URL**, because it would otherwise do its own unguarded network I/O (and would resolve `file://`). Keep that invariant when touching feed fetching.
+
 ### FCM: topics + per-token sends
 
 Two delivery modes coexist:
@@ -130,9 +133,19 @@ Notification channel ID is `shiftfeed_alerts` and must match between [scraper/fc
 
 [app/lib/main.dart](app/lib/main.dart) initializes Supabase, then conditionally initializes Firebase + `NotificationService` only when `!kIsWeb && (Android || iOS)` — Linux/macOS/Windows/web skip Firebase. `ArticleRepository` ([app/lib/repositories/article_repository.dart](app/lib/repositories/article_repository.dart)) is the only Supabase reader; both `HomeScreen` and `DigestScreen` go through it. `ThemeNotifier` + `provider` drive light/dark switching.
 
-**Mobile vs desktop layout split.** [home_screen.dart:431-441](app/lib/screens/home_screen.dart#L431-L441) routes at `_desktopBreakpoint = 900` between `_buildMobile` (BottomNav + collapsible search AppBar + IndexedStack of feed/versions/saved/settings) and `_buildDesktop` (left sidebar nav + grid + right sidebar with OCP versions, latest CVEs, top sources, popular tags). Same state, repository, and search backing — completely different shells. Editing the feed UI usually means updating both paths.
+**Mobile vs desktop layout split.** `HomeScreen.build` routes at `_desktopBreakpoint = 900` between `_buildMobile` (BottomNav + IndexedStack of feed/versions/saved/settings) and `_buildDesktop` (left sidebar nav + grid + right sidebar with OCP versions, latest CVEs, top sources, popular tags). Same state, repository, and search backing — completely different shells. Editing the feed UI usually means updating both paths.
+
+**Screen names are a trap.** [settings_screen.dart](app/lib/screens/settings_screen.dart) (`SettingsScreen`) is the *Settings* tab — the thing users change. [about_screen.dart](app/lib/screens/about_screen.dart) (`AboutScreen`) is a separate screen pushed from a row at the bottom of Settings, holding app identity (icon, version via `release_info.dart`, tagline), the Data section, external links, and the RevenueCat ID copy. Historically `AboutScreen` *was* the settings tab; don't conflate them.
+
+**One app bar across the four tabs.** [main_app_bar.dart](app/lib/widgets/main_app_bar.dart) renders the wordmark ([brand_title.dart](app/lib/widgets/brand_title.dart), which resolves the PRO badge itself off `EntitlementService`) plus four actions: search, view-mode toggle, AI Briefing (Pro-gated via the shared top-level `openDigest(context)` — web exempt), theme toggle. Actions a screen can't act on are **greyed, not dropped**, so the bar's shape never shifts: `onSearch` is null everywhere but the feed, `viewToggleEnabled` is true only on feed + Saved. `VersionsScreen` / `BookmarksScreen` / `SettingsScreen` each take an `isTab` flag — true inside the `IndexedStack` (wear `MainAppBar`), false when the desktop sidebar pushes them as routes (keep their own descriptive title + back arrow). Both paths exist in every one of those files.
+
+**View mode is global.** `LayoutNotifier` (`ViewMode.grid` = full card, `ViewMode.list` = compact) is an app-wide provider persisted to `SharedPreferences`; the feed *and* the Saved list both pass `compact:` to `ArticleCard` from it. A new card list should honour it too.
+
+**Saved screen.** Removal is swipe-only (`Dismissible` + Undo snackbar) plus the in-card bookmark icon; there is deliberately no bulk clear-all and no bookmark export — `ExportService` now shares the AI briefing and nothing else. Because the swipe isn't discoverable, the first card demos it on every visit (slide out, bounce back) until the user really swipe-deletes once, which sets the `saved_swipe_hint_done` pref. The replay hangs off the same `isActive` flag pattern `VersionsScreen` uses: the `IndexedStack` keeps the State alive, so `initState` fires once and `didUpdateWidget` is what sees a tab revisit.
 
 **Theme awareness.** Don't hardcode `kSurface` / `kTextPrimary` etc. in widgets — use the helpers in [app/lib/theme/app_theme.dart](app/lib/theme/app_theme.dart) (`surfaceOf(context)`, `borderOf(context)`, `textMutedOf(context)`, etc.) or the theme-aware getters on widgets like `HomeScreen`'s `_textPrimary` / `_surface` / `_border`. That's how light mode stays correct.
+
+**Spacing is optical, and two things lie to you.** Gaps in this UI are measured to the *glyphs*, not the widget boxes, because a `Text`'s line box carries a blank strip above its glyphs and another below the baseline — a nominal 16dp can render as 21dp. [theme/text_metrics.dart](app/lib/theme/text_metrics.dart) (`inkTop(size, height)` / `inkBottom(size, height)`, constants measured off a device screenshot) is the shared compensation, used by [article_card.dart](app/lib/widgets/article_card.dart) and [settings_screen.dart](app/lib/screens/settings_screen.dart). It only applies to text that sets an explicit `height` + `leadingDistribution: TextLeadingDistribution.even`. Second liar: Material's `Card` defaults to a **4dp margin on every side** — set `margin: EdgeInsets.zero` or every gap between stacked cards is silently 8dp larger than written. When changing spacing, verify on a device (`adb exec-out screencap`) and measure pixel rows; the nominal numbers in the code will not match what you see otherwise.
 
 ### Two env files, two keys
 
