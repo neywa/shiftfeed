@@ -9,3 +9,4 @@
 | 1.2.7     | 12 | K      | Kubelet Keystone |
 | 1.2.8     | 13 | L      | Lattice Launchpad |
 | 1.2.9     | 14 | M      | Manifest Momentum |
+| 1.2.10    | 15 | N      | Nimbus Nexus |
