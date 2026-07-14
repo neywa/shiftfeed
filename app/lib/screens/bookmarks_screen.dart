@@ -8,7 +8,6 @@ import '../repositories/article_repository.dart';
 import '../services/bookmark_article_cache.dart';
 import '../services/bookmark_service.dart';
 import '../services/entitlement_service.dart';
-import '../services/user_service.dart';
 import '../theme/app_theme.dart';
 import '../theme/layout_notifier.dart';
 import '../utils/open_article.dart';
@@ -274,10 +273,7 @@ class _BookmarksScreenState extends State<BookmarksScreen>
           appBar: widget.isTab
               // The cards here honour the view mode, so that toggle stays
               // live; there is no search on this screen, so it greys out.
-              ? const MainAppBar(
-                  viewToggleEnabled: true,
-                  leadingActions: [_SyncIndicator()],
-                )
+              ? const MainAppBar(viewToggleEnabled: true)
               : AppBar(
                   backgroundColor: bgOf(context),
                   title: const Text(
@@ -287,7 +283,6 @@ class _BookmarksScreenState extends State<BookmarksScreen>
                       letterSpacing: 2,
                     ),
                   ),
-                  actions: const [_SyncIndicator()],
                   bottom: PreferredSize(
                     preferredSize: const Size.fromHeight(1),
                     child: Container(height: 1, color: kRed),
@@ -445,36 +440,6 @@ class _BookmarksScreenState extends State<BookmarksScreen>
         },
         child: card,
       ),
-    );
-  }
-}
-
-class _SyncIndicator extends StatelessWidget {
-  const _SyncIndicator();
-
-  Future<bool> _shouldShow() async {
-    if (!UserService.instance.isSignedIn) return false;
-    return EntitlementService.instance.isPro();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<bool>(
-      future: _shouldShow(),
-      builder: (context, snap) {
-        if (snap.data != true) return const SizedBox.shrink();
-        return Padding(
-          padding: const EdgeInsets.only(right: 4),
-          child: Tooltip(
-            message: 'Bookmarks synced across devices',
-            child: Icon(
-              Icons.cloud_done_outlined,
-              size: 20,
-              color: textSecondaryOf(context),
-            ),
-          ),
-        );
-      },
     );
   }
 }
