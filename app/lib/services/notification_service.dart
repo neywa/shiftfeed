@@ -37,7 +37,17 @@ class NotificationService {
 
     const androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
-    const initSettings = InitializationSettings(android: androidSettings);
+    // Permission is already requested by FirebaseMessaging in main(); asking
+    // again here would put a second prompt path in front of the user.
+    const darwinSettings = DarwinInitializationSettings(
+      requestAlertPermission: false,
+      requestBadgePermission: false,
+      requestSoundPermission: false,
+    );
+    const initSettings = InitializationSettings(
+      android: androidSettings,
+      iOS: darwinSettings,
+    );
     await _localNotifications.initialize(initSettings);
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
@@ -57,6 +67,11 @@ class NotificationService {
             priority: Priority.high,
             color: const Color(0xFFEE0000),
             icon: '@mipmap/ic_launcher',
+          ),
+          iOS: const DarwinNotificationDetails(
+            presentAlert: true,
+            presentBadge: true,
+            presentSound: true,
           ),
         ),
       );
