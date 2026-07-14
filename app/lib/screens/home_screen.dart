@@ -17,6 +17,7 @@ import '../services/bookmark_service.dart';
 import '../services/entitlement_service.dart';
 import '../theme/app_theme.dart';
 import '../theme/layout_notifier.dart';
+import '../theme/text_metrics.dart';
 import '../theme/theme_notifier.dart';
 import '../utils/favicons.dart';
 import '../utils/open_article.dart';
@@ -32,6 +33,10 @@ import 'submit_screen.dart';
 import 'versions_screen.dart';
 
 const double _desktopBreakpoint = 900;
+
+/// Font size of the desktop sidebar's wordmark. Its vertical [ProBadge] is
+/// sized off this so the two stay in step.
+const double _kSidebarWordmarkSize = 18;
 const Color _kReleaseGreen = Color(0xFF00AA44);
 const Color _kSecurityOrange = Color(0xFFFF6600);
 const String _kOcpVersionsSource = 'OCP Versions';
@@ -1181,15 +1186,17 @@ class _HomeScreenState extends State<HomeScreen> {
                       overflow: TextOverflow.ellipsis,
                       softWrap: false,
                       style: GoogleFonts.ibmPlexSans(
-                        fontSize: 18,
+                        fontSize: _kSidebarWordmarkSize,
                         fontWeight: FontWeight.w800,
                         color: _textPrimary,
                       ),
                     ),
                   ),
                   if (_isPro) ...[
-                    const SizedBox(width: 8),
-                    const ProBadge(),
+                    const SizedBox(width: 6),
+                    const ProBadge.vertical(
+                      height: kFontBox * _kSidebarWordmarkSize,
+                    ),
                   ],
                 ],
               ),
