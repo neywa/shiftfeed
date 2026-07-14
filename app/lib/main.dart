@@ -22,9 +22,8 @@ import 'theme/theme_notifier.dart';
 
 // RevenueCat publishable SDK keys — safe to ship in source (mobile SDK keys
 // are designed for client embedding, like the Supabase anon key).
-// TODO: replace the Apple placeholder with the real key before iOS testing.
 const String _rcApiKeyAndroid = 'goog_kryEWTjzpwJhvzTbeBEbQfmJXGG';
-const String _rcApiKeyApple = 'REVENUECAT_APPLE_KEY';
+const String _rcApiKeyApple = 'appl_rWUmfnWfGhUXnUnEPNlPjQIRJfT';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
