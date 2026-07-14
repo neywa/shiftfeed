@@ -7,6 +7,7 @@
 library;
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -85,11 +86,54 @@ class NotificationService {
     return prefs.getBool(topicPrefKey(topic)) ?? true;
   }
 
+  /// Waits for APNs to hand Firebase a device token, which happens some time
+  /// after `requestPermission()` — not by the time startup code runs.
+  ///
+  /// Until that token lands, every FCM call on an Apple platform throws
+  /// `[firebase_messaging/apns-token-not-set]`; that exception, awaited
+  /// unguarded during startup, is what once left the app on a white screen.
+  /// So every subscribe/unsubscribe/getToken call must pass through here.
+  ///
+  /// Returns true as soon as the token is available — and immediately on
+  /// Android and web, which need no APNs token. Returns false if it never
+  /// arrives within [timeout] (the iOS Simulator never issues one, and
+  /// neither does a device whose user denied notifications), in which case
+  /// callers must **skip** the FCM call rather than let it throw.
+  static Future<bool> ensureApnsToken({
+    Duration timeout = const Duration(seconds: 15),
+  }) async {
+    if (kIsWeb) return true;
+    if (defaultTargetPlatform != TargetPlatform.iOS &&
+        defaultTargetPlatform != TargetPlatform.macOS) {
+      return true;
+    }
+
+    const pollInterval = Duration(milliseconds: 500);
+    final deadline = DateTime.now().add(timeout);
+    while (true) {
+      try {
+        if (await FirebaseMessaging.instance.getAPNSToken() != null) {
+          return true;
+        }
+      } catch (e) {
+        debugPrint('[NotificationService] getAPNSToken failed: $e');
+      }
+      if (!DateTime.now().isBefore(deadline)) {
+        debugPrint('[NotificationService] APNs token unavailable after '
+            '${timeout.inSeconds}s — skipping FCM topic subscriptions.');
+        return false;
+      }
+      await Future<void>.delayed(pollInterval);
+    }
+  }
+
   /// Persists the enabled-state for [topic] and immediately reconciles the
   /// FCM subscription if [isPro] is true.
   ///
   /// When [isPro] is false the pref is still written but no FCM call is made
-  /// — the user can toggle freely while the gate holds.
+  /// — the user can toggle freely while the gate holds. The pref is also
+  /// written when the FCM call can't be made or fails, so a subscription
+  /// missed here is picked up by [applyTopicSubscriptions] on next launch.
   static Future<void> setTopicEnabled(
     String topic, {
     required bool enabled,
@@ -98,11 +142,17 @@ class NotificationService {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(topicPrefKey(topic), enabled);
     if (!isPro) return;
+    if (!await ensureApnsToken()) return;
+
     final messaging = FirebaseMessaging.instance;
-    if (enabled) {
-      await messaging.subscribeToTopic(topic);
-    } else {
-      await messaging.unsubscribeFromTopic(topic);
+    try {
+      if (enabled) {
+        await messaging.subscribeToTopic(topic);
+      } else {
+        await messaging.unsubscribeFromTopic(topic);
+      }
+    } catch (e) {
+      debugPrint('[NotificationService] $topic subscription failed: $e');
     }
   }
 
@@ -110,18 +160,22 @@ class NotificationService {
   ///
   /// When [isPro] is false this unsubscribes from every topic — required so
   /// users who let their trial lapse stop receiving pushes.
+  ///
+  /// Never throws: a topic that fails is logged and the rest still reconcile.
   static Future<void> applyTopicSubscriptions({required bool isPro}) async {
+    if (!await ensureApnsToken()) return;
+
     final messaging = FirebaseMessaging.instance;
     for (final topic in kProNotificationTopics) {
-      if (!isPro) {
-        await messaging.unsubscribeFromTopic(topic);
-        continue;
-      }
-      final enabled = await getTopicEnabled(topic);
-      if (enabled) {
-        await messaging.subscribeToTopic(topic);
-      } else {
-        await messaging.unsubscribeFromTopic(topic);
+      try {
+        final subscribe = isPro && await getTopicEnabled(topic);
+        if (subscribe) {
+          await messaging.subscribeToTopic(topic);
+        } else {
+          await messaging.unsubscribeFromTopic(topic);
+        }
+      } catch (e) {
+        debugPrint('[NotificationService] $topic reconcile failed: $e');
       }
     }
   }

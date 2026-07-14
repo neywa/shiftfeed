@@ -67,35 +67,43 @@ Future<void> main() async {
   if (!kIsWeb &&
       (defaultTargetPlatform == TargetPlatform.android ||
           defaultTargetPlatform == TargetPlatform.iOS)) {
-    await Firebase.initializeApp();
-    await NotificationService.initialize();
-    final messaging = FirebaseMessaging.instance;
-    await messaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
-
+    // Push is best-effort. Everything in here must degrade to "no push" on
+    // failure — it sits in front of runApp(), so anything that escapes costs
+    // the user the whole app (an unguarded APNs failure here once showed a
+    // white screen instead of the feed).
     try {
-      final rcKey = Platform.isAndroid ? _rcApiKeyAndroid : _rcApiKeyApple;
-      await EntitlementService.instance.init(rcKey);
+      await Firebase.initializeApp();
+      await NotificationService.initialize();
+      await FirebaseMessaging.instance.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+
+      try {
+        final rcKey = Platform.isAndroid ? _rcApiKeyAndroid : _rcApiKeyApple;
+        await EntitlementService.instance.init(rcKey);
+      } catch (e) {
+        debugPrint('RevenueCat init failed: $e');
+      }
+      await UserService.instance.init();
+      DeviceTokenService.instance.listenForTokenRefresh();
+
+      // Deliberately not awaited: on iOS this blocks on the APNs token, which
+      // lands seconds after launch. Holding the first frame for it would just
+      // trade a crashed white screen for a slow one.
+      unawaited(_reapplyTopicSubscriptions());
+
+      // Pro can now flip mid-session (sign-in/out as well as purchase/restore),
+      // so keep FCM topic subscriptions reconciled with entitlement instead of
+      // only applying them once at startup. Registered after the line above so
+      // the startup linkUser inside UserService.init() doesn't double-trigger.
+      EntitlementService.instance.addListener(_reapplyTopicSubscriptions);
+
+      unawaited(_logFcmToken());
     } catch (e) {
-      debugPrint('RevenueCat init failed: $e');
+      debugPrint('Push notification setup failed: $e');
     }
-    await UserService.instance.init();
-    DeviceTokenService.instance.listenForTokenRefresh();
-
-    final isPro = await EntitlementService.instance.isPro();
-    await NotificationService.applyTopicSubscriptions(isPro: isPro);
-
-    // Pro can now flip mid-session (sign-in/out as well as purchase/restore),
-    // so keep FCM topic subscriptions reconciled with entitlement instead of
-    // only applying them once at startup. Registered after the line above so
-    // the startup linkUser inside UserService.init() doesn't double-trigger.
-    EntitlementService.instance.addListener(_reapplyTopicSubscriptions);
-
-    final token = await messaging.getToken();
-    debugPrint('FCM Token: $token');
   }
 
   runApp(
@@ -114,6 +122,17 @@ Future<void> main() async {
       child: const MyApp(),
     ),
   );
+}
+
+// Debug aid only. Gated on the APNs token because getToken() throws the same
+// apns-token-not-set exception the topic calls do.
+Future<void> _logFcmToken() async {
+  try {
+    if (!await NotificationService.ensureApnsToken()) return;
+    debugPrint('FCM Token: ${await FirebaseMessaging.instance.getToken()}');
+  } catch (e) {
+    debugPrint('FCM token fetch failed: $e');
+  }
 }
 
 // Serializes topic reconciliation triggered by EntitlementService changes.

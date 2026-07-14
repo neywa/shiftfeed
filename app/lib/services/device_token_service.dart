@@ -11,6 +11,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'notification_service.dart';
 import 'user_service.dart';
 
 const String _kTable = 'user_device_tokens';
@@ -30,6 +31,10 @@ class DeviceTokenService {
     if (kIsWeb) return;
     if (!UserService.instance.isSignedIn) return;
     if (!(Platform.isAndroid || Platform.isIOS)) return;
+    // On iOS getToken() throws until APNs has issued a token; without this
+    // gate the catch below would swallow it and the device would never
+    // register for per-user push.
+    if (!await NotificationService.ensureApnsToken()) return;
     try {
       final token = await FirebaseMessaging.instance.getToken();
       if (token == null) {
