@@ -94070,7 +94070,7 @@ if(q!=null){A.f4().$1("[About] PackageInfo.fromPlatform failed: "+A.j(q))
 return B.at}q=b.b
 s=q==null?r:q.c
 if(s==null)return A.ad(" ",r,r,r,r,this.a.c,r,r)
-return A.ad("v"+B.b.ga_(s.split("+"))+" \xb7 Lattice Launchpad",r,r,r,r,this.a.c,r,r)},
+return A.ad("v"+B.b.ga_(s.split("+"))+" \xb7 Manifest Momentum",r,r,r,r,this.a.c,r,r)},
 $S:604}
 A.I3.prototype={
 aj(){return new A.YQ()}}
