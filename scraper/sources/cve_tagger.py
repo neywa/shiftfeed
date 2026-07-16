@@ -30,4 +30,8 @@ def enrich_with_cve_tags(article: Article) -> Article:
         tags=new_tags,
         summary=article.summary,
         published_at=article.published_at,
+        # Must be carried over: a None submitted_by is what the articles RLS
+        # policy treats as "visible to everyone", so dropping it here would
+        # publish a Pro user's custom-feed article to the global firehose.
+        submitted_by=article.submitted_by,
     )
