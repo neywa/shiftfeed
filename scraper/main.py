@@ -8,6 +8,7 @@ from scraper.fcm import FCMSender
 from scraper.notified_cache import NotifiedCache
 from scraper.sources.alert_rule_matcher import article_matches_rule
 from scraper.sources.alert_rules import fetch_active_rules
+from scraper.sources.cve_enrichment import enrich_articles
 from scraper.sources.cve_tagger import enrich_with_cve_tags
 from scraper.sources.github_releases import fetch_github_releases
 from scraper.sources.ocp_versions import fetch_ocp_version_updates
@@ -111,16 +112,38 @@ def main() -> None:
     print(f"Articles with CVE tags: {tagged_cve_count}")
     print(f"Total: {len(all_articles)}")
 
+    # Score any cve-tagged article the regex path minted without one (Istio
+    # bulletins, blog mentions), and drop rejected CVE records — BEFORE the
+    # upsert, so an unscored or withdrawn CVE never reaches the feed. Reads
+    # cve_alerts as a cache first, so a steady-state run makes ~0 API calls.
+    all_articles, dropped = enrich_articles(all_articles, client)
+    if dropped:
+        print(f"Dropped {len(dropped)} rejected CVE record(s)")
+
     for article in all_articles:
         client.upsert_article(article)
 
     for article in all_articles:
+        cvss = next(
+            (t for t in article.tags if t.startswith("cvss:")), None
+        )
+        cvss_value = float(cvss.split(":", 1)[1]) if cvss else None
+        severity = next(
+            (
+                t
+                for t in article.tags
+                if t in ("critical", "important", "moderate", "low", "high", "medium")
+            ),
+            None,
+        )
         for tag in article.tags:
             if tag.startswith("CVE-"):
                 client.upsert_cve_alert(
                     cve_id=tag,
                     title=article.title,
                     article_url=article.url,
+                    cvss=cvss_value,
+                    severity=severity,
                 )
 
     fcm = FCMSender()

@@ -110,18 +110,31 @@ def _read_capped(response: httpx.Response) -> bytes:
     return b"".join(chunks)
 
 
-def fetch_feed_bytes(url: str) -> bytes:
+def fetch_feed_bytes(
+    url: str, *, headers: dict[str, str] | None = None
+) -> bytes:
     """Fetch ``url`` and return the response body bytes.
 
     The SSRF guard runs on the initial URL and on every redirect hop;
     an explicit timeout and a hard size cap bound the cost. Raises
     :class:`FeedFetchError` on any guard violation or limit breach
-    (callers swallow per-feed, preserving the run's isolation invariant)."""
+    (callers swallow per-feed, preserving the run's isolation invariant).
+
+    ``headers`` merges over the default User-Agent, for APIs that
+    authenticate via a header (NVD's ``apiKey``). It cannot weaken the
+    guard — scheme/IP validation, redirect re-validation, the timeout and
+    the size cap all run regardless of what is passed here. Note the
+    headers travel to every redirect hop, so only pass credentials for
+    hosts you trust to redirect responsibly.
+    """
     current = url
+    merged = {"User-Agent": _USER_AGENT}
+    if headers:
+        merged.update(headers)
     with httpx.Client(
         follow_redirects=False,  # we follow manually so the guard re-runs
         timeout=_TIMEOUT,
-        headers={"User-Agent": _USER_AGENT},
+        headers=merged,
     ) as client:
         for _ in range(_MAX_REDIRECTS + 1):
             _guard_url(current)

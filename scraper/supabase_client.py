@@ -35,19 +35,37 @@ class SupabaseClient:
             _logger.exception("Failed to upsert article")
 
     def upsert_cve_alert(
-        self, cve_id: str, title: str, article_url: str
+        self,
+        cve_id: str,
+        title: str,
+        article_url: str,
+        cvss: float | None = None,
+        severity: str | None = None,
     ) -> None:
+        """Upsert a cve_alerts row.
+
+        ``cvss`` requires the column added by::
+
+            alter table cve_alerts add column if not exists cvss numeric(3,1);
+
+        ``severity`` has always existed on the table but was never written
+        until CVE enrichment landed, which is why it is NULL on every row
+        predating it. Both are omitted from the payload when None so an
+        upsert can never blank out a score a previous run resolved.
+        """
         try:
+            row: dict[str, object] = {
+                "cve_id": cve_id,
+                "title": title,
+                "article_url": article_url,
+            }
+            if cvss is not None:
+                row["cvss"] = cvss
+            if severity is not None:
+                row["severity"] = severity
             (
                 self._client.table("cve_alerts")
-                .upsert(
-                    {
-                        "cve_id": cve_id,
-                        "title": title,
-                        "article_url": article_url,
-                    },
-                    on_conflict="cve_id",
-                )
+                .upsert(row, on_conflict="cve_id")
                 .execute()
             )
             print(f"CVE Alert: {cve_id}")

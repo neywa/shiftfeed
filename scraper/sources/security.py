@@ -16,6 +16,7 @@ from typing import Any
 import httpx
 
 from scraper.models import Article
+from scraper.sources.cve_enrichment import extract_cvss_score
 from scraper.sources.relevance import evaluate_relevance
 
 _logger = logging.getLogger(__name__)
@@ -39,49 +40,6 @@ def _parse_public_date(raw: str | None) -> datetime | None:
         return datetime.fromisoformat(raw.replace("Z", "+00:00"))
     except ValueError:
         return None
-
-
-def _extract_cvss_score(advisory: dict[str, Any]) -> float | None:
-    """
-    Returns the CVSS base score from a Red Hat Hydra CVE entry, rounded to
-    one decimal place. Returns ``None`` if no recognisable score is found
-    or any field is malformed — never raises.
-
-    The Hydra payload has historically used a few different shapes
-    (``cvss3_score`` is the most common today; older entries used
-    ``cvss_score``), and NVD-shaped responses nest the score under
-    ``metrics.cvssMetricV31[0].cvssData.baseScore``. We try them in turn
-    and take the first numeric value we can coerce to a float.
-    """
-    try:
-        candidates: list[Any] = [
-            advisory.get("cvss3_score"),
-            advisory.get("cvssScore"),
-            advisory.get("cvss_score"),
-        ]
-        cvss3 = advisory.get("cvss3")
-        if isinstance(cvss3, dict):
-            candidates.append(cvss3.get("score"))
-            candidates.append(cvss3.get("base_score"))
-        metrics = advisory.get("metrics")
-        if isinstance(metrics, dict):
-            v31 = metrics.get("cvssMetricV31")
-            if isinstance(v31, list) and v31:
-                first = v31[0]
-                if isinstance(first, dict):
-                    cvss_data = first.get("cvssData")
-                    if isinstance(cvss_data, dict):
-                        candidates.append(cvss_data.get("baseScore"))
-        for raw in candidates:
-            if raw is None or raw == "":
-                continue
-            try:
-                return round(float(raw), 1)
-            except (TypeError, ValueError):
-                continue
-    except Exception:
-        return None
-    return None
 
 
 def _is_relevant(entry: dict[str, Any]) -> bool:
@@ -126,7 +84,9 @@ def _article_from_cve(entry: dict[str, Any]) -> Article | None:
         if cve_upper not in tags:
             tags.append(cve_upper)
 
-    cvss_score = _extract_cvss_score(entry)
+    # The LIST endpoint's flat cvss3_score. Shape handling lives in
+    # cve_enrichment so there is exactly one extractor across the scraper.
+    cvss_score = extract_cvss_score(entry)
     if cvss_score is not None:
         tags.append(f"cvss:{cvss_score:.1f}")
 
