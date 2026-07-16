@@ -18,6 +18,13 @@ dependencies = [
     "pyyaml>=6.0",
 ]
 
+[project.optional-dependencies]
+# Dev-only. Deliberately NOT added to the pip install line in
+# .github/workflows/scrape.yml — the hourly job never imports pytest.
+dev = [
+    "pytest>=8",
+]
+
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["sources*"]

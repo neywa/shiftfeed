@@ -16,11 +16,11 @@ from typing import Any
 import httpx
 
 from scraper.models import Article
+from scraper.sources.relevance import evaluate_relevance
 
 _logger = logging.getLogger(__name__)
 
 _CVE_PATTERN = re.compile(r"CVE-\d{4}-\d+", re.IGNORECASE)
-_RELEVANT_KEYWORDS = ("openshift", "ocp", "kubernetes", "container", "podman", "quay", "istio", "servicemesh", "envoy", "kiali")
 
 # Red Hat deprecated the legacy RSS errata feeds in favor of the JSON
 # Security Data API. We query it once per relevant package keyword and
@@ -85,12 +85,19 @@ def _extract_cvss_score(advisory: dict[str, Any]) -> float | None:
 
 
 def _is_relevant(entry: dict[str, Any]) -> bool:
+    """True if a Hydra CVE entry looks relevant to this app's audience.
+
+    The haystack is the description (falling back to the bare CVE id) plus
+    every affected package name — never the summary. Matching itself lives
+    in :func:`~scraper.sources.relevance.evaluate_relevance` so the keyword
+    set stays shared with the content filter in ``rss.py``.
+    """
     title = entry.get("bugzilla_description") or entry.get("CVE") or ""
     haystack = title.lower()
     packages = entry.get("affected_packages") or []
     for pkg in packages:
         haystack += f" {str(pkg).lower()}"
-    return any(keyword in haystack for keyword in _RELEVANT_KEYWORDS)
+    return evaluate_relevance(haystack).passed
 
 
 def _article_from_cve(entry: dict[str, Any]) -> Article | None:

@@ -4,12 +4,13 @@ import calendar
 import logging
 import time
 from datetime import datetime, timezone
-from typing import TypedDict
+from typing import NotRequired, TypedDict
 
 import feedparser
 from bs4 import BeautifulSoup
 
 from scraper.models import Article
+from scraper.sources.relevance import evaluate_relevance
 from scraper.sources.safe_fetch import FeedFetchError, fetch_feed_bytes
 
 _logger = logging.getLogger(__name__)
@@ -19,6 +20,10 @@ class RSSSource(TypedDict):
     url: str
     source: str
     tags: list[str]
+    # Opt-in for broad feeds: when True, entries whose title+summary match
+    # no relevance keyword are dropped. Omit (the default) for narrow,
+    # all-relevant feeds where every entry is on-topic by construction.
+    content_filter: NotRequired[bool]
 
 
 RSS_SOURCES: list[RSSSource] = [
@@ -31,6 +36,14 @@ RSS_SOURCES: list[RSSSource] = [
         "url": "https://developers.redhat.com/blog/feed",
         "source": "Red Hat Developer",
         "tags": ["blog", "developer"],
+    },
+    {
+        "url": (
+            "https://azure.microsoft.com/en-us/blog/product/"
+            "azure-red-hat-openshift/feed/"
+        ),
+        "source": "Azure Red Hat OpenShift",
+        "tags": ["blog", "openshift"],
     },
     {
         "url": "https://kubernetes.io/feed.xml",
@@ -82,7 +95,20 @@ def _html_to_plain_text(html: str) -> str | None:
     return text if text else None
 
 
-def fetch_rss_articles(url: str, source: str, tags: list[str]) -> list[Article]:
+def fetch_rss_articles(
+    url: str,
+    source: str,
+    tags: list[str],
+    content_filter: bool = False,
+) -> list[Article]:
+    """Fetches and parses one feed.
+
+    When ``content_filter`` is True, entries whose title+summary match no
+    keyword in :data:`~scraper.sources.relevance.RELEVANCE_KEYWORDS` are
+    dropped — for broad feeds that would otherwise flood the firehose.
+    Defaults to False, so narrow curated feeds and Pro users' custom feeds
+    keep every entry.
+    """
     articles: list[Article] = []
     # Fetch the bytes ourselves through the SSRF/DoS guard rather than
     # letting feedparser do unguarded network I/O (it would follow
@@ -119,6 +145,16 @@ def fetch_rss_articles(url: str, source: str, tags: list[str]) -> list[Article]:
             else:
                 summary = None
 
+            # Filter on the same plain text that gets stored, so what the
+            # user reads is what decided the article's fate.
+            if content_filter:
+                haystack = f"{title} {summary or ''}"
+                if not evaluate_relevance(haystack).passed:
+                    _logger.debug(
+                        "Dropped off-topic entry from %s: %s", url, title
+                    )
+                    continue
+
             published_parsed = getattr(entry, "published_parsed", None) or getattr(
                 entry, "updated_parsed", None
             )
@@ -145,7 +181,12 @@ def fetch_all_rss() -> list[Article]:
     for src in RSS_SOURCES:
         _logger.info("Fetching: %s", src["source"])
         out.extend(
-            fetch_rss_articles(src["url"], src["source"], src["tags"]),
+            fetch_rss_articles(
+                src["url"],
+                src["source"],
+                src["tags"],
+                content_filter=src.get("content_filter", False),
+            ),
         )
     return out
 
@@ -154,14 +195,16 @@ def fetch_single_feed(feed_config: dict) -> list[Article]:
     """Fetches and parses a single RSS/Atom feed described by ``feed_config``.
 
     ``feed_config`` must have keys ``url``, ``source`` and ``tags`` — the
-    same shape as entries in :data:`RSS_SOURCES`. Returns an empty list
-    on any fetch/parse failure (the underlying :func:`fetch_rss_articles`
-    already swallows and logs per-entry errors)."""
+    same shape as entries in :data:`RSS_SOURCES`, including the optional
+    ``content_filter`` flag (default False). Returns an empty list on any
+    fetch/parse failure (the underlying :func:`fetch_rss_articles` already
+    swallows and logs per-entry errors)."""
     try:
         return fetch_rss_articles(
             feed_config["url"],
             feed_config["source"],
             list(feed_config.get("tags", [])),
+            content_filter=feed_config.get("content_filter", False),
         )
     except Exception:
         _logger.exception(
