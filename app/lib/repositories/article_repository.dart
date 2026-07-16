@@ -185,21 +185,20 @@ class ArticleRepository {
     }
   }
 
+  /// Fetches the [limit] most recently detected CVE alerts.
+  ///
+  /// Ordering and limiting are server-side: the table has no per-user
+  /// scoping, so there is nothing to re-sort client-side.
   Future<List<CveAlert>> fetchCveAlerts({int limit = 10}) async {
     try {
-      final response = await _client.from('cve_alerts').select();
-      final all = (response as List)
+      final response = await _client
+          .from('cve_alerts')
+          .select()
+          .order('detected_at', ascending: false, nullsFirst: false)
+          .limit(limit);
+      return (response as List)
           .map((row) => CveAlert.fromJson(row as Map<String, dynamic>))
           .toList();
-      all.sort((a, b) {
-        final ad = a.createdAt;
-        final bd = b.createdAt;
-        if (ad == null && bd == null) return 0;
-        if (ad == null) return 1;
-        if (bd == null) return -1;
-        return bd.compareTo(ad);
-      });
-      return all.take(limit).toList();
     } catch (e) {
       // ignore: avoid_print
       print('fetchCveAlerts error: $e');

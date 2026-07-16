@@ -1971,10 +1971,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: TextStyle(fontSize: 11, color: _textPrimary),
                 ),
               ),
-              if (alert.createdAt != null) ...[
+              if (alert.detectedAt != null) ...[
                 const SizedBox(width: 4),
                 Text(
-                  timeago.format(alert.createdAt!),
+                  timeago.format(alert.detectedAt!),
                   style: TextStyle(fontSize: 10, color: _textMuted),
                 ),
               ],
