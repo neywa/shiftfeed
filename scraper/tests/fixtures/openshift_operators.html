@@ -1,0 +1,1139 @@
+<html><body>
+<!-- Pruned fixture of https://access.redhat.com/support/policy/updates/openshift_operators
+     captured 2026-07-16. The live page is ~1.6 MB. This keeps a representative subset of
+     operators per tier, verbatim, with the page chrome removed and each version table
+     truncated to its first few rows.
+
+     Deliberately included:
+       platform-aligned  - must be excluded entirely by the parser.
+       OpenShift Logging - group form; sub-operators named by table aria-label (Loki 6.5).
+       GitOps 1.21       - simple 4-cell form with a detail table.
+       AWS Load Balancer - version 'N/A', no table; must be skipped.
+       ACM / Klusterlet  - top table row is prose, not a version; must be skipped.
+       Cluster Observability Operator - name-only 1-cell entry; must be skipped. -->
+<h1 id="platform-aligned">Platform Aligned Operators</h1>
+<div class="pf-v5-c-accordion pf-m-bordered">
+<div>
+<button aria-expanded="false" class="pf-v5-c-accordion__toggle accordion-header" type="button">
+<span class="pf-v5-c-accordion__toggle-text button-grid">
+<span><strong>Operator/Operator Group name</strong></span>
+<span><strong>Latest version</strong></span>
+<span><strong>Full support ends</strong></span>
+<span><strong>Maintenance ends</strong></span>
+</span>
+</button>
+</div>
+<div data-search="OpenShift Data Foundation ODF Multicluster Orchestrator Red Hat OpenShift Data Foundation Openshift DR Cluster Operator Openshift DR Hub Operator">
+<button aria-expanded="false" class="pf-v5-c-accordion__toggle accordion-item" data-id="openshiftDataFoundation-Aligned" type="button">
+<span class="pf-v5-c-accordion__toggle-text button-grid">
+<span>OpenShift Data Foundation</span>
+<span>[Expand for Operator list]</span>
+</span>
+<span class="pf-v5-c-accordion__toggle-icon">
+<i aria-hidden="true" class="fas fa-angle-right" id="openshiftDataFoundation-Aligned-arrow"></i>
+</span>
+</button>
+</div>
+<div class="pf-v5-c-accordion__expandable-content" data-searchtoggle="OpenShift Data Foundation" hidden="" id="openshiftDataFoundation-Aligned">
+<div class="pf-v5-c-accordion__expandable-content-body">
+<h4>Red Hat OpenShift Data Foundation</h4>
+
+<div class="pf-v5-u-mt-md pf-v5-u-mb-md">
+<div><strong>Additional Links: </strong>
+<a class="lifecycle-link" href="https://access.redhat.com/labs/ocpouic/?operator=odf-operator" target="_blank">Operator Update Information Checker</a>
+</div>
+<div><strong>Estimated release cadence: </strong>4 months</div>
+<div><strong>Valid Subscriptions: </strong>
+    OpenShift Platform Plus / OpenShift Data Foundation Essentials / OpenShift Data Foundation Advanced
+    </div>
+</div>
+<h4>ODF Multicluster Orchestrator</h4>
+
+<div class="pf-v5-u-mt-md pf-v5-u-mb-md">
+<div><strong>Additional Links: </strong>
+<a class="lifecycle-link" href="https://access.redhat.com/labs/ocpouic/?operator=odf-multicluster-orchestrator" target="_blank">Operator Update Information Checker</a>
+</div>
+<div><strong>Estimated release cadence: </strong>4 months</div>
+<div><strong>Valid Subscriptions: </strong>
+    OpenShift Platform Plus / OpenShift Data Foundation Essentials / OpenShift Data Foundation Advanced
+    </div>
+</div>
+<h4>Openshift DR Cluster Operator</h4>
+
+<div class="pf-v5-u-mt-md pf-v5-u-mb-md">
+<div><strong>Additional Links: </strong>
+<a class="lifecycle-link" href="https://access.redhat.com/labs/ocpouic/?operator=odr-cluster-operator" target="_blank">Operator Update Information Checker</a>
+</div>
+<div><strong>Estimated release cadence: </strong>4 months</div>
+</div>
+<h4>Openshift DR Hub Operator</h4>
+
+<div class="pf-v5-u-mt-md pf-v5-u-mb-md">
+<div><strong>Additional Links: </strong>
+<a class="lifecycle-link" href="https://access.redhat.com/labs/ocpouic/?operator=odr-hub-operator" target="_blank">Operator Update Information Checker</a>
+</div>
+<div><strong>Estimated release cadence: </strong>4 months</div>
+</div>
+</div>
+</div>
+
+
+
+
+<div data-search="AWS EFS CSI driver operator">
+<button aria-expanded="false" class="pf-v5-c-accordion__toggle accordion-item" data-id="awsEfsCsiDriverOperator-Aligned" type="button">
+<span class="pf-v5-c-accordion__toggle-text button-grid">
+<span>AWS EFS CSI driver operator</span>
+<span>4.20</span>
+<span title="03 May 2026">03 May 2026</span>
+<span title="21 Apr 2027">21 Apr 2027</span>
+</span>
+<span class="pf-v5-c-accordion__toggle-icon">
+<i aria-hidden="true" class="fas fa-angle-right" id="awsEfsCsiDriverOperator-Aligned-arrow"></i>
+</span>
+</button>
+</div>
+<div class="pf-v5-c-accordion__expandable-content" data-searchtoggle="AWS EFS CSI driver operator" hidden="" id="awsEfsCsiDriverOperator-Aligned">
+<div class="pf-v5-c-accordion__expandable-content-body">
+<table aria-label="AWS EFS CSI driver operator version table" class="pf-v5-c-table pf-m-compact pf-m-grid-md" role="grid">
+<thead class="pf-v5-c-table__thead">
+<tr class="pf-v5-c-table__tr" role="row">
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                Version
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                Tier
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                OpenShift Version
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                General availability
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                Full support ends
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                Maintenance ends
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                EUS ends
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                EUS Term 2 ends
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                EUS Term 3 ends
+            </th>
+</tr>
+</thead>
+<tbody class="pf-v5-c-table__tbody" role="rowgroup">
+<tr class="pf-v5-c-table__tr" role="row">
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Version" role="cell">
+                4.20
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Tier" role="cell">
+                Platform Aligned
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="OpenShift Version" role="cell">
+                4.20
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="General availability" role="cell" title="21 Oct 2025">
+                21 Oct 2025
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Full support ends" role="cell" title="03 May 2026">
+                03 May 2026
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Maintenance ends" role="cell" title="21 Apr 2027">
+                21 Apr 2027
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="EUS ends" role="cell" title="21 Oct 2027">
+                21 Oct 2027
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="EUS Term 2 ends" role="cell" title="21 Oct 2028">
+                21 Oct 2028
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="EUS Term 3 ends" role="cell" title="N/A">
+                N/A
+            </td>
+</tr>
+<tr class="pf-v5-c-table__tr" role="row">
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Version" role="cell">
+                4.19
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Tier" role="cell">
+                Platform Aligned
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="OpenShift Version" role="cell">
+                4.19
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="General availability" role="cell" title="17 Jun 2025">
+                17 Jun 2025
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Full support ends" role="cell" title="21 Jan 2026">
+                21 Jan 2026
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Maintenance ends" role="cell" title="17 Dec 2026">
+                17 Dec 2026
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="EUS ends" role="cell" title="N/A">
+                N/A
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="EUS Term 2 ends" role="cell" title="N/A">
+                N/A
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="EUS Term 3 ends" role="cell" title="N/A">
+                N/A
+            </td>
+</tr>
+<tr class="pf-v5-c-table__tr" role="row">
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Version" role="cell">
+                4.18
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Tier" role="cell">
+                Platform Aligned
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="OpenShift Version" role="cell">
+                4.18
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="General availability" role="cell" title="25 Feb 2025">
+                25 Feb 2025
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Full support ends" role="cell" title="17 Sep 2025">
+                17 Sep 2025
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Maintenance ends" role="cell" title="25 Aug 2026">
+                25 Aug 2026
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="EUS ends" role="cell" title="25 Feb 2027">
+                25 Feb 2027
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="EUS Term 2 ends" role="cell" title="25 Feb 2028">
+                25 Feb 2028
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="EUS Term 3 ends" role="cell" title="N/A">
+                N/A
+            </td>
+</tr>
+
+
+
+
+
+
+
+
+</tbody>
+</table>
+<div class="pf-v5-u-mt-md pf-v5-u-mb-md">
+<div><strong>Additional Links: </strong>
+<a class="lifecycle-link" href="https://access.redhat.com/labs/ocpouic/?operator=aws-efs-csi-driver-operator" target="_blank">Operator Update Information Checker</a>
+</div>
+<div><strong>Estimated release cadence: </strong>4 months</div>
+<div><strong>Valid Subscriptions: </strong>
+    OpenShift Kubernetes Engine / OpenShift Container Platform / OpenShift Platform Plus
+    </div>
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+<h1 id="platform-agnostic">Platform Agnostic Operators</h1>
+<div class="pf-v5-c-accordion pf-m-bordered">
+<div>
+<button aria-expanded="false" class="pf-v5-c-accordion__toggle accordion-header" type="button">
+<span class="pf-v5-c-accordion__toggle-text button-grid">
+<span><strong>Operator/Operator Group name</strong></span>
+<span><strong>Latest version</strong></span>
+<span><strong>Full support ends</strong></span>
+<span><strong>Maintenance ends</strong></span>
+</span>
+</button>
+</div>
+<div data-search="OpenShift Logging logging for Red Hat OpenShift Loki operator">
+<button aria-expanded="false" class="pf-v5-c-accordion__toggle accordion-item" data-id="openshiftLogging-Agnostic" type="button">
+<span class="pf-v5-c-accordion__toggle-text button-grid">
+<span>OpenShift Logging</span>
+<span>[Expand for Operator list]</span>
+</span>
+<span class="pf-v5-c-accordion__toggle-icon">
+<i aria-hidden="true" class="fas fa-angle-right" id="openshiftLogging-Agnostic-arrow"></i>
+</span>
+</button>
+</div>
+<div class="pf-v5-c-accordion__expandable-content" data-searchtoggle="OpenShift Logging" hidden="" id="openshiftLogging-Agnostic">
+<div class="pf-v5-c-accordion__expandable-content-body">
+<h4>logging for Red Hat OpenShift</h4>
+<table aria-label="logging for Red Hat OpenShift version table" class="pf-v5-c-table pf-m-compact pf-m-grid-md" role="grid">
+<thead class="pf-v5-c-table__thead">
+<tr class="pf-v5-c-table__tr" role="row">
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                Version
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                Tier
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                OpenShift Version
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                General availability
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                Full support ends
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                Maintenance ends
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                EUS ends
+            </th>
+</tr>
+</thead>
+<tbody class="pf-v5-c-table__tbody" role="rowgroup">
+<tr class="pf-v5-c-table__tr" role="row">
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Version" role="cell">
+                6.5
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Tier" role="cell">
+                Platform Agnostic
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="OpenShift Version" role="cell">
+                4.19, 4.20, 4.21
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="General availability" role="cell" title="01 Apr 2026">
+                01 Apr 2026
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Full support ends" role="cell" title="Release of Logging 6.6 + 1 month">
+                Release of Logging 6.6 + 1 month
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Maintenance ends" role="cell" title="Release of Logging 6.7">
+                Release of Logging 6.7
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="EUS ends" role="cell" title="N/A">
+                N/A
+            </td>
+</tr>
+<tr class="pf-v5-c-table__tr" role="row">
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Version" role="cell">
+                6.4
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Tier" role="cell">
+                Platform Agnostic
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="OpenShift Version" role="cell">
+                4.18, 4.19, 4.20, 4.21
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="General availability" role="cell" title="13 Nov 2025">
+                13 Nov 2025
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Full support ends" role="cell" title="01 May 2026">
+                01 May 2026
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Maintenance ends" role="cell" title="Release of Logging 6.6">
+                Release of Logging 6.6
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="EUS ends" role="cell" title="N/A">
+                N/A
+            </td>
+</tr>
+<tr class="pf-v5-c-table__tr" role="row">
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Version" role="cell">
+                6.3
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Tier" role="cell">
+                Platform Agnostic
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="OpenShift Version" role="cell">
+                4.17, 4.18, 4.19, 4.20
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="General availability" role="cell" title="16 Jul 2025">
+                16 Jul 2025
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Full support ends" role="cell" title="13 Dec 2025">
+                13 Dec 2025
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Maintenance ends" role="cell" title="01 Apr 2026">
+                01 Apr 2026
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="EUS ends" role="cell" title="N/A">
+                N/A
+            </td>
+</tr>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</tbody>
+</table>
+<div class="pf-v5-u-mt-md pf-v5-u-mb-md">
+<div><strong>Additional Links: </strong>
+<a class="lifecycle-link" href="https://access.redhat.com/labs/ocpouic/?operator=cluster-logging" target="_blank">Operator Update Information Checker</a>
+        
+        
+        / <a class="lifecycle-link" href="https://access.redhat.com/support/policy/updates/openshift/#logging" target="_blank">Detailed life cycle information</a>
+</div>
+<div><strong>Estimated release cadence: </strong>4 months</div>
+<div><strong>Valid Subscriptions: </strong>
+    OpenShift Kubernetes Engine / OpenShift Container Platform / OpenShift Platform Plus
+    </div>
+</div>
+<h4>Loki operator</h4>
+<table aria-label="Loki operator version table" class="pf-v5-c-table pf-m-compact pf-m-grid-md" role="grid">
+<thead class="pf-v5-c-table__thead">
+<tr class="pf-v5-c-table__tr" role="row">
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                Version
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                Tier
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                OpenShift Version
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                General availability
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                Full support ends
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                Maintenance ends
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                EUS ends
+            </th>
+</tr>
+</thead>
+<tbody class="pf-v5-c-table__tbody" role="rowgroup">
+<tr class="pf-v5-c-table__tr" role="row">
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Version" role="cell">
+                6.5
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Tier" role="cell">
+                Platform Agnostic
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="OpenShift Version" role="cell">
+                4.19, 4.20, 4.21
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="General availability" role="cell" title="01 Apr 2026">
+                01 Apr 2026
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Full support ends" role="cell" title="Release of Logging 6.6 + 1 month">
+                Release of Logging 6.6 + 1 month
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Maintenance ends" role="cell" title="Release of Logging 6.7">
+                Release of Logging 6.7
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="EUS ends" role="cell" title="N/A">
+                N/A
+            </td>
+</tr>
+<tr class="pf-v5-c-table__tr" role="row">
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Version" role="cell">
+                6.4
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Tier" role="cell">
+                Platform Agnostic
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="OpenShift Version" role="cell">
+                4.18, 4.19, 4.20, 4.21
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="General availability" role="cell" title="13 Nov 2025">
+                13 Nov 2025
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Full support ends" role="cell" title="01 May 2026">
+                01 May 2026
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Maintenance ends" role="cell" title="Release of Logging 6.6">
+                Release of Logging 6.6
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="EUS ends" role="cell" title="N/A">
+                N/A
+            </td>
+</tr>
+<tr class="pf-v5-c-table__tr" role="row">
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Version" role="cell">
+                6.3
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Tier" role="cell">
+                Platform Agnostic
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="OpenShift Version" role="cell">
+                4.17, 4.18, 4.19, 4.20
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="General availability" role="cell" title="16 Jul 2025">
+                16 Jul 2025
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Full support ends" role="cell" title="13 Dec 2025">
+                13 Dec 2025
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Maintenance ends" role="cell" title="01 Apr 2026">
+                01 Apr 2026
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="EUS ends" role="cell" title="N/A">
+                N/A
+            </td>
+</tr>
+
+
+
+
+
+</tbody>
+</table>
+<div class="pf-v5-u-mt-md pf-v5-u-mb-md">
+<div><strong>Additional Links: </strong>
+<a class="lifecycle-link" href="https://access.redhat.com/labs/ocpouic/?operator=loki-operator" target="_blank">Operator Update Information Checker</a>
+</div>
+<div><strong>Estimated release cadence: </strong>4 months</div>
+<div><strong>Valid Subscriptions: </strong>
+    OpenShift Kubernetes Engine / OpenShift Container Platform / OpenShift Platform Plus
+    </div>
+</div>
+</div>
+</div>
+
+
+<div data-search="Red Hat Advanced Cluster Management for Kubernetes Gatekeeper operator Klusterlet multicluster global hub Submariner VolSync">
+<button aria-expanded="false" class="pf-v5-c-accordion__toggle accordion-item" data-id="redHatAdvancedClusterManagementForKubernetes-Agnostic" type="button">
+<span class="pf-v5-c-accordion__toggle-text button-grid">
+<span>Red Hat Advanced Cluster Management for Kubernetes</span>
+<span>[Expand for Operator list]</span>
+</span>
+<span class="pf-v5-c-accordion__toggle-icon">
+<i aria-hidden="true" class="fas fa-angle-right" id="redHatAdvancedClusterManagementForKubernetes-Agnostic-arrow"></i>
+</span>
+</button>
+</div>
+<div class="pf-v5-c-accordion__expandable-content" data-searchtoggle="Red Hat Advanced Cluster Management for Kubernetes" hidden="" id="redHatAdvancedClusterManagementForKubernetes-Agnostic">
+<div class="pf-v5-c-accordion__expandable-content-body">
+<h4>Gatekeeper operator</h4>
+
+<div class="pf-v5-u-mt-md pf-v5-u-mb-md">
+<div><strong>Additional Links: </strong>
+<a class="lifecycle-link" href="https://access.redhat.com/labs/ocpouic/?operator=gatekeeper-operator-product" target="_blank">Operator Update Information Checker</a>
+</div>
+<div><strong>Estimated release cadence: </strong>4 months</div>
+<div><strong>Valid Subscriptions: </strong>
+    OpenShift Platform Plus / Red Hat Advanced Cluster Management for Kubernetes
+    </div>
+</div>
+<h4>Klusterlet</h4>
+<table aria-label="Klusterlet version table" class="pf-v5-c-table pf-m-compact pf-m-grid-md" role="grid">
+<thead class="pf-v5-c-table__thead">
+<tr class="pf-v5-c-table__tr" role="row">
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                Version
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                Tier
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                OpenShift Version
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                General availability
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                Full support ends
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                Maintenance ends
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                EUS ends
+            </th>
+</tr>
+</thead>
+<tbody class="pf-v5-c-table__tbody" role="rowgroup">
+<tr class="pf-v5-c-table__tr" role="row">
+<td class="pf-v5-c-table__td pf-v5-u-pt-md" colspan="5" role="cell" scope="col">
+<strong>Previous operator releases without a tiered strategy</strong>
+</td>
+</tr>
+<tr class="pf-v5-c-table__tr" role="row">
+<td class="pf-v5-c-table__td" data-label="Version" role="cell">
+                2.5
+            </td>
+<td class="pf-v5-c-table__td" data-label="Tier" role="cell">
+                N/A
+            </td>
+<td class="pf-v5-c-table__td" data-label="OpenShift Version" role="cell">
+                N/A
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="General availability" role="cell" title="12 Mar 2024">
+                12 Mar 2024
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Full support ends" role="cell" title="22 Oct 2024">
+                22 Oct 2024
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Maintenance ends" role="cell" title="23 Sep 2025">
+                23 Sep 2025
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="EUS ends" role="cell" title="N/A">
+                N/A
+            </td>
+</tr>
+<tr class="pf-v5-c-table__tr" role="row">
+<td class="pf-v5-c-table__td" data-label="Version" role="cell">
+                2.4
+            </td>
+<td class="pf-v5-c-table__td" data-label="Tier" role="cell">
+                N/A
+            </td>
+<td class="pf-v5-c-table__td" data-label="OpenShift Version" role="cell">
+                N/A
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="General availability" role="cell" title="15 Nov 2023">
+                15 Nov 2023
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Full support ends" role="cell" title="16 Jul 2024">
+                16 Jul 2024
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Maintenance ends" role="cell" title="17 Jun 2025">
+                17 Jun 2025
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="EUS ends" role="cell" title="N/A">
+                N/A
+            </td>
+</tr>
+
+
+
+
+</tbody>
+</table>
+<div class="pf-v5-u-mt-md pf-v5-u-mb-md">
+<div><strong>Additional Links: </strong>
+<a class="lifecycle-link" href="https://access.redhat.com/labs/ocpouic/?operator=klusterlet-product" target="_blank">Operator Update Information Checker</a>
+</div>
+<div><strong>Estimated release cadence: </strong>4 months</div>
+</div>
+<h4>Submariner</h4>
+
+<div class="pf-v5-u-mt-md pf-v5-u-mb-md">
+<div><strong>Additional Links: </strong>
+<a class="lifecycle-link" href="https://access.redhat.com/labs/ocpouic/?operator=submariner" target="_blank">Operator Update Information Checker</a>
+</div>
+<div><strong>Estimated release cadence: </strong>4 months</div>
+</div>
+<h4>VolSync</h4>
+
+<div class="pf-v5-u-mt-md pf-v5-u-mb-md">
+<div><strong>Additional Links: </strong>
+<a class="lifecycle-link" href="https://access.redhat.com/labs/ocpouic/?operator=volsync-product" target="_blank">Operator Update Information Checker</a>
+</div>
+<div><strong>Estimated release cadence: </strong>4 months</div>
+<div><strong>Valid Subscriptions: </strong>
+    OpenShift Platform Plus / Red Hat Advanced Cluster Management for Kubernetes
+    </div>
+</div>
+<h4>multicluster global hub</h4>
+
+<div class="pf-v5-u-mt-md pf-v5-u-mb-md">
+<div><strong>Additional Links: </strong>
+<a class="lifecycle-link" href="https://access.redhat.com/labs/ocpouic/?operator=multicluster-global-hub-operator" target="_blank">Operator Update Information Checker</a>
+</div>
+<div><strong>Estimated release cadence: </strong>4 months</div>
+</div>
+</div>
+</div>
+
+
+
+
+<div data-search="AWS Load Balancer Operator">
+<button aria-expanded="false" class="pf-v5-c-accordion__toggle accordion-item" data-id="awsLoadBalancerOperator-Agnostic" type="button">
+<span class="pf-v5-c-accordion__toggle-text button-grid">
+<span>AWS Load Balancer Operator</span>
+<span>N/A</span>
+<span title="-">-</span>
+<span title="-">-</span>
+</span>
+<span class="pf-v5-c-accordion__toggle-icon">
+<i aria-hidden="true" class="fas fa-angle-right" id="awsLoadBalancerOperator-Agnostic-arrow"></i>
+</span>
+</button>
+</div>
+<div class="pf-v5-c-accordion__expandable-content" data-searchtoggle="AWS Load Balancer Operator" hidden="" id="awsLoadBalancerOperator-Agnostic">
+<div class="pf-v5-c-accordion__expandable-content-body">
+<div class="pf-v5-u-mt-md pf-v5-u-mb-md">
+<div>Operator Life cycle tiering commenced with the release of OpenShift 4.14.  Information for this Operator is pending and will be available with the next Operator release.</div>
+<div><strong>Additional Links: </strong>
+<a class="lifecycle-link" href="https://access.redhat.com/labs/ocpouic/?operator=aws-load-balancer-operator" target="_blank">Operator Update Information Checker</a>
+</div>
+<div><strong>Estimated release cadence: </strong> Not Specified</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div data-search="Red Hat OpenShift GitOps">
+<button aria-expanded="false" class="pf-v5-c-accordion__toggle accordion-item" data-id="redHatOpenshiftGitops-Agnostic" type="button">
+<span class="pf-v5-c-accordion__toggle-text button-grid">
+<span>Red Hat OpenShift GitOps</span>
+<span>1.21</span>
+<span title="31 Oct 2026">31 Oct 2026</span>
+<span title="31 Mar 2027">31 Mar 2027</span>
+</span>
+<span class="pf-v5-c-accordion__toggle-icon">
+<i aria-hidden="true" class="fas fa-angle-right" id="redHatOpenshiftGitops-Agnostic-arrow"></i>
+</span>
+</button>
+</div>
+<div class="pf-v5-c-accordion__expandable-content" data-searchtoggle="Red Hat OpenShift GitOps" hidden="" id="redHatOpenshiftGitops-Agnostic">
+<div class="pf-v5-c-accordion__expandable-content-body">
+<table aria-label="Red Hat OpenShift GitOps version table" class="pf-v5-c-table pf-m-compact pf-m-grid-md" role="grid">
+<thead class="pf-v5-c-table__thead">
+<tr class="pf-v5-c-table__tr" role="row">
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                Version
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                Tier
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                OpenShift Version
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                General availability
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                Full support ends
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                Maintenance ends
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                EUS ends
+            </th>
+</tr>
+</thead>
+<tbody class="pf-v5-c-table__tbody" role="rowgroup">
+<tr class="pf-v5-c-table__tr" role="row">
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Version" role="cell">
+                1.21
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Tier" role="cell">
+                Platform Agnostic
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="OpenShift Version" role="cell">
+                4.18, 4.19, 4.20, 4.21, 4.22
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="General availability" role="cell" title="24 Jun 2026">
+                24 Jun 2026
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Full support ends" role="cell" title="31 Oct 2026">
+                31 Oct 2026
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Maintenance ends" role="cell" title="31 Mar 2027">
+                31 Mar 2027
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="EUS ends" role="cell" title="N/A">
+                N/A
+            </td>
+</tr>
+<tr class="pf-v5-c-table__tr" role="row">
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Version" role="cell">
+                1.20
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Tier" role="cell">
+                Platform Agnostic
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="OpenShift Version" role="cell">
+                4.14, 4.16, 4.17, 4.18, 4.19, 4.20, 4.21
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="General availability" role="cell" title="25 Mar 2026">
+                25 Mar 2026
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Full support ends" role="cell" title="31 Jul 2026">
+                31 Jul 2026
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Maintenance ends" role="cell" title="15 Dec 2026">
+                15 Dec 2026
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="EUS ends" role="cell" title="N/A">
+                N/A
+            </td>
+</tr>
+<tr class="pf-v5-c-table__tr" role="row">
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Version" role="cell">
+                1.19
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Tier" role="cell">
+                Platform Agnostic
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="OpenShift Version" role="cell">
+                4.14, 4.16, 4.17, 4.18, 4.19, 4.20, 4.21
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="General availability" role="cell" title="18 Dec 2025">
+                18 Dec 2025
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Full support ends" role="cell" title="25 Apr 2026">
+                25 Apr 2026
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Maintenance ends" role="cell" title="30 Sep 2026">
+                30 Sep 2026
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="EUS ends" role="cell" title="N/A">
+                N/A
+            </td>
+</tr>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</tbody>
+</table>
+<div class="pf-v5-u-mt-md pf-v5-u-mb-md">
+<div><strong>Additional Links: </strong>
+<a class="lifecycle-link" href="https://access.redhat.com/labs/ocpouic/?operator=openshift-gitops-operator" target="_blank">Operator Update Information Checker</a>
+</div>
+<div><strong>Estimated release cadence: </strong>3 months</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+</div>
+<h1 id="rolling-stream">Rolling-Stream Operators</h1>
+<div class="pf-v5-c-accordion pf-m-bordered">
+<div>
+<button aria-expanded="false" class="pf-v5-c-accordion__toggle accordion-header" type="button">
+<span class="pf-v5-c-accordion__toggle-text button-grid">
+<span><strong>Operator/Operator Group name</strong></span>
+<span><strong>Latest version</strong></span>
+<span><strong>Full support ends</strong></span>
+<span><strong>Maintenance ends</strong></span>
+</span>
+</button>
+</div>
+<div data-search="compliance operator">
+<button aria-expanded="false" class="pf-v5-c-accordion__toggle accordion-item" data-id="complianceOperator-Rolling" type="button">
+<span class="pf-v5-c-accordion__toggle-text button-grid">
+<span>compliance operator</span>
+<span>1.9</span>
+<span title="Release of 1.10.0">Release of 1.10.0</span>
+<span title="N/A">N/A</span>
+</span>
+<span class="pf-v5-c-accordion__toggle-icon">
+<i aria-hidden="true" class="fas fa-angle-right" id="complianceOperator-Rolling-arrow"></i>
+</span>
+</button>
+</div>
+<div class="pf-v5-c-accordion__expandable-content" data-searchtoggle="compliance operator" hidden="" id="complianceOperator-Rolling">
+<div class="pf-v5-c-accordion__expandable-content-body">
+<table aria-label="compliance operator version table" class="pf-v5-c-table pf-m-compact pf-m-grid-md" role="grid">
+<thead class="pf-v5-c-table__thead">
+<tr class="pf-v5-c-table__tr" role="row">
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                Version
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                Tier
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                OpenShift Version
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                General availability
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                Full support ends
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                Maintenance ends
+            </th>
+<th class="pf-v5-c-table__th" role="columnheader" scope="col">
+                EUS ends
+            </th>
+</tr>
+</thead>
+<tbody class="pf-v5-c-table__tbody" role="rowgroup">
+<tr class="pf-v5-c-table__tr" role="row">
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Version" role="cell">
+                1.9
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Tier" role="cell">
+                Rolling Stream
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="OpenShift Version" role="cell">
+                4.12, 4.14, 4.16, 4.18, 4.19, 4.20, 4.21
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="General availability" role="cell" title="16 Apr 2026">
+                16 Apr 2026
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Full support ends" role="cell" title="Release of 1.10.0">
+                Release of 1.10.0
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Maintenance ends" role="cell" title="N/A">
+                N/A
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="EUS ends" role="cell" title="N/A">
+                N/A
+            </td>
+</tr>
+<tr class="pf-v5-c-table__tr" role="row">
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Version" role="cell">
+                1.8
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Tier" role="cell">
+                Rolling Stream
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="OpenShift Version" role="cell">
+                4.12, 4.14, 4.16, 4.17, 4.18, 4.19, 4.20, 4.21
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="General availability" role="cell" title="24 Nov 2025">
+                24 Nov 2025
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Full support ends" role="cell" title="16 Apr 2026">
+                16 Apr 2026
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="Maintenance ends" role="cell" title="N/A">
+                N/A
+            </td>
+<td class="pf-v5-c-table__td pf-v5-l-flex pf-v5-c-table__text" data-label="EUS ends" role="cell" title="N/A">
+                N/A
+            </td>
+</tr>
+</tbody>
+</table>
+<div class="pf-v5-u-mt-md pf-v5-u-mb-md">
+<div><strong>Additional Links: </strong>
+<a class="lifecycle-link" href="https://access.redhat.com/labs/ocpouic/?operator=compliance-operator" target="_blank">Operator Update Information Checker</a>
+</div>
+<div><strong>Estimated release cadence: </strong>4 months</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p class="pf-v5-u-mt-md">The following operators have a single rolling stream release and do not publish version information.</p>
+<div>
+<button aria-expanded="false" class="pf-v5-c-accordion__toggle accordion-header" type="button">
+<span class="pf-v5-c-accordion__toggle-text button-grid">
+<span><strong>Operator/Operator Group name</strong></span>
+</span>
+</button>
+</div>
+
+
+
+
+
+
+<div data-search="Cluster Observability Operator">
+<button aria-expanded="false" class="pf-v5-c-accordion__toggle accordion-item" data-id="clusterObservabilityOperator-Rolling" type="button">
+<span class="pf-v5-c-accordion__toggle-text button-grid">
+<span>Cluster Observability Operator</span>
+</span>
+<span class="pf-v5-c-accordion__toggle-icon">
+<i aria-hidden="true" class="fas fa-angle-right" id="clusterObservabilityOperator-Rolling-arrow"></i>
+</span>
+</button>
+</div>
+<div class="pf-v5-c-accordion__expandable-content" data-searchtoggle="Cluster Observability Operator" hidden="" id="clusterObservabilityOperator-Rolling">
+<div class="pf-v5-c-accordion__expandable-content-body">
+<div class="pf-v5-u-mt-md pf-v5-u-mb-md">
+<div>This operator follows a rolling-stream release methodology and customers are expected to continuously upgrade to new versions as they become available on the cluster.</div>
+<div><strong>Additional Links: </strong>
+<a class="lifecycle-link" href="https://access.redhat.com/labs/ocpouic/?operator=cluster-observability-operator" target="_blank">Operator Update Information Checker</a>
+</div>
+<div><strong>Estimated release cadence: </strong> 4 months</div>
+<div><strong>Valid Subscriptions: </strong>
+    OpenShift Kubernetes Engine / OpenShift Container Platform / OpenShift Platform Plus
+    </div>
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+</body></html>

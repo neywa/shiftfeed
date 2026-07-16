@@ -11,6 +11,7 @@ from scraper.sources.alert_rules import fetch_active_rules
 from scraper.sources.cve_tagger import enrich_with_cve_tags
 from scraper.sources.github_releases import fetch_github_releases
 from scraper.sources.ocp_versions import fetch_ocp_version_updates
+from scraper.sources.operator_lifecycles import fetch_operator_lifecycles
 from scraper.sources.rss import fetch_all_rss
 from scraper.sources.security import fetch_security_advisories
 from scraper.sources.user_rss import (
@@ -50,8 +51,32 @@ def main() -> None:
     if is_first_run:
         print("OCP versions: seeded table, no articles generated")
 
+    try:
+        result = (
+            client.client.table("operator_versions")
+            .select("id")
+            .limit(1)
+            .execute()
+        )
+        operators_first_run = len(result.data) == 0
+    except Exception:
+        operators_first_run = False
+
+    operator_articles = [
+        enrich_with_cve_tags(a)
+        for a in fetch_operator_lifecycles(
+            client, seed_only=operators_first_run
+        )
+    ]
+    if operators_first_run:
+        print("Operator life cycles: seeded table, no articles generated")
+
     all_articles = (
-        rss_articles + github_articles + security_articles + ocp_articles
+        rss_articles
+        + github_articles
+        + security_articles
+        + ocp_articles
+        + operator_articles
     )
 
     # User custom RSS sources (Phase 6 — Pro users)
@@ -77,6 +102,7 @@ def main() -> None:
     print(f"GitHub release articles: {len(github_articles)}")
     print(f"Security advisory articles: {len(security_articles)}")
     print(f"OCP version update articles: {len(ocp_articles)}")
+    print(f"Operator lifecycle articles: {len(operator_articles)}")
     print(
         f"User RSS articles: {user_articles_total} "
         f"(from {len(user_sources)} user feed(s))"

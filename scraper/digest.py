@@ -150,11 +150,18 @@ Today's articles:
 
     # ---- Personalised digests (Phase 5) -------------------------------
 
-    # Mirrors the category mapping in scraper.sources.alert_rule_matcher
-    # so a digest filter feels identical to an alert rule's category filter.
+    # Mirrors the category mapping in scraper.sources.alert_rule_matcher so
+    # a digest filter feels identical to an alert rule's category filter —
+    # with ONE deliberate exception: "releases" also matches
+    # "layered-release" here. A digest is content (hour-scheduled, no
+    # per-article push), so including layered-product GAs keeps a
+    # releases-filtered briefing complete. The matcher must NOT be brought
+    # back in line: adding "layered-release" there would re-enable per-token
+    # pushes for anyone with a releases-category rule, which is exactly what
+    # the push-silence decision rules out.
     _CATEGORY_TAG_MAP = {
         "security": {"security", "cve"},
-        "releases": {"release"},
+        "releases": {"release", "layered-release"},
         "ocp": {"ocp"},
     }
 
