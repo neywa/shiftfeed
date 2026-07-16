@@ -80,6 +80,27 @@ RSS_SOURCES: list[RSSSource] = [
         "source": "Istio Blog",
         "tags": ["blog", "istio", "servicemesh"],
     },
+    # Broad sources — most of what they publish is outside this app's scope
+    # (AI/LLM security, cloud IAM, general vulns), so they self-filter on
+    # content instead of being trusted wholesale like the feeds above.
+    {
+        "url": "https://sysdig.com/feed/",
+        "source": "Sysdig",
+        "tags": ["blog", "security"],
+        "content_filter": True,
+    },
+    {
+        "url": "https://blog.aquasec.com/rss.xml",
+        "source": "Aqua Security",
+        "tags": ["blog", "security"],
+        "content_filter": True,
+    },
+    {
+        "url": "https://lwkd.info/feed.xml",
+        "source": "Last Week in Kubernetes Development",
+        "tags": ["blog", "kubernetes"],
+        "content_filter": True,
+    },
 ]
 
 
@@ -95,6 +116,26 @@ def _html_to_plain_text(html: str) -> str | None:
     return text if text else None
 
 
+def _entry_content_text(entry) -> str:
+    """Plain text of an entry's ``<content>`` blocks, or "" if it has none.
+
+    Atom feeds may put only a stub in ``<summary>`` and the real article in
+    ``<content>`` — lwkd.info ships a 14-character summary next to a 7 KB
+    body. Only the relevance filter reads this; the stored summary keeps
+    coming from ``<summary>``/``<description>``.
+
+    HTML is stripped before matching on purpose: an ``href`` pointing at
+    kubernetes.io would otherwise score a keyword hit the prose never
+    earned.
+    """
+    parts: list[str] = []
+    for block in getattr(entry, "content", None) or []:
+        value = getattr(block, "value", None)
+        if value:
+            parts.append(_html_to_plain_text(str(value)) or "")
+    return " ".join(parts)
+
+
 def fetch_rss_articles(
     url: str,
     source: str,
@@ -103,11 +144,11 @@ def fetch_rss_articles(
 ) -> list[Article]:
     """Fetches and parses one feed.
 
-    When ``content_filter`` is True, entries whose title+summary match no
-    keyword in :data:`~scraper.sources.relevance.RELEVANCE_KEYWORDS` are
-    dropped — for broad feeds that would otherwise flood the firehose.
-    Defaults to False, so narrow curated feeds and Pro users' custom feeds
-    keep every entry.
+    When ``content_filter`` is True, entries whose title, summary and
+    ``<content>`` body match no keyword in
+    :data:`~scraper.sources.relevance.RELEVANCE_KEYWORDS` are dropped — for
+    broad feeds that would otherwise flood the firehose. Defaults to False,
+    so narrow curated feeds and Pro users' custom feeds keep every entry.
     """
     articles: list[Article] = []
     # Fetch the bytes ourselves through the SSRF/DoS guard rather than
@@ -145,10 +186,14 @@ def fetch_rss_articles(
             else:
                 summary = None
 
-            # Filter on the same plain text that gets stored, so what the
-            # user reads is what decided the article's fate.
+            # Judge on every scrap of text the entry offers — title,
+            # summary, and the <content> body. A summary alone is not
+            # enough: feeds that stub it out would have their articles
+            # dropped on boilerplate alone.
             if content_filter:
-                haystack = f"{title} {summary or ''}"
+                haystack = (
+                    f"{title} {summary or ''} {_entry_content_text(entry)}"
+                )
                 if not evaluate_relevance(haystack).passed:
                     _logger.debug(
                         "Dropped off-topic entry from %s: %s", url, title

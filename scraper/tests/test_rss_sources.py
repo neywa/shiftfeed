@@ -39,6 +39,46 @@ ARO_FEED = b"""<?xml version="1.0" encoding="UTF-8"?>
 </rss>
 """
 
+# Atom, shaped after lwkd.info: a near-empty <summary> stub next to the real
+# article in <content>. Judged on the summary alone, both entries would drop.
+STUB_SUMMARY_FEED = b"""<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Stubby Weekly</title>
+  <entry>
+    <title>Week Ending July 05, 2026</title>
+    <link href="https://example.com/week-27"/>
+    <summary>Developer News</summary>
+    <content type="html">&lt;h2&gt;Developer News&lt;/h2&gt;&lt;p&gt;Kubernetes
+      v1.37 has reached its mid-cycle milestone with 86 tracked
+      enhancements.&lt;/p&gt;</content>
+    <published>2026-07-05T00:00:00Z</published>
+  </entry>
+  <entry>
+    <title>Week Ending June 28, 2026</title>
+    <link href="https://example.com/week-26"/>
+    <summary>Developer News</summary>
+    <content type="html">&lt;h2&gt;Developer News&lt;/h2&gt;&lt;p&gt;A roundup of
+      unrelated desktop publishing tips.&lt;/p&gt;</content>
+    <published>2026-06-28T00:00:00Z</published>
+  </entry>
+</feed>
+"""
+
+# An entry whose only keyword hit is inside a link URL, not the prose.
+LINK_ONLY_FEED = b"""<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Linky</title>
+  <entry>
+    <title>A post about nothing</title>
+    <link href="https://example.com/nothing"/>
+    <summary>Stub</summary>
+    <content type="html">&lt;p&gt;Read more at
+      &lt;a href="https://kubernetes.io/docs"&gt;this link&lt;/a&gt;.&lt;/p&gt;</content>
+    <published>2026-07-05T00:00:00Z</published>
+  </entry>
+</feed>
+"""
+
 # One off-topic entry, one relevant entry.
 MIXED_FEED = b"""<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
@@ -156,12 +196,89 @@ def test_content_filter_defaults_off(stub_feed) -> None:
     assert len(articles) == 2
 
 
-def test_no_current_source_enables_the_filter() -> None:
-    """The mechanism ships switched off; enabling feeds is a follow-up."""
-    enabled = [
+# The only sources meant to self-filter. Broad feeds whose output is mostly
+# outside this app's scope; everything else is trusted wholesale because the
+# feed itself is narrow.
+FILTERED_SOURCES = {
+    "Sysdig",
+    "Aqua Security",
+    "Last Week in Kubernetes Development",
+}
+
+
+def test_exactly_the_expected_sources_enable_the_filter() -> None:
+    """Tripwire: fires if a source gains or loses the flag unintentionally.
+
+    Filtering a narrow source is silently lossy — it would drop real
+    articles — so the set is pinned in both directions rather than merely
+    asserting the intended three are present.
+    """
+    enabled = {
         s["source"] for s in rss.RSS_SOURCES if s.get("content_filter", False)
-    ]
-    assert enabled == []
+    }
+    assert enabled == FILTERED_SOURCES
+
+
+def test_unfiltered_sources_do_not_set_the_flag() -> None:
+    """Every other source must leave the flag absent or explicitly False."""
+    for s in rss.RSS_SOURCES:
+        if s["source"] in FILTERED_SOURCES:
+            continue
+        assert not s.get("content_filter", False), s["source"]
+
+
+def test_filter_reads_content_when_summary_is_a_stub(stub_feed) -> None:
+    """Regression for lwkd.info: a stub <summary> must not cost the article.
+
+    Judged on <summary> alone both entries read as "Developer News" and drop;
+    the relevant one only survives because <content> is part of the haystack.
+    """
+    stub_feed(STUB_SUMMARY_FEED)
+
+    articles = rss.fetch_rss_articles(
+        "https://example.com/feed", "Stubby", ["blog"], content_filter=True
+    )
+
+    assert [a.title for a in articles] == ["Week Ending July 05, 2026"]
+
+
+def test_stub_summary_entries_still_drop_when_content_is_offtopic(
+    stub_feed,
+) -> None:
+    """Guards the test above from passing because the filter went permissive."""
+    stub_feed(STUB_SUMMARY_FEED)
+
+    articles = rss.fetch_rss_articles(
+        "https://example.com/feed", "Stubby", ["blog"], content_filter=True
+    )
+
+    assert "Week Ending June 28, 2026" not in [a.title for a in articles]
+
+
+def test_stored_summary_is_not_replaced_by_content(stub_feed) -> None:
+    """<content> feeds the filter only — it must not leak into the row.
+
+    Changing the stored summary is a separate, deliberate decision; this
+    pins the current contract so it can't drift silently.
+    """
+    stub_feed(STUB_SUMMARY_FEED)
+
+    articles = rss.fetch_rss_articles(
+        "https://example.com/feed", "Stubby", ["blog"], content_filter=True
+    )
+
+    assert articles[0].summary == "Developer News"
+
+
+def test_keyword_inside_a_link_url_does_not_pass(stub_feed) -> None:
+    """HTML is stripped before matching, so hrefs can't score keyword hits."""
+    stub_feed(LINK_ONLY_FEED)
+
+    articles = rss.fetch_rss_articles(
+        "https://example.com/feed", "Linky", ["blog"], content_filter=True
+    )
+
+    assert articles == []
 
 
 def test_fetch_single_feed_defaults_to_unfiltered(stub_feed) -> None:
