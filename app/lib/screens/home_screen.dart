@@ -24,10 +24,14 @@ import '../utils/open_article.dart';
 import '../widgets/article_card.dart';
 import '../widgets/brand_title.dart';
 import '../widgets/error_state.dart';
+import '../widgets/filter_pill.dart';
 import '../widgets/main_app_bar.dart';
 import '../widgets/offline_banner.dart';
 import '../widgets/paywall_sheet.dart';
+import '../widgets/toggle_button.dart';
 import 'bookmarks_screen.dart';
+import 'cve_screen.dart';
+import 'nav_tabs.dart';
 import 'settings_screen.dart';
 import 'submit_screen.dart';
 import 'versions_screen.dart';
@@ -594,6 +598,18 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  /// Desktop/web route to the CVE screen. The mobile layout reaches the
+  /// same screen through the bottom-nav tab at index 2; the desktop shell
+  /// has no bottom nav, so this pushes it as a route (isTab: false → own
+  /// title + back arrow). Reached from the left sidebar and from the
+  /// "LATEST CVES" right-sidebar header.
+  void _openCves() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const CveScreen()),
+    );
+  }
+
   void _comingSoon() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -618,7 +634,7 @@ class _HomeScreenState extends State<HomeScreen> {
   // ================= MOBILE =================
 
   Widget _buildMobile(BuildContext context) {
-    final isFeed = _bottomNavIndex == 0;
+    final isFeed = _bottomNavIndex == NavTab.feed.index;
     return PopScope(
       canPop: !_showSearchBar && !_isSearchMode,
       onPopInvokedWithResult: (didPop, result) {
@@ -643,12 +659,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     backgroundColor: _surface,
                     child: _buildMobileList(),
                   ),
+                  // Order MUST match NavTab.values — this list is indexed
+                  // by _bottomNavIndex. Pinned by nav_tabs_test.dart.
                   VersionsScreen(
-                    isActive: _bottomNavIndex == 1,
+                    isActive: _bottomNavIndex == NavTab.versions.index,
+                    isTab: true,
+                  ),
+                  CveScreen(
+                    isActive: _bottomNavIndex == NavTab.cves.index,
                     isTab: true,
                   ),
                   BookmarksScreen(
-                    isActive: _bottomNavIndex == 2,
+                    isActive: _bottomNavIndex == NavTab.saved.index,
                     isTab: true,
                   ),
                   const SettingsScreen(isTab: true),
@@ -667,27 +689,20 @@ class _HomeScreenState extends State<HomeScreen> {
         selectedLabelStyle: const TextStyle(fontSize: 10, letterSpacing: 1.0),
         unselectedLabelStyle: const TextStyle(fontSize: 10, letterSpacing: 1.0),
         onTap: (i) {
-          if (i < 0 || i > 3) {
+          // Derived from NavTab, never a literal: a hardcoded bound left
+          // stale by a tab insert routes a real tab to "Coming soon".
+          if (!NavTab.isValidIndex(i)) {
             _comingSoon();
             return;
           }
           setState(() => _bottomNavIndex = i);
-          if (i == 0) {
+          if (i == NavTab.feed.index) {
             _loadBookmarkStates();
           }
         },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.rss_feed), label: 'Feed'),
-          BottomNavigationBarItem(icon: Icon(Icons.terminal), label: 'Versions'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bookmark_outline),
-            label: 'Saved',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
+        // Built from NavTab, so this can't drift out of alignment with
+        // the IndexedStack children above.
+        items: bottomNavItems,
       ),
       ),
     );
@@ -705,10 +720,10 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /// 11px IBM Plex Sans (line height 1.3) plus the chip's 6px vertical padding.
   /// Must stay >= the chips' natural height or the AppBar bottom overflows.
-  double get _mobileChipHeight =>
-      MediaQuery.textScalerOf(context).scale(11) * 1.3 + 12;
+  /// Delegated to [FilterPill], which owns the type size and padding this
+  /// depends on — re-deriving it here is how it goes stale.
+  double get _mobileChipHeight => FilterPill.heightOf(context);
 
   PreferredSizeWidget _buildMobileSearchAppBar() {
     return AppBar(
@@ -782,34 +797,34 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildMobileFilterChips() {
     final chips = <Widget>[
-      _mobileChip(
-        'ALL',
-        _selectedSource == null && _tagFilter == null,
-        () => _onSourceSelected(null),
+      FilterPill(
+        label: 'ALL',
+        selected: _selectedSource == null && _tagFilter == null,
+        onTap: () => _onSourceSelected(null),
       ),
-      _mobileChip(
-        'RELEASES',
-        _tagFilter == 'release',
-        () => _onTagSelected('release'),
+      FilterPill(
+        label: 'RELEASES',
+        selected: _tagFilter == 'release',
+        onTap: () => _onTagSelected('release'),
         selectedColor: _kReleaseGreen,
       ),
-      _mobileChip(
-        'SECURITY',
-        _tagFilter == 'security',
-        () => _onTagSelected('security'),
+      FilterPill(
+        label: 'SECURITY',
+        selected: _tagFilter == 'security',
+        onTap: () => _onTagSelected('security'),
         selectedColor: _kSecurityOrange,
       ),
-      _mobileChip(
-        'OCP',
-        _selectedSource == _kOcpVersionsSource,
-        () => _onSourceSelected(_kOcpVersionsSource),
+      FilterPill(
+        label: 'OCP',
+        selected: _selectedSource == _kOcpVersionsSource,
+        onTap: () => _onSourceSelected(_kOcpVersionsSource),
         selectedColor: _kReleaseGreen,
       ),
       for (final s in _sources)
-        _mobileChip(
-          s.toUpperCase(),
-          _selectedSource == s,
-          () => _onSourceSelected(s),
+        FilterPill(
+          label: s.toUpperCase(),
+          selected: _selectedSource == s,
+          onTap: () => _onSourceSelected(s),
         ),
     ];
     return SingleChildScrollView(
@@ -822,40 +837,6 @@ class _HomeScreenState extends State<HomeScreen> {
             chips[i],
           ],
         ],
-      ),
-    );
-  }
-
-  Widget _mobileChip(
-    String label,
-    bool selected,
-    VoidCallback onTap, {
-    Color? selectedColor,
-  }) {
-    final activeColor = selectedColor ?? kRed;
-    return Material(
-      color: selected ? activeColor : _surface2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-        side: BorderSide(
-          color: selected ? Colors.transparent : _border,
-        ),
-      ),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 1.0,
-              color: selected ? Colors.white : _textSecondary,
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -1220,6 +1201,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   onTap: _openVersions,
                 ),
                 _navItem(
+                  icon: Icons.shield_outlined,
+                  label: 'CVE Alerts',
+                  selected: false,
+                  onTap: _openCves,
+                ),
+                _navItem(
                   icon: Icons.bookmark_outline,
                   label: 'Saved',
                   selected: false,
@@ -1482,35 +1469,11 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          _feedToggleButton('Latest', selected: true, onTap: () {}),
+          ToggleButton(label: 'Latest', selected: true, onTap: () {}),
           const SizedBox(width: 8),
-          _feedToggleButton('Top', selected: false, onTap: _comingSoon),
+          ToggleButton(label: 'Top', selected: false, onTap: _comingSoon),
         ],
       ),
-    );
-  }
-
-  Widget _feedToggleButton(
-    String label, {
-    required bool selected,
-    required VoidCallback onTap,
-  }) {
-    return FilledButton(
-      onPressed: onTap,
-      style: FilledButton.styleFrom(
-        backgroundColor: selected ? kRed : _surface2,
-        foregroundColor: selected ? Colors.white : _textSecondary,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(6),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        textStyle: const TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          letterSpacing: 1.0,
-        ),
-      ),
-      child: Text(label.toUpperCase()),
     );
   }
 
@@ -1756,12 +1719,42 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 24),
             ],
             if (_cveAlerts.isNotEmpty) ...[
-              Text(
-                'LATEST CVES',
-                style: TextStyle(
-                  fontSize: 10,
-                  color: _textMuted,
-                  letterSpacing: 2,
+              // The desktop/web entry point to the full CVE screen: this
+              // header is the counterpart of the mobile bottom-nav tab.
+              // The rows below still deep-link to their own article, so
+              // only the header itself navigates.
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: _openCves,
+                  child: Row(
+                    children: [
+                      Text(
+                        'LATEST CVES',
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: _textMuted,
+                          letterSpacing: 2,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Icon(
+                        Icons.arrow_forward,
+                        size: 11,
+                        color: _textMuted,
+                      ),
+                      const Spacer(),
+                      const Text(
+                        'VIEW ALL',
+                        style: TextStyle(
+                          fontSize: 9,
+                          color: kRed,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 12),

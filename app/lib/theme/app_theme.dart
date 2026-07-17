@@ -37,6 +37,32 @@ Color textSecondaryOf(BuildContext context) =>
 Color textMutedOf(BuildContext context) =>
     isDark(context) ? kTextMuted : kLightTextMuted;
 
+/// Luminance above which text on an accent fill must be black, not white.
+///
+/// **This is 0.40 and not the conventional 0.5 on purpose.** The severity
+/// amber (`#FFAA00`, [CveSeverity.medium]) measures 0.5001 — a 0.5 rule
+/// decides it by a margin of 0.0001, so any palette tweak or rounding
+/// change silently flips it to white text at a 1.91:1 contrast ratio
+/// (illegible; worse than no styling at all). 0.40 clears the brightest
+/// accent we actually use below it (`#FF6600`, 0.3076) by ~0.09 and amber
+/// by ~0.10, so nothing sits near the boundary.
+///
+/// Every color the feed's filter pills pass as `selectedColor` — kRed
+/// 0.1818, `#00AA44` 0.2917, `#FF6600` 0.3076 — falls below this, so they
+/// all resolve to white and render exactly as they did before [onAccent]
+/// existed. `test/filter_pill_test.dart` pins that.
+const double kAccentLuminanceThreshold = 0.40;
+
+/// Readable foreground for text sitting on a solid [accent] fill.
+///
+/// Material's `colorScheme.onSurface` doesn't cover this: it maps the
+/// theme's surface colors, not the arbitrary semantic accents (severity
+/// red/orange/amber/grey, release green) these controls fill with.
+Color onAccent(Color accent) =>
+    accent.computeLuminance() > kAccentLuminanceThreshold
+        ? Colors.black
+        : Colors.white;
+
 ThemeData appTheme() => ThemeData(
   brightness: Brightness.dark,
   scaffoldBackgroundColor: kBg,

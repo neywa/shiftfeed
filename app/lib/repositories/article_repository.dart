@@ -169,6 +169,45 @@ class ArticleRepository {
     }
   }
 
+  /// Fetches `cve`-tagged rows from `articles` for the CVE screen.
+  ///
+  /// Deliberately NOT [fetchArticles] with `tag: 'cve'`: that method
+  /// carries the free-tier page-2 wall (`isPro`), and the CVE screen is
+  /// free for everyone. Deliberately NOT `cve_alerts` either — that table
+  /// is a per-CVE index keyed on `cve_id` with only `detected_at` (when we
+  /// noticed it), whereas the screen wants the article's true
+  /// `published_at` plus the full tag list.
+  ///
+  /// **The `url` secondary sort is load-bearing.** `published_at` has
+  /// heavy ties — a scrape run batch-inserts a whole advisory feed with
+  /// timestamps inside the same second — and Postgres gives no stable
+  /// order among rows that tie on every ORDER BY key. Without a
+  /// tiebreaker, `range()` pagination re-shuffles tied rows between
+  /// requests, so page 2 can repeat or skip rows from page 1. `url` is the
+  /// table's unique key, which makes the total ordering deterministic.
+  /// (`cve_id` is a column on `cve_alerts`, not here.)
+  Future<List<Article>> fetchCveArticles({
+    int limit = 50,
+    int offset = 0,
+  }) async {
+    try {
+      final response = await _visibleToCurrentUser(
+        _client.from('articles').select(),
+      )
+          .contains('tags', ['cve'])
+          .order('published_at', ascending: false, nullsFirst: false)
+          .order('url', ascending: true)
+          .range(offset, offset + limit - 1);
+
+      return (response as List)
+          .map((row) => Article.fromJson(row as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      debugPrint('fetchCveArticles error: $e');
+      throw RepoException('fetchCveArticles', e);
+    }
+  }
+
   Future<Digest?> fetchLatestDigest() async {
     try {
       final response = await _client
