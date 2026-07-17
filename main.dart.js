@@ -94377,7 +94377,7 @@ if(q!=null){A.ek().$1("[About] PackageInfo.fromPlatform failed: "+A.j(q))
 return B.au}q=b.b
 s=q==null?r:q.c
 if(s==null)return A.a8(" ",r,r,r,r,this.a.c,r,r)
-return A.a8("v"+B.b.ga_(s.split("+"))+" \xb7 Nimbus Nexus",r,r,r,r,this.a.c,r,r)},
+return A.a8("v"+B.b.ga_(s.split("+"))+" \xb7 Orbit Overlay",r,r,r,r,this.a.c,r,r)},
 $S:603}
 A.If.prototype={
 ah(){return new A.Z8()}}
