@@ -1,9 +1,8 @@
 /// Local + remote notification glue.
 ///
-/// Owns the FCM topic subscription state for the three Pro topics (`all`,
-/// `security`, `releases`) — preferences live in [SharedPreferences] under
-/// the `notif_*` keys; the actual subscribe/unsubscribe only fires when the
-/// user holds the Pro entitlement.
+/// Owns the FCM topic subscription state for every Pro topic — preferences
+/// live in [SharedPreferences] under the `notif_*` keys; the actual
+/// subscribe/unsubscribe only fires when the user holds the Pro entitlement.
 library;
 
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -12,12 +11,45 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// FCM topics gated behind Pro. Order matters for [topicPrefKeys].
-const List<String> kProNotificationTopics = ['all', 'security', 'releases'];
+import '../models/cve_severity.dart';
 
-/// SharedPreferences key for the per-topic on/off pref. Defaults to true on
-/// first launch — see [getTopicEnabled].
+/// Per-severity CVE topics, worst first. These strings are a contract with
+/// the scraper's `SEVERITY_TOPICS` (scraper/sources/cve_severity.py) — it
+/// publishes to exactly these names.
+///
+/// Derived from [CveSeverity] rather than written out, so the topics can
+/// never drift from the buckets the CVE screen filters by.
+final List<String> kCveTopics = [
+  for (final s in CveSeverity.values) cveTopicFor(s),
+];
+
+/// The FCM topic carrying CVEs of [severity].
+String cveTopicFor(CveSeverity severity) => 'cve_${severity.name}';
+
+/// FCM topics gated behind Pro.
+final List<String> kProNotificationTopics = ['all', 'releases', ...kCveTopics];
+
+/// Topics we used to publish to and no longer do.
+///
+/// `security` carried every CVE regardless of severity; it is replaced by
+/// the four [kCveTopics]. The scraper has stopped sending to it, but a
+/// device that subscribed under the old build stays subscribed until it is
+/// explicitly unsubscribed — so [applyTopicSubscriptions] unsubscribes from
+/// everything here on EVERY launch, Pro or not. Unsubscribe is idempotent,
+/// so this is self-healing: a device that is offline for the attempt gets
+/// cleaned up on the next launch instead of being orphaned forever.
+const List<String> kRetiredTopics = ['security'];
+
+/// SharedPreferences key for the per-topic on/off pref.
 String topicPrefKey(String topic) => 'notif_$topic';
+
+/// First-launch default for [topic].
+///
+/// The CVE topics default OFF — a first-time Pro user opts into each
+/// severity deliberately, rather than being opted in to four new streams by
+/// an upgrade. `all` and `releases` keep their historical opt-OUT default so
+/// this change doesn't silently mute existing subscribers.
+bool defaultTopicEnabled(String topic) => !kCveTopics.contains(topic);
 
 class NotificationService {
   static final _localNotifications = FlutterLocalNotificationsPlugin();
@@ -79,11 +111,11 @@ class NotificationService {
     });
   }
 
-  /// Returns the saved enabled-state for [topic], defaulting to true if the
-  /// pref has never been written.
+  /// Returns the saved enabled-state for [topic], falling back to
+  /// [defaultTopicEnabled] if the pref has never been written.
   static Future<bool> getTopicEnabled(String topic) async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(topicPrefKey(topic)) ?? true;
+    return prefs.getBool(topicPrefKey(topic)) ?? defaultTopicEnabled(topic);
   }
 
   /// Waits for APNs to hand Firebase a device token, which happens some time
@@ -144,8 +176,11 @@ class NotificationService {
     if (!isPro) return;
     if (!await ensureApnsToken()) return;
 
-    final messaging = FirebaseMessaging.instance;
     try {
+      // Resolved inside the try: this throws when Firebase failed to
+      // initialise, which must not propagate out of a settings toggle —
+      // the pref is already saved and next launch's reconcile will retry.
+      final messaging = FirebaseMessaging.instance;
       if (enabled) {
         await messaging.subscribeToTopic(topic);
       } else {
@@ -156,27 +191,77 @@ class NotificationService {
     }
   }
 
-  /// Reconciles every Pro topic's FCM subscription against the saved prefs.
+  /// The subscription state that SHOULD hold, given [isPro] and the saved
+  /// prefs. Pure apart from reading SharedPreferences — no Firebase, which
+  /// is what makes the reconcile rules testable without a live FCM.
   ///
-  /// When [isPro] is false this unsubscribes from every topic — required so
-  /// users who let their trial lapse stop receiving pushes.
+  /// Retired topics come first and are always unsubscribed: a device
+  /// subscribed to `security` under an older build would otherwise keep
+  /// that subscription forever, and Pro state has no bearing on a topic
+  /// nothing publishes to any more.
   ///
-  /// Never throws: a topic that fails is logged and the rest still reconcile.
+  /// When [isPro] is false every Pro topic resolves to unsubscribe —
+  /// required so users who let their trial lapse stop receiving pushes.
+  @visibleForTesting
+  static Future<List<TopicAction>> planTopicSubscriptions({
+    required bool isPro,
+  }) async {
+    final plan = <TopicAction>[
+      for (final topic in kRetiredTopics)
+        TopicAction(topic: topic, subscribe: false),
+    ];
+    for (final topic in kProNotificationTopics) {
+      plan.add(
+        TopicAction(
+          topic: topic,
+          subscribe: isPro && await getTopicEnabled(topic),
+        ),
+      );
+    }
+    return plan;
+  }
+
+  /// Reconciles every Pro topic's FCM subscription against the saved prefs,
+  /// and unsubscribes from every [kRetiredTopics] entry.
+  ///
+  /// Never throws: a topic that fails is logged and the rest still
+  /// reconcile. [FirebaseMessaging.instance] is resolved inside the try —
+  /// it throws when Firebase failed to initialise, and that must not take
+  /// down a settings toggle.
   static Future<void> applyTopicSubscriptions({required bool isPro}) async {
     if (!await ensureApnsToken()) return;
 
-    final messaging = FirebaseMessaging.instance;
-    for (final topic in kProNotificationTopics) {
+    for (final action in await planTopicSubscriptions(isPro: isPro)) {
       try {
-        final subscribe = isPro && await getTopicEnabled(topic);
-        if (subscribe) {
-          await messaging.subscribeToTopic(topic);
+        final messaging = FirebaseMessaging.instance;
+        if (action.subscribe) {
+          await messaging.subscribeToTopic(action.topic);
         } else {
-          await messaging.unsubscribeFromTopic(topic);
+          await messaging.unsubscribeFromTopic(action.topic);
         }
       } catch (e) {
-        debugPrint('[NotificationService] $topic reconcile failed: $e');
+        debugPrint('[NotificationService] ${action.topic} reconcile failed: $e');
       }
     }
   }
+}
+
+/// One reconcile step: subscribe to, or unsubscribe from, [topic].
+@immutable
+class TopicAction {
+  final String topic;
+  final bool subscribe;
+  const TopicAction({required this.topic, required this.subscribe});
+
+  @override
+  bool operator ==(Object other) =>
+      other is TopicAction &&
+      other.topic == topic &&
+      other.subscribe == subscribe;
+
+  @override
+  int get hashCode => Object.hash(topic, subscribe);
+
+  @override
+  String toString() => '${subscribe ? '+' : '-'}$topic';
 }

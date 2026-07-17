@@ -61,7 +61,7 @@ The app prefers `--dart-define`d Supabase creds; if those are empty it falls bac
 1. **Fetch + tag** — `sources/rss.py::fetch_all_rss()`, `sources/github_releases.py::fetch_github_releases()`, `sources/security.py::fetch_security_advisories()`, `sources/ocp_versions.py::fetch_ocp_version_updates()`, `sources/operator_lifecycles.py::fetch_operator_lifecycles()`. Each result is run through `sources/cve_tagger.py::enrich_with_cve_tags()` which scans title+summary for `CVE-YYYY-N` patterns and adds `cve` / `security` / `CVE-…` tags. After the curated fetches, `sources/user_rss.py::fetch_user_sources()` pulls every enabled row from `user_rss_sources` and ingests each user feed via `fetch_articles_for_source()` — those articles are stamped with `submitted_by=user_id` and tagged `custom_feed`. Per-user fetch errors are recorded back to `user_rss_sources.last_error` (cleared on success). `security.py` additionally emits a `cvss:X.X` tag from the Hydra payload — that string is the contract read by `sources/alert_rule_matcher.py`.
 1b. **Score CVEs** — `sources/cve_enrichment.py::enrich_articles()` runs after CVE tagging and **before** the upsert. The `cve_tagger` regex path mints cve-tagged articles with no score (Istio bulletins, blog mentions), and an unscored article can never satisfy a Pro CVSS-threshold rule, so this closes the gap at ingest. Looks up Red Hat Hydra's *detail* endpoint first, NVD on 404. Rejected CVEs are dropped (the article is skipped) when the article IS the CVE record, otherwise just de-tagged. **It reads `cve_alerts` as a score cache first** — RSS re-serves the same articles hourly, so without the cache this would re-fetch every unscored CVE article every run (~350 calls/day instead of ~0.1/run).
 2. **Upsert** — `SupabaseClient.upsert_article()` writes to `articles` (`ON CONFLICT url`). For each `CVE-…` tag found, also upserts a row into `cve_alerts` (`ON CONFLICT cve_id`) with the article's `cvss` + `severity`.
-3. **Notify** — `FCMSender` + `NotifiedCache`. `notified_cache.py` uses the `articles.notified` boolean column as the dedupe ledger; only un-notified articles tagged `cve` or `release` produce pushes. A single new alert sends a detailed notification; multiple new alerts collapse into one batch notification (topics: `security`, `releases`). After the curated pushes, `sources/alert_rules.py` + `sources/alert_rule_matcher.py` walk every newly-arrived article from this run against each Pro user's enabled rules and dispatch per-token FCM pushes via `FCMSender.send_to_token()`. 404/410 from FCM trigger `fcm.prune_stale_token()` against `user_device_tokens`.
+3. **Notify** — `FCMSender` + `NotifiedCache`. `notified_cache.py` uses the `articles.notified` boolean column as the dedupe ledger; only un-notified articles tagged `cve` or `release` produce pushes. A single new alert sends a detailed notification; multiple new alerts collapse into one batch notification. Releases go to the `releases` topic. CVEs are **routed by severity** through `main.py::push_cve_alerts()` — one of four `cve_*` topics per [sources/cve_severity.py](scraper/sources/cve_severity.py) (see "CVE severity routing" below); each bucket decides single-vs-batch on its own count, so one new critical plus three new highs is a detailed critical push and a high batch, not one lump. `python -m scraper.main --dry-run-push` reports what the stage *would* send (topic + CVE id + severity) without calling Firebase or touching the ledger, then exits before the release/alert-rule/digest stages. After the curated pushes, `sources/alert_rules.py` + `sources/alert_rule_matcher.py` walk every newly-arrived article from this run against each Pro user's enabled rules and dispatch per-token FCM pushes via `FCMSender.send_to_token()`. 404/410 from FCM trigger `fcm.prune_stale_token()` against `user_device_tokens`.
 4. **Digest** — `digest.py::DigestGenerator.generate()` queries today's articles, calls Claude Haiku (`claude-haiku-4-5-20251001`) with a fixed briefing-format prompt, upserts into `digests` (`ON CONFLICT digest_date`), and sends an FCM push to topic `all`. Idempotent per day via `_already_generated_today()`.
 5. **Personalised digests** — `digest_personal.py::run_personal_digests()` joins `user_digest_prefs` with `user_device_tokens` and matches each Pro user's `delivery_hour` against their IANA timezone vs UTC-now (uses stdlib `zoneinfo`). For matching users it calls `DigestGenerator.generate_filtered()` (no `digests` upsert, no FCM topic broadcast), then per-token pushes the result. Personal digests are ephemeral — only the curated digest hits the `digests` table.
 
@@ -109,12 +109,63 @@ When adding a new per-user feature: add the table with `user_id uuid references 
 
 Tags on `articles.tags` aren't just labels — several are read by other modules as a contract:
 
-- `cve` / `release` / `security` — drive the global FCM topic pushes in stage 3.
+- `cve` / `release` — drive the global FCM topic pushes in stage 3. `cve` selects an article for CVE routing; its *severity* tag then picks which topic (below). `security` is just a label now — it once named the single CVE topic, which is retired.
 - `CVE-YYYY-N` (uppercase) — triggers `cve_alerts` upserts in stage 2. Note `cve_alerts` has no schema file anywhere: it was created ad hoc in the dashboard. Live columns are `id, cve_id, title, article_url, severity, cvss, detected_at, notified` (`cvss numeric(3,1)` added 2026-07-16 for enrichment; `severity` existed but was NULL on every row until then).
 - `cvss:X.X` — the CVSS base score. Format is `cvss:` + one-decimal float; consumed by [alert_rule_matcher.py](scraper/sources/alert_rule_matcher.py) for the CVSS threshold check on Pro alert rules. Emitted by `security.py` for its own Hydra fetches, and by [cve_enrichment.py](scraper/sources/cve_enrichment.py) for everything the `cve_tagger` regex path mints. **Exactly one `cvss:` tag per article, always** — `alert_rule_matcher` iterates a *set* of tags keeping the last one it sees with no `break`, so a second tag makes the winning score vary between runs. A multi-CVE article carries the **max** score of its CVEs plus that CVE's severity.
 - **Severity is two vocabularies, deliberately not merged.** Red Hat says `low/moderate/important/critical`; NVD says `low/medium/high/critical`. They are different scales (Red Hat's `important` spans NVD's `high` *and* `critical`), so `cve_enrichment` never maps between them — it records which source won in `CveScore.source`. Both appear in `articles.tags` and `cve_alerts.severity`; anything filtering by severity must handle both. `article_card.dart` currently styles only `critical`/`important`/`moderate`, so NVD-sourced `high`/`medium` render as a plain `SECURITY` badge.
+
+  **Red Hat's vocabulary carries almost all the traffic — this is a silent-failure trap.** Measured over all 331 cve-tagged articles (2026-07-17): `important` 194, `moderate` 111, `high` 11, `medium` 2, `critical` 6, `low` 5, no severity 2. Red Hat outnumbers NVD ~15:1. Code that handles only the NVD words looks correct, compiles, and passes any test asserting `high → High` — while silently dropping **307 of 331 articles (93%)**. Never treat `important`/`moderate` as droppable synonyms.
 - `custom_feed` — Phase 6 marker on user-RSS articles; combined with `submitted_by != NULL` on the row.
-- `layered-release` + `layered-product` — a Red Hat layered-product GA from [operator_lifecycles.py](scraper/sources/operator_lifecycles.py). **Deliberately NOT tagged `release`**, so these are push-silent: `release` is the exact string [main.py:142](scraper/main.py#L142) tests to build the `releases` topic push list, and `layered-release` matches nothing in any FCM path. The decision is to hold pushes until we've seen the real GA volume across ~60 operators; re-adding `release` here silently turns pushes back on. Tripwire tests live in `scraper/tests/test_operator_lifecycles.py` under "Push silence". Caveat: a Pro user's *custom alert rule* with empty categories matches every new article regardless of tag, so it can still push these per-token — the guarantee is zero **topic** pushes, not zero pushes.
+- `layered-release` + `layered-product` — a Red Hat layered-product GA from [operator_lifecycles.py](scraper/sources/operator_lifecycles.py). **Deliberately NOT tagged `release`**, so these are push-silent: `release` is the exact string [main.py:358](scraper/main.py#L358) tests to build the `releases` topic push list, and `layered-release` matches nothing in any FCM path. The decision is to hold pushes until we've seen the real GA volume across ~60 operators; re-adding `release` here silently turns pushes back on. Tripwire tests live in `scraper/tests/test_operator_lifecycles.py` under "Push silence". Caveat: a Pro user's *custom alert rule* with empty categories matches every new article regardless of tag, so it can still push these per-token — the guarantee is zero **topic** pushes, not zero pushes.
+
+### CVE severity routing (a cross-language paired contract)
+
+A `cve`-tagged article pushes to one of four per-severity topics —
+`cve_critical` / `cve_high` / `cve_medium` / `cve_low` — chosen from its severity
+tag. Two mappings implement this, in two languages, and **they must agree**:
+
+| | |
+|---|---|
+| [scraper/sources/cve_severity.py](scraper/sources/cve_severity.py) | `SEVERITY_TOPICS` — raw word → FCM topic. Read at push time. |
+| [app/lib/models/cve_severity.dart](app/lib/models/cve_severity.dart) | `CveSeverity.fromWord` — raw word → display bucket. Drives the CVE screen's severity filter *and* the notification topics (`kCveTopics` in `notification_service.dart` derives them from the enum). |
+
+The mapping, both vocabularies, all six words:
+
+```
+critical  → cve_critical      moderate → cve_medium   (Red Hat)
+important → cve_high  (Red Hat)   medium → cve_medium   (NVD)
+high      → cve_high  (NVD)          low → cve_low
+```
+
+Why it's a contract and not a coincidence: a user filters the CVE screen to HIGH
+and enables the HIGH switch expecting the same set of CVEs. `app/` and `scraper/`
+never import from each other, so nothing at compile time connects the two — but
+`scraper/tests/test_cve_severity.py::TestDartContract` **parses the Dart source
+text** and fails if either side is edited alone (same trick `nav_tabs_test.dart`
+uses for tab order). If that parser breaks, fix it; deleting it silently retires
+the only thing checking the contract.
+
+Rules when touching any of this:
+- **Never drop `important`/`moderate`** as apparent synonyms — see the traffic
+  numbers under "Tag conventions". That edit passes review and kills 93% of pushes.
+- Both sides take the **max** severity on a multi-CVE article, matching the max
+  `cvss:` score the scraper already stamps. Take-first would disagree the day a
+  second severity word appears.
+- **Unmapped or missing severity is logged and skipped, never guessed** — a guess
+  either wakes people for a low or swallows a critical. 2 of 331 live articles are
+  in this state (Istio 2019 bulletins the regex path minted with no score). They
+  are still marked notified, so they don't re-log hourly forever.
+- Topic strings are the wire format. Renaming one on either side yields an app
+  subscribed to a topic nobody publishes to — pushes stop, nothing errors.
+  `app/test/cve_notifications_test.dart` pins the four names as literals.
+
+**Retired: the `security` topic.** It once carried every CVE at every severity.
+The scraper no longer sends to it, and `kRetiredTopics` in
+[notification_service.dart](app/lib/services/notification_service.dart) unsubscribes
+every device from it on **every launch, Pro or not** — dropping a topic from
+`kProNotificationTopics` without retiring it leaves old installs subscribed forever
+with no switch to turn it off. Unsubscribe is idempotent, so retirement is
+self-healing across offline launches.
 
 ### Adding a source
 
@@ -141,8 +192,11 @@ Two delivery modes coexist:
 
 1. **Topic broadcasts** — used for the curated firehose. The Flutter client subscribes on launch (Android/iOS only) to:
    - `all` — daily digest notifications
-   - `security` — CVE alerts (single + batch)
    - `releases` — release alerts (single + batch)
+   - `cve_critical` / `cve_high` / `cve_medium` / `cve_low` — CVE alerts (single + batch), one topic per severity bucket; see "CVE severity routing" above. These four default **off** (`defaultTopicEnabled`) — a Pro user opts into each level on the CVE notifications screen. `all` and `releases` keep the historical opt-out default.
+   - `security` — **retired.** Nothing publishes to it; every device unsubscribes on launch. See "CVE severity routing".
+
+   Subscription is decided by `NotificationService.planTopicSubscriptions()` (pure, prefs-only, testable) and performed by `applyTopicSubscriptions()` (the Firebase I/O). Keep that split — the reconcile rules are untestable otherwise, since `FirebaseMessaging.instance` throws without a live Firebase. For the same reason every `FirebaseMessaging.instance` access sits *inside* a try/catch: a failed Firebase init must not propagate out of a settings toggle.
 2. **Per-token sends** — used for Pro user-scoped pushes (custom alert rules, personalised digests). [`DeviceTokenService`](app/lib/services/device_token_service.dart) registers the device's FCM token in `user_device_tokens` after sign-in / token refresh; the scraper joins that table when dispatching via [`FCMSender.send_to_token()`](scraper/fcm.py). On 404/410 the token is pruned automatically.
 
 Notification channel ID is `shiftfeed_alerts` and must match between [scraper/fcm.py](scraper/fcm.py) and [app/lib/services/notification_service.dart](app/lib/services/notification_service.dart). The Firebase project ID is hardcoded in `scraper/fcm.py::FCM_URL`.
@@ -156,6 +210,8 @@ Notification channel ID is `shiftfeed_alerts` and must match between [scraper/fc
 **Bottom-nav tabs are declared in [nav_tabs.dart](app/lib/screens/nav_tabs.dart), never as integer literals.** The `NavTab` enum is the source of truth for tab order; `bottomNavItems` builds the bar from it, and `NavTab.isValidIndex` is the bounds guard. This exists because the nav previously used bare indices (`_bottomNavIndex == 2` driving the Versions self-heal refetch and the Saved swipe hint, plus an `i > 3` guard), and inserting a tab meant hand-shifting every one — **a missed shift fails silently**: it still compiles, the analyzer says nothing, and the swipe hint just quietly fires on the wrong tab or a real tab routes to "Coming soon". Compare `_bottomNavIndex` to `NavTab.<tab>.index` only. The one invariant the enum can't enforce is that the `IndexedStack` children stay in the same order; `test/nav_tabs_test.dart` pins that (and the no-bare-literal rule) by asserting against the source text.
 
 **Screen names are a trap.** [settings_screen.dart](app/lib/screens/settings_screen.dart) (`SettingsScreen`) is the *Settings* tab — the thing users change. [about_screen.dart](app/lib/screens/about_screen.dart) (`AboutScreen`) is a separate screen pushed from a row at the bottom of Settings, holding app identity (icon, version via `release_info.dart`, tagline), the Data section, external links, and the RevenueCat ID copy. Historically `AboutScreen` *was* the settings tab; don't conflate them.
+
+**Settings' Notifications section is two switches plus a tile.** `_NotificationsSection` holds the `all` and `releases` switches inline; CVE alerts are a `ListTile` pushing [cve_notifications_screen.dart](app/lib/screens/cve_notifications_screen.dart), because four independent per-severity subscriptions don't collapse into one on/off. That screen's rows are generated from `CveSeverity.values` (labels, order and colours from the same enum the CVE screen filters by) — don't hand-write the four rows, or the notification labels drift from the badges. Pro-gating is the shared pattern: re-check `EntitlementService.isPro()` on **every flip** rather than trusting a cached value, revert the switch and show `PaywallSheet(reason: PaywallReason.notifications)` when it fails.
 
 **One app bar across the four tabs.** [main_app_bar.dart](app/lib/widgets/main_app_bar.dart) renders the wordmark ([brand_title.dart](app/lib/widgets/brand_title.dart), which resolves the PRO badge itself off `EntitlementService`) plus four actions: search, view-mode toggle, AI Briefing (Pro-gated via the shared top-level `openDigest(context)` — web exempt), theme toggle. Actions a screen can't act on are **greyed, not dropped**, so the bar's shape never shifts: `onSearch` is null everywhere but the feed, `viewToggleEnabled` is true only on feed + Saved. `VersionsScreen` / `BookmarksScreen` / `SettingsScreen` each take an `isTab` flag — true inside the `IndexedStack` (wear `MainAppBar`), false when the desktop sidebar pushes them as routes (keep their own descriptive title + back arrow). Both paths exist in every one of those files.
 

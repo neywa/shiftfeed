@@ -15,6 +15,7 @@ import '../widgets/brand_title.dart';
 import '../widgets/main_app_bar.dart';
 import '../widgets/paywall_sheet.dart';
 import 'about_screen.dart';
+import 'cve_notifications_screen.dart';
 import 'submit_screen.dart';
 
 // One spacing rule for the screen, in *visible* space: 16 above a section
@@ -305,9 +306,12 @@ class _NotificationsSection extends StatefulWidget {
 }
 
 class _NotificationsSectionState extends State<_NotificationsSection> {
+  // CVE alerts used to be a switch here on the single `security` topic,
+  // which carried every CVE at every severity. It now lives on its own
+  // screen with one switch per severity — see CveNotificationsScreen and
+  // the "CVE notifications" tile below this section.
   static const _topics = <_TopicRow>[
     _TopicRow('all', 'Daily AI briefing', Icons.auto_awesome),
-    _TopicRow('security', 'CVE alerts', Icons.shield_outlined),
     _TopicRow('releases', 'Release alerts', Icons.rocket_launch_outlined),
   ];
 
@@ -368,6 +372,20 @@ class _NotificationsSectionState extends State<_NotificationsSection> {
             value: _enabled[t.topic] ?? true,
             onChanged: (v) => _onToggle(t.topic, v),
           ),
+        // Not a switch: CVE alerts are four independent per-severity
+        // subscriptions, which don't collapse into one on/off.
+        ListTile(
+          leading: const Icon(Icons.shield_outlined),
+          title: const Text('CVE notifications'),
+          subtitle: const Text('Choose which severities alert you'),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const CveNotificationsScreen(),
+            ),
+          ),
+        ),
       ],
     );
   }

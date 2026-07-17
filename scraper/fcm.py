@@ -146,11 +146,17 @@ class FCMSender:
             print(f"[FCM] Failed to prune stale token: {e}")
 
     def send_cve_alert(
-        self, cve_id: str, title: str, severity: str, url: str
+        self, topic: str, cve_id: str, title: str, severity: str, url: str
     ) -> None:
+        """Sends one CVE alert to a per-severity topic.
+
+        ``topic`` is required and comes from ``cve_severity.topic_for_article``
+        — it used to be hardcoded to the single ``security`` topic, which is
+        now retired in favour of cve_critical/high/medium/low.
+        """
         severity_upper = severity.upper() if severity else "UNKNOWN"
         self.send_to_topic(
-            topic="security",
+            topic=topic,
             title=f"🔴 {severity_upper}: {cve_id}",
             body=title[:100],
             data={"url": url, "cve_id": cve_id, "type": "cve"},
