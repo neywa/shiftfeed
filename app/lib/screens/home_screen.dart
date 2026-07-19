@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -1166,9 +1165,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       'ShiftFeed',
                       overflow: TextOverflow.ellipsis,
                       softWrap: false,
-                      style: GoogleFonts.ibmPlexSans(
+                      style: TextStyle(
+                        fontFamily: kFontSans,
                         fontSize: _kSidebarWordmarkSize,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w700,
                         color: _textPrimary,
                       ),
                     ),

@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
+
+/// Bundled font families (declared in pubspec.yaml `fonts:`). Referenced by
+/// name so a typo can't silently fall back to the platform font. Sans ships
+/// 400/500/700; Mono ships 400/600 — the only weights the app uses.
+const kFontSans = 'IBM Plex Sans';
+const kFontMono = 'IBM Plex Mono';
 
 const kRed = Color(0xFFEE0000);
 const kBg = Color(0xFF0D0D0D);
@@ -63,6 +68,22 @@ Color onAccent(Color accent) =>
         ? Colors.black
         : Colors.white;
 
+/// Named text styles that aren't part of the Material [TextTheme].
+class AppTextStyles {
+  AppTextStyles._();
+
+  /// Canonical monospace style for technical values — version numbers, CVE ids,
+  /// the RevenueCat id. Deliberately sets **no color** so it inherits the
+  /// ambient `DefaultTextStyle`/`TextTheme` color and works in both light and
+  /// dark; call sites `.copyWith(color: ...)` when they need a specific one.
+  static const TextStyle technicalLabel = TextStyle(
+    fontFamily: kFontMono,
+    fontSize: 12,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0.2,
+  );
+}
+
 ThemeData appTheme() => ThemeData(
   brightness: Brightness.dark,
   scaffoldBackgroundColor: kBg,
@@ -72,23 +93,16 @@ ThemeData appTheme() => ThemeData(
   ),
   cardColor: kSurface,
   dividerColor: kBorder,
-  textTheme: GoogleFonts.ibmPlexSansTextTheme(
-    ThemeData.dark().textTheme,
-  ).copyWith(
-    labelSmall: GoogleFonts.ibmPlexMono(
-      color: kTextMuted,
-      fontSize: 10,
-      letterSpacing: 1.0,
-    ),
-  ),
+  textTheme: ThemeData.dark().textTheme.apply(fontFamily: kFontSans),
   appBarTheme: AppBarTheme(
     backgroundColor: kBg,
     elevation: 0,
     centerTitle: false,
-    titleTextStyle: GoogleFonts.ibmPlexSans(
+    titleTextStyle: const TextStyle(
+      fontFamily: kFontSans,
       color: kTextPrimary,
       fontSize: 14,
-      fontWeight: FontWeight.w800,
+      fontWeight: FontWeight.w700,
       letterSpacing: 2.0,
     ),
     iconTheme: const IconThemeData(color: kTextSecondary),
@@ -119,17 +133,16 @@ ThemeData lightTheme() => ThemeData(
   ),
   cardColor: kLightSurface,
   dividerColor: kLightBorder,
-  textTheme: GoogleFonts.ibmPlexSansTextTheme(
-    ThemeData.light().textTheme,
-  ),
+  textTheme: ThemeData.light().textTheme.apply(fontFamily: kFontSans),
   appBarTheme: AppBarTheme(
     backgroundColor: kLightBg,
     elevation: 0,
     centerTitle: false,
-    titleTextStyle: GoogleFonts.ibmPlexSans(
+    titleTextStyle: const TextStyle(
+      fontFamily: kFontSans,
       color: kLightTextPrimary,
       fontSize: 14,
-      fontWeight: FontWeight.w800,
+      fontWeight: FontWeight.w700,
       letterSpacing: 2.0,
     ),
     iconTheme: const IconThemeData(color: kLightTextSecondary),

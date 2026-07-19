@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../release_info.dart';
 import '../services/entitlement_service.dart';
+import '../theme/app_theme.dart';
 
 /// What the app *is*: identity, version, the links that describe it, and the
 /// RevenueCat support affordance. Pushed from the About row at the bottom of
@@ -241,9 +242,8 @@ class _RevenueCatIdCardState extends State<_RevenueCatIdCard> {
             title: const Text('Copy RevenueCat ID'),
             subtitle: Text(
               id,
-              style: theme.textTheme.bodySmall?.copyWith(
+              style: AppTextStyles.technicalLabel.copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                fontFamily: 'monospace',
               ),
             ),
             trailing: const Icon(Icons.copy, size: 18),

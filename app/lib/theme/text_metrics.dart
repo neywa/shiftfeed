@@ -1,4 +1,4 @@
-/// Optical spacing helpers for IBM Plex Sans as `google_fonts` renders it.
+/// Optical spacing helpers for IBM Plex Sans (bundled; see pubspec `fonts:`).
 ///
 /// A [Text]'s line box carries a blank strip above its glyphs and another
 /// below its baseline, so laying out to the *boxes* leaves gaps that look

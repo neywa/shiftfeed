@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 import '../models/article.dart';
@@ -542,15 +541,11 @@ class CveRow extends StatelessWidget {
                                       if (ids.isNotEmpty)
                                         Text(
                                           ids.join('  '),
-                                          style: GoogleFonts.ibmPlexMono(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w600,
-                                            // textPrimary, not a literal
-                                            // white — the same row renders
-                                            // on a light background in
-                                            // light mode.
-                                            color: textPrimary,
-                                          ),
+                                          // textPrimary, not a literal white —
+                                          // the same row renders on a light
+                                          // background in light mode.
+                                          style: AppTextStyles.technicalLabel
+                                              .copyWith(color: textPrimary),
                                         ),
                                       if (cvss != null)
                                         // Neutral, not the severity accent:
