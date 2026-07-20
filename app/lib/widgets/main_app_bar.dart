@@ -17,6 +17,14 @@ import 'paywall_sheet.dart';
 /// rather than dropped, so the bar's shape never shifts between tabs:
 /// [onSearch] is null everywhere except the feed, and [viewToggleEnabled]
 /// is true only where a card list responds to it (feed and Saved).
+/// Leading inset of the wordmark. Chosen so the wordmark's left glyph axis
+/// lines up with the "ALL" chip's *text* in the feed filter bar below it —
+/// the chip row's 12px pad plus the [FilterPill]'s border and 14px inset,
+/// net of the two glyphs' differing side bearings, lands here (measured on
+/// device, not the nominal 16). Shared across every tab so the wordmark
+/// keeps one x position when switching tabs.
+const double _kTitleSpacing = 25.7;
+
 class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// Opens the screen's search UI. Null greys the search icon out.
   final VoidCallback? onSearch;
@@ -60,7 +68,7 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
 
     return AppBar(
       automaticallyImplyLeading: false,
-      titleSpacing: 16,
+      titleSpacing: _kTitleSpacing,
       title: BrandTitle(onLongPress: onBrandLongPress),
       actions: [
         ...leadingActions,
