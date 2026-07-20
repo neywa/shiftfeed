@@ -42,6 +42,11 @@ const _kSummaryHeight = 1.5;
 const _kGapCompact = 8.0;
 const _kGapFull = 16.0;
 
+// Exception to the compact card's 8dp rhythm: the gap between the title and the
+// footer (tags) is opened to 16dp so the tags read as a distinct block rather
+// than crowding the title. Every other compact gap stays at _kGapCompact.
+const _kCompactTitleToFooterGap = 16.0;
+
 // The ink strips inside a line box — see theme/text_metrics.dart, which the
 // Settings screen shares.
 
@@ -225,10 +230,10 @@ class ArticleCard extends StatelessWidget {
     );
   }
 
-  // The save button. Shared between the compact card's header (inline after the
-  // timestamp) and the full card's footer row. Capped to the 20dp source-icon
-  // height in the header: `constraints` alone isn't enough because IconButton's
-  // ButtonStyle enforces a 48dp tap target, so shrinkWrap it too.
+  // The save button. Lives in the footer row of both the compact and full
+  // cards, right-aligned. Capped to the 20dp source-icon height: `constraints`
+  // alone isn't enough because IconButton's ButtonStyle enforces a 48dp tap
+  // target, so shrinkWrap it too.
   Widget _buildBookmarkButton(Color muted,
       {AlignmentGeometry alignment = Alignment.center}) {
     return IconButton(
@@ -239,10 +244,9 @@ class ArticleCard extends StatelessWidget {
       ),
       iconSize: 20,
       padding: EdgeInsets.zero,
-      // The 40dp tap box is wider than the 20dp glyph. Centered, the glyph sits
-      // ~10dp inboard of the box's right edge; in the footer we align it right
-      // so the icon shares the timestamp's right axis (both flush to the content
-      // padding edge). The compact header keeps the default centering.
+      // The 40dp tap box is wider than the 20dp glyph. In the footer we align
+      // it right so the icon shares the timestamp's right axis (both flush to
+      // the content padding edge).
       alignment: alignment,
       constraints: const BoxConstraints(
         minWidth: 40,
@@ -274,11 +278,9 @@ class ArticleCard extends StatelessWidget {
     final titleMaxLines = compact ? 1 : 2;
     final badge = _buildBadge();
     final hasTags = visibleTags.isNotEmpty;
-    // Full cards move the badge, tags and bookmark into a single footer row
-    // below the body. Compact cards keep the badge + bookmark inline in the
-    // header and the tags in their own body row (unchanged).
-    final hasFooter =
-        !compact && (badge != null || hasTags || showBookmarkButton);
+    // Both cards move the badge, tags and bookmark into a single footer row
+    // below the body. The header keeps only icon · name · time.
+    final hasFooter = badge != null || hasTags || showBookmarkButton;
 
     // Every gap below is `gap` of *visible* space: the nominal value minus the
     // blank strips inside the line boxes on either side of it. The source icon
@@ -295,16 +297,19 @@ class ArticleCard extends StatelessWidget {
     final tagInkTop = _kTagInkTop + tagPadding;
     final tagInkBottom = _kTagInkBottom + tagPadding;
 
-    // Full card: shift the body text right so it shares a left axis with the
-    // source name in the header. Compact keeps everything flush against the
-    // padding's left edge.
-    final textIndent = compact ? 0.0 : _kSourceNameIndent;
+    // Both cards shift the body text right so it shares a left axis with the
+    // source name in the header (icon width + header gap to the right of the
+    // icon's left edge).
+    final textIndent = _kSourceNameIndent;
 
     final topPad = gap;
     final headerToTitle = gap - titleInkTop;
+    // Compact cards open the title→footer gap to 16dp (see the constant); every
+    // other gap on both cards uses the card's own nominal.
+    final titleToFooterGap = compact ? _kCompactTitleToFooterGap : gap;
     final titleToNext = hasSummary
         ? gap - titleInkBottom - summaryInkTop
-        : gap - titleInkBottom - tagInkTop;
+        : titleToFooterGap - titleInkBottom - tagInkTop;
     final summaryToTags = gap - summaryInkBottom - tagInkTop;
     // Whatever ends the card sets the bottom padding. Full cards end on the
     // footer row: when it carries tags the tag pill's ink strip is the bottom
@@ -359,20 +364,14 @@ class ArticleCard extends StatelessWidget {
                               ),
                             ),
                           ),
-                          // Full cards keep the first line to icon · name ·
-                          // time; the badge and bookmark drop to the footer row.
-                          // Compact cards keep them inline here.
-                          if (compact && badge != null) ...[
-                            const SizedBox(width: 6),
-                            badge,
-                          ],
+                          // Both cards keep the first line to icon · name ·
+                          // time; the badge, tags and bookmark drop to the
+                          // footer row below the body.
                           const SizedBox(width: 8),
                           Text(
                             timeago.format(when),
                             style: AppTextStyles.caption.copyWith(color: muted),
                           ),
-                          if (compact && showBookmarkButton)
-                            _buildBookmarkButton(muted),
                         ],
                       ),
                       SizedBox(height: headerToTitle),
@@ -408,31 +407,8 @@ class ArticleCard extends StatelessWidget {
                           ),
                         ),
                       ],
-                      // Compact card: tags on their own body row (unchanged).
-                      if (compact && hasTags) ...[
-                        SizedBox(
-                          height: hasSummary ? summaryToTags : titleToNext,
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(left: textIndent),
-                          child: Wrap(
-                            // The pills carry no padding of their own, so the
-                            // Wrap owns the whole gap between them.
-                            spacing: 16,
-                            children: [
-                              for (final tag in visibleTags)
-                                _TagPill(
-                                  tag: tag,
-                                  color: _tagColor(tag),
-                                  onTap: onTagTap,
-                                  compact: compact,
-                                ),
-                            ],
-                          ),
-                        ),
-                      ],
-                      // Full card: footer row — badge + tags on the body text
-                      // axis (left), save button pinned to the card's right edge.
+                      // Footer row — badge + tags on the body text axis (left),
+                      // save button pinned to the card's right edge.
                       if (hasFooter) ...[
                         SizedBox(
                           height: hasSummary ? summaryToTags : titleToNext,
