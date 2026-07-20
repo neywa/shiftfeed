@@ -8,9 +8,9 @@ import '../theme/app_theme.dart';
 const double _kWordmarkSize = 22;
 
 /// Tightened tracking on the wordmark, expressed per-em so it scales with the
-/// font size. -1.2px at size 22 reproduces the Figma design width (which used
+/// font size. -1.45px at size 22 reproduces the Figma design width (which used
 /// per-glyph kerning Flutter can't express); other sizes stay proportional.
-const double _kWordmarkTrackingEm = -1.2 / 22;
+const double _kWordmarkTrackingEm = -1.45 / 22;
 
 /// Letter spacing (logical px) for a wordmark rendered at [fontSize].
 double wordmarkTrackingFor(double fontSize) =>
@@ -19,12 +19,12 @@ double wordmarkTrackingFor(double fontSize) =>
 /// Gap between the wordmark and the vertical [ProBadge].
 const double _kBadgeGap = 3;
 
-/// The wordmark is set in two halves: "Shift" upright, "Feed" italic — both
-/// Bold (w700, inherited from the base style). The italic half needs IBM
+/// The wordmark is set in two halves: "Shift" upright, "FEED" italic (caps) —
+/// both Bold (w700, inherited from the base style). The italic half needs IBM
 /// Plex Sans Bold Italic bundled (see pubspec.yaml); without it Flutter
 /// would synthesize a skewed faux-italic.
 const String _kWordmarkUpright = 'Shift';
-const String _kWordmarkItalic = 'Feed';
+const String _kWordmarkItalic = 'FEED';
 
 /// Shrunk PRO badge geometry (from the Figma design): a compact vertical
 /// pill, decoupled from the wordmark line box it used to match.
