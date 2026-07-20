@@ -7,9 +7,14 @@ import '../theme/app_theme.dart';
 /// the two stay in step if the title is ever resized.
 const double _kWordmarkSize = 22;
 
-/// Tightened tracking on the wordmark. Uniform -1.2px reproduces the width
-/// of the Figma design (which used per-glyph kerning Flutter can't express).
-const double _kWordmarkLetterSpacing = -1.2;
+/// Tightened tracking on the wordmark, expressed per-em so it scales with the
+/// font size. -1.2px at size 22 reproduces the Figma design width (which used
+/// per-glyph kerning Flutter can't express); other sizes stay proportional.
+const double _kWordmarkTrackingEm = -1.2 / 22;
+
+/// Letter spacing (logical px) for a wordmark rendered at [fontSize].
+double wordmarkTrackingFor(double fontSize) =>
+    _kWordmarkTrackingEm * fontSize;
 
 /// Gap between the wordmark and the vertical [ProBadge].
 const double _kBadgeGap = 3;
@@ -26,6 +31,48 @@ const String _kWordmarkItalic = 'Feed';
 const double _kBadgeLongAxis = 21; // reads bottom-to-top; the rotated height
 const double _kBadgeThickness = 9; // the rotated width
 const double _kBadgeRadius = 1;
+
+/// The "ShiftFeed" wordmark type — "Shift" upright, "Feed" italic, both Bold
+/// (w700) IBM Plex Sans. Shared by the mobile [BrandTitle] and the desktop
+/// sidebar so the two never drift: the italic split lives here once, and the
+/// tracking scales with [fontSize] via [wordmarkTrackingFor].
+///
+/// Wrap in a [Flexible] at the call site so it yields width to a trailing
+/// [ProBadge] instead of overflowing.
+class WordmarkText extends StatelessWidget {
+  const WordmarkText({
+    super.key,
+    required this.fontSize,
+    required this.color,
+  });
+
+  final double fontSize;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text.rich(
+      const TextSpan(
+        children: [
+          TextSpan(text: _kWordmarkUpright),
+          TextSpan(
+            text: _kWordmarkItalic,
+            style: TextStyle(fontStyle: FontStyle.italic),
+          ),
+        ],
+      ),
+      overflow: TextOverflow.ellipsis,
+      softWrap: false,
+      style: TextStyle(
+        fontFamily: kFontSans,
+        color: color,
+        fontSize: fontSize,
+        fontWeight: FontWeight.w700,
+        letterSpacing: wordmarkTrackingFor(fontSize),
+      ),
+    );
+  }
+}
 
 /// The "ShiftFeed" wordmark shown in the upper-left of every bottom-nav
 /// tab's AppBar, with the [ProBadge] appended when the user is Pro.
@@ -78,24 +125,9 @@ class _BrandTitleState extends State<BrandTitle> {
           // Flexible + ellipsis so the title yields width to the PRO
           // badge on narrow AppBar layouts instead of overflowing.
           Flexible(
-            child: Text.rich(
-              const TextSpan(
-                children: [
-                  TextSpan(text: _kWordmarkUpright),
-                  TextSpan(
-                    text: _kWordmarkItalic,
-                    style: TextStyle(fontStyle: FontStyle.italic),
-                  ),
-                ],
-              ),
-              overflow: TextOverflow.ellipsis,
-              softWrap: false,
-              style: TextStyle(
-                color: textPrimaryOf(context),
-                fontSize: _kWordmarkSize,
-                fontWeight: FontWeight.w700,
-                letterSpacing: _kWordmarkLetterSpacing,
-              ),
+            child: WordmarkText(
+              fontSize: _kWordmarkSize,
+              color: textPrimaryOf(context),
             ),
           ),
           if (_isPro) ...[

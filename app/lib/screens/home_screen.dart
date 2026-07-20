@@ -39,7 +39,7 @@ const double _desktopBreakpoint = 900;
 
 /// Font size of the desktop sidebar's wordmark. Its vertical [ProBadge] is
 /// sized off this so the two stay in step.
-const double _kSidebarWordmarkSize = 18;
+const double _kSidebarWordmarkSize = 24;
 const Color _kReleaseGreen = Color(0xFF00AA44);
 const Color _kSecurityOrange = Color(0xFFFF6600);
 const String _kOcpVersionsSource = 'OCP Versions';
@@ -1161,16 +1161,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Flexible(
-                    child: Text(
-                      'ShiftFeed',
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: false,
-                      style: TextStyle(
-                        fontFamily: kFontSans,
-                        fontSize: _kSidebarWordmarkSize,
-                        fontWeight: FontWeight.w700,
-                        color: _textPrimary,
-                      ),
+                    child: WordmarkText(
+                      fontSize: _kSidebarWordmarkSize,
+                      color: _textPrimary,
                     ),
                   ),
                   if (_isPro) ...[
