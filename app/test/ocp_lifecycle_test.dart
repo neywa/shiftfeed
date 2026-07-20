@@ -85,6 +85,25 @@ void main() {
     });
   });
 
+  group('ocpIsEus — static EUS eligibility, phase-independent', () {
+    test('even minors are EUS-eligible', () {
+      for (final m in ['4.22', '4.20', '4.18', '4.16', '4.14']) {
+        expect(ocpIsEus(m), isTrue, reason: '$m should be EUS-eligible');
+      }
+    });
+
+    test('odd standard releases are not EUS-eligible', () {
+      for (final m in ['4.21', '4.19', '4.17', '4.15']) {
+        expect(ocpIsEus(m), isFalse, reason: '$m should not be EUS-eligible');
+      }
+    });
+
+    test('a minor absent from the table is not EUS (never a guess)', () {
+      expect(ocpIsEus('4.99'), isFalse);
+      expect(ocpIsEus('garbage'), isFalse);
+    });
+  });
+
   group('unknown fallback — never a guessed bucket', () {
     test('a minor absent from the table resolves to unknown', () {
       expect(ocpPhaseFor('4.99', now: today), OcpSupportPhase.unknown);

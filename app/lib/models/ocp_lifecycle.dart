@@ -169,3 +169,13 @@ OcpSupportPhase ocpPhaseFor(String minorVersion, {DateTime? now}) {
   }
   return OcpSupportPhase.endOfLife;
 }
+
+/// Whether a minor is EUS-eligible (Red Hat grants Extended Update Support to
+/// even-numbered minors).
+///
+/// This is a **static property of the release**, independent of its current
+/// [ocpPhaseFor] — a version is "an EUS release" from GA, long before it
+/// actually enters the EUS window. A minor absent from [kOcpLifecycle] returns
+/// false — never a guess, same policy as [ocpPhaseFor]'s `unknown`.
+bool ocpIsEus(String minorVersion) =>
+    kOcpLifecycle[minorVersion]?.isEus ?? false;

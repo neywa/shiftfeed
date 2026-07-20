@@ -232,12 +232,7 @@ class _VersionsScreenState extends State<VersionsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'STABLE CHANNEL TRACKER',
-                  style: AppTextStyles.sectionLabel.copyWith(color: textMuted, fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'OpenShift Active Versions',
+                  'OpenShift Supported Versions',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -328,6 +323,54 @@ class _VersionCard extends StatelessWidget {
     final accentColor = phase.color;
     final statusLabel = phase.label;
 
+    // Trailing badges. They live in the right-edge slot the removed
+    // external-link icon used, vertically centered against the full card (via
+    // the enclosing Row's CrossAxisAlignment.center). maxLines/softWrap guard
+    // 'FULL SUPPORT' — the widest label — from wrapping at large text scales.
+    Widget buildBadge(Color color, String label) => Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 6,
+            vertical: 2,
+          ),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.15),
+            border: Border.all(
+              color: color,
+              width: 0.5,
+            ),
+            borderRadius: BorderRadius.circular(3),
+          ),
+          child: Text(
+            label,
+            maxLines: 1,
+            softWrap: false,
+            style: TextStyle(
+              fontSize: 9,
+              color: color,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1,
+            ),
+          ),
+        );
+
+    // EUS-eligibility tag, stacked under the phase badge. Driven by the
+    // release's static EUS eligibility, not its current phase — but suppressed
+    // when the phase badge already reads 'EUS' (a version actually *in* the EUS
+    // window) so the same chip isn't shown twice.
+    final showEus = ocpIsEus(version.minorVersion) && phase != OcpSupportPhase.eus;
+
+    final badges = Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        buildBadge(accentColor, statusLabel),
+        if (showEus) ...[
+          const SizedBox(height: 6),
+          buildBadge(OcpSupportPhase.eus.color, 'EUS'),
+        ],
+      ],
+    );
+
     final cardContent = IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -337,7 +380,9 @@ class _VersionCard extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                // Center the trailing badge against the full padded card
+                // height, matching the slot the old trailing icon held.
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Expanded(
                     child: Column(
@@ -357,30 +402,6 @@ class _VersionCard extends StatelessWidget {
                                 fontSize: 15,
                                 fontWeight: FontWeight.w700,
                                 color: textPrimary,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                color: accentColor.withValues(alpha: 0.15),
-                                border: Border.all(
-                                  color: accentColor,
-                                  width: 0.5,
-                                ),
-                                borderRadius: BorderRadius.circular(3),
-                              ),
-                              child: Text(
-                                statusLabel,
-                                style: TextStyle(
-                                  fontSize: 9,
-                                  color: accentColor,
-                                  fontWeight: FontWeight.w700,
-                                  letterSpacing: 1,
-                                ),
                               ),
                             ),
                           ],
@@ -409,6 +430,8 @@ class _VersionCard extends StatelessWidget {
                       ],
                     ),
                   ),
+                  const SizedBox(width: 12),
+                  badges,
                 ],
               ),
             ),
