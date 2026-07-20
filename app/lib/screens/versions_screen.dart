@@ -2,16 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:url_launcher/url_launcher.dart';
 
+import '../models/ocp_lifecycle.dart';
 import '../models/ocp_version.dart';
 import '../repositories/article_repository.dart';
 import '../theme/app_theme.dart';
 import '../widgets/error_state.dart';
 import '../widgets/main_app_bar.dart';
 import '../widgets/offline_banner.dart';
-
-const Color _kStatusGreen = Color(0xFF00AA44);
-const Color _kStatusAmber = Color(0xFFFFAA00);
-const Color _kStatusGrey = Color(0xFF555555);
 
 class VersionsScreen extends StatefulWidget {
   /// Whether this screen is the visible tab. Inside the mobile
@@ -40,7 +37,7 @@ class _VersionsScreenState extends State<VersionsScreen> {
   final ArticleRepository _repository = ArticleRepository();
 
   List<OcpVersion> _versions = [];
-  List<Color> _accentColors = [];
+  List<OcpSupportPhase> _phases = [];
   bool _isLoading = true;
   bool _loadFailed = false;
 
@@ -81,14 +78,24 @@ class _VersionsScreenState extends State<VersionsScreen> {
           .toList()
         ..sort((a, b) => b.minorInt.compareTo(a.minorInt));
 
-      final colors = <Color>[
-        for (int i = 0; i < active.length; i++) _accentForIndex(i),
-      ];
+      // Compute each version's real Red Hat lifecycle phase from today's date,
+      // then drop the ones that have reached End of Life. `unknown` (a minor
+      // not yet in the lifecycle table) is deliberately kept — it renders an
+      // honest 'UNKNOWN' badge rather than being hidden or mislabelled.
+      final now = DateTime.now();
+      final shown = <OcpVersion>[];
+      final phases = <OcpSupportPhase>[];
+      for (final v in active) {
+        final phase = ocpPhaseFor(v.minorVersion, now: now);
+        if (phase == OcpSupportPhase.endOfLife) continue;
+        shown.add(v);
+        phases.add(phase);
+      }
 
       if (!mounted) return;
       setState(() {
-        _versions = active;
-        _accentColors = colors;
+        _versions = shown;
+        _phases = phases;
         _isLoading = false;
       });
     } on RepoException {
@@ -107,18 +114,6 @@ class _VersionsScreenState extends State<VersionsScreen> {
         _loadFailed = true;
       });
     }
-  }
-
-  Color _accentForIndex(int index) {
-    if (index <= 1) return _kStatusGreen;
-    if (index <= 3) return _kStatusAmber;
-    return _kStatusGrey;
-  }
-
-  String _statusLabel(int index) {
-    if (index <= 1) return 'LATEST';
-    if (index <= 3) return 'SUPPORTED';
-    return 'MAINTENANCE';
   }
 
   @override
@@ -205,8 +200,7 @@ class _VersionsScreenState extends State<VersionsScreen> {
             const SizedBox(height: 8),
             _VersionCard(
               version: _versions[i],
-              accentColor: _accentColors[i],
-              statusLabel: _statusLabel(i),
+              phase: _phases[i],
             ),
           ],
           const SizedBox(height: 16),
@@ -258,7 +252,11 @@ class _VersionsScreenState extends State<VersionsScreen> {
               ],
             ),
           ),
-          const Icon(Icons.verified, color: _kStatusGreen, size: 20),
+          Icon(
+            Icons.verified,
+            color: OcpSupportPhase.fullSupport.color,
+            size: 20,
+          ),
         ],
       ),
     );
@@ -311,13 +309,11 @@ class _VersionsScreenState extends State<VersionsScreen> {
 
 class _VersionCard extends StatelessWidget {
   final OcpVersion version;
-  final Color accentColor;
-  final String statusLabel;
+  final OcpSupportPhase phase;
 
   const _VersionCard({
     required this.version,
-    required this.accentColor,
-    required this.statusLabel,
+    required this.phase,
   });
 
   @override
@@ -326,6 +322,11 @@ class _VersionCard extends StatelessWidget {
     final border = borderOf(context);
     final textPrimary = textPrimaryOf(context);
     final textMuted = textMutedOf(context);
+
+    // The accent stripe + status badge both take the phase's colour; the badge
+    // text is the phase's label. One enum owns both (see ocp_lifecycle.dart).
+    final accentColor = phase.color;
+    final statusLabel = phase.label;
 
     final cardContent = IntrinsicHeight(
       child: Row(
