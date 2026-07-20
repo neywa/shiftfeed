@@ -16,6 +16,16 @@ const _kTitleSize = 15.0;
 const _kSummarySize = 13.0;
 const _kTagSize = 11.0;
 
+// The header's source icon and the gap to its right, reused both to lay out the
+// header and to indent the full card's body text under the source *name*.
+const _kSourceIconSize = 20.0;
+const _kSourceIconGap = 8.0;
+
+// Full-card body text (title/summary/tags) aligns under the source *name*, not
+// the source icon: the name's left edge sits icon width + header gap to the
+// right of the icon's left edge. Compact keeps everything flush left.
+const _kSourceNameIndent = _kSourceIconSize + _kSourceIconGap;
+
 // The full card keeps generous line spacing (its title can wrap to two lines).
 // The compact card trims the title's line box down to roughly the glyph box: a
 // height below the font's natural 1.3em means the glyphs overflow their box
@@ -147,8 +157,8 @@ class ArticleCard extends StatelessWidget {
   Widget _buildSourceIcon(Color border) {
     if (article.source == 'GitHub Releases') {
       return Container(
-        width: 20,
-        height: 20,
+        width: _kSourceIconSize,
+        height: _kSourceIconSize,
         decoration: BoxDecoration(
           color: _kGitHubGreen,
           borderRadius: BorderRadius.circular(4),
@@ -165,12 +175,12 @@ class ArticleCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(4),
       child: Image.asset(
         faviconAsset(article.source),
-        width: 20,
-        height: 20,
+        width: _kSourceIconSize,
+        height: _kSourceIconSize,
         fit: BoxFit.contain,
         errorBuilder: (context, error, stack) => Container(
-          width: 20,
-          height: 20,
+          width: _kSourceIconSize,
+          height: _kSourceIconSize,
           color: border,
         ),
       ),
@@ -244,6 +254,11 @@ class ArticleCard extends StatelessWidget {
     final tagInkTop = _kTagInkTop + tagPadding;
     final tagInkBottom = _kTagInkBottom + tagPadding;
 
+    // Full card: shift the body text right so it shares a left axis with the
+    // source name in the header. Compact keeps everything flush against the
+    // padding's left edge.
+    final textIndent = compact ? 0.0 : _kSourceNameIndent;
+
     final topPad = gap;
     final headerToTitle = gap - titleInkTop;
     final titleToNext = hasSummary
@@ -284,7 +299,7 @@ class ArticleCard extends StatelessWidget {
                       Row(
                         children: [
                           _buildSourceIcon(border),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: _kSourceIconGap),
                           Expanded(
                             child: Text(
                               article.source.toUpperCase(),
@@ -341,29 +356,35 @@ class ArticleCard extends StatelessWidget {
                         ],
                       ),
                       SizedBox(height: headerToTitle),
-                      Text(
-                        article.title,
-                        maxLines: titleMaxLines,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: titleColor,
-                          fontSize: _kTitleSize,
-                          fontWeight: FontWeight.w700,
-                          height: titleHeight,
-                          leadingDistribution: TextLeadingDistribution.even,
+                      Padding(
+                        padding: EdgeInsets.only(left: textIndent),
+                        child: Text(
+                          article.title,
+                          maxLines: titleMaxLines,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: titleColor,
+                            fontSize: _kTitleSize,
+                            fontWeight: FontWeight.w700,
+                            height: titleHeight,
+                            leadingDistribution: TextLeadingDistribution.even,
+                          ),
                         ),
                       ),
                       if (hasSummary) ...[
                         SizedBox(height: titleToNext),
-                        Text(
-                          article.summary!,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: secondary,
-                            fontSize: _kSummarySize,
-                            height: _kSummaryHeight,
-                            leadingDistribution: TextLeadingDistribution.even,
+                        Padding(
+                          padding: EdgeInsets.only(left: textIndent),
+                          child: Text(
+                            article.summary!,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: secondary,
+                              fontSize: _kSummarySize,
+                              height: _kSummaryHeight,
+                              leadingDistribution: TextLeadingDistribution.even,
+                            ),
                           ),
                         ),
                       ],
@@ -371,19 +392,22 @@ class ArticleCard extends StatelessWidget {
                         SizedBox(
                           height: hasSummary ? summaryToTags : titleToNext,
                         ),
-                        Wrap(
-                          // The pills carry no padding of their own, so the
-                          // Wrap owns the whole gap between them.
-                          spacing: 16,
-                          children: [
-                            for (final tag in visibleTags)
-                              _TagPill(
-                                tag: tag,
-                                color: _tagColor(tag),
-                                onTap: onTagTap,
-                                compact: compact,
-                              ),
-                          ],
+                        Padding(
+                          padding: EdgeInsets.only(left: textIndent),
+                          child: Wrap(
+                            // The pills carry no padding of their own, so the
+                            // Wrap owns the whole gap between them.
+                            spacing: 16,
+                            children: [
+                              for (final tag in visibleTags)
+                                _TagPill(
+                                  tag: tag,
+                                  color: _tagColor(tag),
+                                  onTap: onTagTap,
+                                  compact: compact,
+                                ),
+                            ],
+                          ),
                         ),
                       ],
                     ],
