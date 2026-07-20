@@ -408,30 +408,6 @@ class _VersionCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Tooltip(
-                    message: 'Open Release Status',
-                    child: InkWell(
-                      // Land users on the OpenShift Release Status
-                      // dashboard (build status + tests for the patch
-                      // release) rather than the raw cincinnati YAML.
-                      onTap: () => launchUrl(
-                        Uri.parse(
-                          'https://openshift-release.apps.ci.l2s4.p1'
-                          '.openshiftapps.com/releasestream/4-stable'
-                          '/release/${version.latestStable}',
-                        ),
-                        mode: LaunchMode.externalApplication,
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Icon(
-                          Icons.open_in_new,
-                          size: 16,
-                          color: textMuted,
-                        ),
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -442,13 +418,26 @@ class _VersionCard extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(6),
-        child: Container(
-          decoration: BoxDecoration(
-            color: surface,
-            border: Border.all(color: border, width: 0.5),
-            borderRadius: BorderRadius.circular(6),
+      child: Material(
+        color: surface,
+        shape: RoundedRectangleBorder(
+          side: BorderSide(color: border, width: 0.5),
+          borderRadius: BorderRadius.circular(6),
+        ),
+        // The accent stripe is a square-cornered box flush with the left edge,
+        // so it (and the ripple) must clip to the rounded shape.
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          // Whole card opens the OpenShift Release Status dashboard (build
+          // status + tests for the patch release) — the destination the old
+          // trailing icon used, now the full tap target.
+          onTap: () => launchUrl(
+            Uri.parse(
+              'https://openshift-release.apps.ci.l2s4.p1'
+              '.openshiftapps.com/releasestream/4-stable'
+              '/release/${version.latestStable}',
+            ),
+            mode: LaunchMode.externalApplication,
           ),
           child: cardContent,
         ),
