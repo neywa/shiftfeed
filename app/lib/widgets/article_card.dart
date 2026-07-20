@@ -225,6 +225,38 @@ class ArticleCard extends StatelessWidget {
     );
   }
 
+  // The save button. Shared between the compact card's header (inline after the
+  // timestamp) and the full card's footer row. Capped to the 20dp source-icon
+  // height in the header: `constraints` alone isn't enough because IconButton's
+  // ButtonStyle enforces a 48dp tap target, so shrinkWrap it too.
+  Widget _buildBookmarkButton(Color muted,
+      {AlignmentGeometry alignment = Alignment.center}) {
+    return IconButton(
+      onPressed: onBookmarkToggle,
+      icon: Icon(
+        isBookmarked ? Icons.bookmark : Icons.bookmark_outline,
+        color: isBookmarked ? kRed : muted,
+      ),
+      iconSize: 20,
+      padding: EdgeInsets.zero,
+      // The 40dp tap box is wider than the 20dp glyph. Centered, the glyph sits
+      // ~10dp inboard of the box's right edge; in the footer we align it right
+      // so the icon shares the timestamp's right axis (both flush to the content
+      // padding edge). The compact header keeps the default centering.
+      alignment: alignment,
+      constraints: const BoxConstraints(
+        minWidth: 40,
+        minHeight: 20,
+      ),
+      style: IconButton.styleFrom(
+        minimumSize: const Size(40, 20),
+        padding: EdgeInsets.zero,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      ),
+      tooltip: isBookmarked ? 'Remove bookmark' : 'Save article',
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -242,6 +274,11 @@ class ArticleCard extends StatelessWidget {
     final titleMaxLines = compact ? 1 : 2;
     final badge = _buildBadge();
     final hasTags = visibleTags.isNotEmpty;
+    // Full cards move the badge, tags and bookmark into a single footer row
+    // below the body. Compact cards keep the badge + bookmark inline in the
+    // header and the tags in their own body row (unchanged).
+    final hasFooter =
+        !compact && (badge != null || hasTags || showBookmarkButton);
 
     // Every gap below is `gap` of *visible* space: the nominal value minus the
     // blank strips inside the line boxes on either side of it. The source icon
@@ -269,12 +306,18 @@ class ArticleCard extends StatelessWidget {
         ? gap - titleInkBottom - summaryInkTop
         : gap - titleInkBottom - tagInkTop;
     final summaryToTags = gap - summaryInkBottom - tagInkTop;
-    // Whatever ends the card sets the bottom padding.
-    final bottomPad = hasTags
-        ? gap - tagInkBottom
-        : hasSummary
-            ? gap - summaryInkBottom
-            : gap - titleInkBottom;
+    // Whatever ends the card sets the bottom padding. Full cards end on the
+    // footer row: when it carries tags the tag pill's ink strip is the bottom
+    // edge (same as the old body tags row); when it's only the badge/bookmark
+    // box there is no ink strip, so the full nominal gap applies — as with the
+    // header icon box at the top.
+    final bottomPad = hasFooter
+        ? (hasTags ? gap - tagInkBottom : gap)
+        : hasTags
+            ? gap - tagInkBottom
+            : hasSummary
+                ? gap - summaryInkBottom
+                : gap - titleInkBottom;
 
     return Material(
       color: theme.cardColor,
@@ -316,7 +359,10 @@ class ArticleCard extends StatelessWidget {
                               ),
                             ),
                           ),
-                          if (badge != null) ...[
+                          // Full cards keep the first line to icon · name ·
+                          // time; the badge and bookmark drop to the footer row.
+                          // Compact cards keep them inline here.
+                          if (compact && badge != null) ...[
                             const SizedBox(width: 6),
                             badge,
                           ],
@@ -325,38 +371,8 @@ class ArticleCard extends StatelessWidget {
                             timeago.format(when),
                             style: AppTextStyles.caption.copyWith(color: muted),
                           ),
-                          if (showBookmarkButton)
-                            IconButton(
-                              onPressed: onBookmarkToggle,
-                              icon: Icon(
-                                isBookmarked
-                                    ? Icons.bookmark
-                                    : Icons.bookmark_outline,
-                                color: isBookmarked ? kRed : muted,
-                              ),
-                              iconSize: 20,
-                              padding: EdgeInsets.zero,
-                              // The button must not exceed the 20dp source
-                              // icon, or it drives the header row's height and
-                              // the gaps around the icon stop holding — the row
-                              // has to be exactly as tall as the icon.
-                              // `constraints` alone is not enough: IconButton's
-                              // ButtonStyle enforces a 48dp tap target on top of
-                              // it, so shrinkWrap it too.
-                              constraints: const BoxConstraints(
-                                minWidth: 40,
-                                minHeight: 20,
-                              ),
-                              style: IconButton.styleFrom(
-                                minimumSize: const Size(40, 20),
-                                padding: EdgeInsets.zero,
-                                tapTargetSize:
-                                    MaterialTapTargetSize.shrinkWrap,
-                              ),
-                              tooltip: isBookmarked
-                                  ? 'Remove bookmark'
-                                  : 'Save article',
-                            ),
+                          if (compact && showBookmarkButton)
+                            _buildBookmarkButton(muted),
                         ],
                       ),
                       SizedBox(height: headerToTitle),
@@ -392,7 +408,8 @@ class ArticleCard extends StatelessWidget {
                           ),
                         ),
                       ],
-                      if (hasTags) ...[
+                      // Compact card: tags on their own body row (unchanged).
+                      if (compact && hasTags) ...[
                         SizedBox(
                           height: hasSummary ? summaryToTags : titleToNext,
                         ),
@@ -412,6 +429,43 @@ class ArticleCard extends StatelessWidget {
                                 ),
                             ],
                           ),
+                        ),
+                      ],
+                      // Full card: footer row — badge + tags on the body text
+                      // axis (left), save button pinned to the card's right edge.
+                      if (hasFooter) ...[
+                        SizedBox(
+                          height: hasSummary ? summaryToTags : titleToNext,
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: EdgeInsets.only(left: textIndent),
+                                child: Wrap(
+                                  spacing: 16,
+                                  runSpacing: 8,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  children: [
+                                    if (badge != null) badge,
+                                    for (final tag in visibleTags)
+                                      _TagPill(
+                                        tag: tag,
+                                        color: _tagColor(tag),
+                                        onTap: onTagTap,
+                                        compact: compact,
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            if (showBookmarkButton)
+                              _buildBookmarkButton(
+                                muted,
+                                alignment: Alignment.centerRight,
+                              ),
+                          ],
                         ),
                       ],
                     ],
