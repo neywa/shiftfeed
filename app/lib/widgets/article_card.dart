@@ -111,6 +111,10 @@ class ArticleCard extends StatelessWidget {
         return const Color(0xFF1976D2); // CNCF brand blue
       case 'Istio Blog':
         return const Color(0xFF466BB0); // Istio brand blue
+      case 'Last Week in Kubernetes Development':
+        return const Color(0xFF326CE5); // Kubernetes brand blue (k8s community project)
+      case 'Azure Red Hat OpenShift':
+        return const Color(0xFF0078D4); // Microsoft Azure brand blue
       case 'Hacker News':
         return const Color(0xFFFF6600); // HN/Y-Combinator orange
       case 'HackerNoon':

@@ -11,6 +11,9 @@ const _faviconMap = {
   'GitHub Releases': 'assets/favicons/github.png',
   'HackerNoon': 'assets/favicons/hackernoon.png',
   'Istio Blog': 'assets/favicons/istio.png',
+  'Sysdig': 'assets/favicons/sysdig.png',
+  'Last Week in Kubernetes Development': 'assets/favicons/lwkd.png',
+  'Azure Red Hat OpenShift': 'assets/favicons/azure.png',
 };
 
 String faviconAsset(String source) => _faviconMap[source] ?? _defaultFavicon;
