@@ -141,7 +141,7 @@ final Map<String, OcpLifecycleEntry> kOcpLifecycle = {
     ga: DateTime.utc(2026, 6, 9),
     isEus: true,
     fullSupportEnd: DateTime.utc(2026, 12, 31),
-    maintenanceEnd: DateTime.utc(2027, 12, 9),
+    maintenanceEnd: DateTime.utc(2027, 12, 31),
     eusEnd: DateTime.utc(2028, 6, 9),
   ),
 };
