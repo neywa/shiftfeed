@@ -124,7 +124,6 @@ class _VersionsScreenState extends State<VersionsScreen> {
   @override
   Widget build(BuildContext context) {
     final bg = bgOf(context);
-    final textPrimary = textPrimaryOf(context);
 
     return Scaffold(
       backgroundColor: bg,
@@ -135,12 +134,7 @@ class _VersionsScreenState extends State<VersionsScreen> {
           : AppBar(
               title: Text(
                 'OCP VERSIONS',
-                style: TextStyle(
-                  fontSize: 11,
-                  letterSpacing: 2,
-                  fontWeight: FontWeight.w800,
-                  color: textPrimary,
-                ),
+                style: AppTextStyles.screenTitle,
               ),
               backgroundColor: bg,
               bottom: PreferredSize(

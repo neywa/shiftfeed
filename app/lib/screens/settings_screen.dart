@@ -726,7 +726,7 @@ class _AlertRuleEditSheetState extends State<_AlertRuleEditSheet> {
               Text(
                 widget.existing == null ? 'New rule' : 'Edit rule',
                 style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
               const SizedBox(height: 16),
@@ -1175,7 +1175,7 @@ class _DigestScheduleSheetState extends State<_DigestScheduleSheet> {
             Text(
               'Daily briefing schedule',
               style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(height: 12),
@@ -1596,7 +1596,7 @@ class _AddRssSourceSheetState extends State<_AddRssSourceSheet> {
               Text(
                 'Add custom feed',
                 style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
               const SizedBox(height: 16),

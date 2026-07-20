@@ -66,7 +66,7 @@ class _BrandTitleState extends State<BrandTitle> {
               style: TextStyle(
                 color: textPrimaryOf(context),
                 fontSize: _kWordmarkSize,
-                fontWeight: FontWeight.w900,
+                fontWeight: FontWeight.w700,
                 letterSpacing: 1.5,
               ),
             ),
@@ -123,7 +123,7 @@ class ProBadge extends StatelessWidget {
           style: TextStyle(
             color: Colors.white,
             fontSize: 9,
-            fontWeight: FontWeight.w800,
+            fontWeight: FontWeight.w700,
             letterSpacing: 0.8,
           ),
         ),

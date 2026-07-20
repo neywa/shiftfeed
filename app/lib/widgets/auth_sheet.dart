@@ -239,7 +239,7 @@ class _AuthSheetState extends State<AuthSheet> {
             AuthSheet._kEnterTitle,
             style: theme.textTheme.titleLarge?.copyWith(
               color: textPrimary,
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(height: 6),
@@ -344,7 +344,7 @@ class _AuthSheetState extends State<AuthSheet> {
           textAlign: TextAlign.center,
           style: theme.textTheme.titleLarge?.copyWith(
             color: textPrimary,
-            fontWeight: FontWeight.w800,
+            fontWeight: FontWeight.w700,
           ),
         ),
         const SizedBox(height: 8),

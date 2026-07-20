@@ -189,7 +189,6 @@ class _CveScreenState extends State<CveScreen> {
   @override
   Widget build(BuildContext context) {
     final bg = bgOf(context);
-    final textPrimary = textPrimaryOf(context);
 
     return Scaffold(
       backgroundColor: bg,
@@ -200,12 +199,7 @@ class _CveScreenState extends State<CveScreen> {
           : AppBar(
               title: Text(
                 'CVE ALERTS',
-                style: TextStyle(
-                  fontSize: 11,
-                  letterSpacing: 2,
-                  fontWeight: FontWeight.w800,
-                  color: textPrimary,
-                ),
+                style: AppTextStyles.screenTitle,
               ),
               backgroundColor: bg,
               actions: _buildAppBarActions(),

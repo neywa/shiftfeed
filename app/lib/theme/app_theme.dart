@@ -82,6 +82,17 @@ class AppTextStyles {
     fontWeight: FontWeight.w600,
     letterSpacing: 0.2,
   );
+
+  /// Canonical uppercase screen/route title — the AppBar title on screens
+  /// pushed as routes (e.g. "CVE ALERTS", "OCP VERSIONS"). Color is inherited
+  /// from the ambient AppBar `titleTextStyle` so it stays theme-correct in
+  /// light and dark, same color-agnostic pattern as [technicalLabel].
+  static const TextStyle screenTitle = TextStyle(
+    fontFamily: kFontSans,
+    fontSize: 11,
+    fontWeight: FontWeight.w700,
+    letterSpacing: 2,
+  );
 }
 
 ThemeData appTheme() => ThemeData(

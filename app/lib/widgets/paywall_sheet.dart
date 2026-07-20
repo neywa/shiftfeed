@@ -458,7 +458,7 @@ class _PaywallSheetState extends State<PaywallSheet> {
                       PaywallSheet._kTitle,
                       style: theme.textTheme.titleLarge?.copyWith(
                         color: textPrimary,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                     if (selected.trial != null)

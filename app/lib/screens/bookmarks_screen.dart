@@ -278,10 +278,7 @@ class _BookmarksScreenState extends State<BookmarksScreen>
                   backgroundColor: bgOf(context),
                   title: const Text(
                     'SAVED',
-                    style: TextStyle(
-                      fontSize: 11,
-                      letterSpacing: 2,
-                    ),
+                    style: AppTextStyles.screenTitle,
                   ),
                   bottom: PreferredSize(
                     preferredSize: const Size.fromHeight(1),

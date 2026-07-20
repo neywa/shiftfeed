@@ -65,11 +65,7 @@ class _DigestScreenState extends State<DigestScreen> {
         ),
         title: const Text(
           'AI BRIEFING',
-          style: TextStyle(
-            fontSize: 11,
-            letterSpacing: 2,
-            fontWeight: FontWeight.w800,
-          ),
+          style: AppTextStyles.screenTitle,
         ),
         actions: [
           IconButton(
