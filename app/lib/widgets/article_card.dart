@@ -420,7 +420,7 @@ class ArticleCard extends StatelessWidget {
                               child: Padding(
                                 padding: EdgeInsets.only(left: textIndent),
                                 child: Wrap(
-                                  spacing: 16,
+                                  spacing: 8,
                                   runSpacing: 8,
                                   crossAxisAlignment: WrapCrossAlignment.center,
                                   children: [
