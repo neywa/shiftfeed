@@ -346,7 +346,8 @@ class _VersionCard extends StatelessWidget {
                           children: [
                             Text(
                               'OpenShift',
-                              style: AppTextStyles.caption.copyWith(color: textMuted),
+                              style: AppTextStyles.caption
+                                  .copyWith(color: textMuted, fontSize: 15),
                             ),
                             const SizedBox(width: 6),
                             Text(
@@ -388,7 +389,8 @@ class _VersionCard extends StatelessWidget {
                           children: [
                             Text(
                               'Latest stable: ',
-                              style: AppTextStyles.caption.copyWith(color: textMuted),
+                              style: AppTextStyles.caption
+                                  .copyWith(color: textMuted, fontSize: 12),
                             ),
                             Text(
                               version.latestStable,
