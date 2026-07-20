@@ -304,7 +304,7 @@ class ArticleCard extends StatelessWidget {
                           const SizedBox(width: 8),
                           Text(
                             timeago.format(when),
-                            style: TextStyle(color: muted, fontSize: 11),
+                            style: AppTextStyles.caption.copyWith(color: muted),
                           ),
                           if (showBookmarkButton)
                             IconButton(

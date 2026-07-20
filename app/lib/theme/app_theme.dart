@@ -93,6 +93,23 @@ class AppTextStyles {
     fontWeight: FontWeight.w700,
     letterSpacing: 2,
   );
+
+  /// Uppercase tracked mini-header that labels a body section (e.g. "SOURCES",
+  /// "TOP STORIES"). Muted color is theme-aware so it can't live in a const —
+  /// call sites add `.copyWith(color: textMutedOf(context))`.
+  static const TextStyle sectionLabel = TextStyle(
+    fontFamily: kFontSans,
+    fontSize: 10,
+    letterSpacing: 2,
+  );
+
+  /// Small muted metadata line (timestamps, counts, hints). Same theme-aware
+  /// color rule as [sectionLabel] — call sites supply the muted color via
+  /// `.copyWith(color: ...)`.
+  static const TextStyle caption = TextStyle(
+    fontFamily: kFontSans,
+    fontSize: 11,
+  );
 }
 
 ThemeData appTheme() => ThemeData(

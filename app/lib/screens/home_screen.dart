@@ -772,7 +772,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     '${_searchResults.length} results',
-                    style: TextStyle(fontSize: 11, color: _textMuted),
+                    style: AppTextStyles.caption.copyWith(color: _textMuted),
                   ),
                 ),
               ),
@@ -861,7 +861,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 12),
                 Text(
                   'Searching...',
-                  style: TextStyle(fontSize: 12, color: _textMuted),
+                  style: AppTextStyles.caption.copyWith(color: _textMuted),
                 ),
               ],
             ),
@@ -915,7 +915,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 4),
                 Text(
                   'Pull to refresh',
-                  style: TextStyle(color: _textMuted, fontSize: 11),
+                  style: AppTextStyles.caption.copyWith(color: _textMuted),
                 ),
               ],
             ),
@@ -981,7 +981,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _searchQuery.startsWith('#')
               ? 'No articles found with tag $_searchQuery'
               : 'Try a different search term or use #tag to search by tag',
-          style: TextStyle(fontSize: 11, color: _textMuted),
+          style: AppTextStyles.caption.copyWith(color: _textMuted),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 16),
@@ -1228,11 +1228,7 @@ class _HomeScreenState extends State<HomeScreen> {
               alignment: Alignment.centerLeft,
               child: Text(
                 'SOURCES',
-                style: TextStyle(
-                  fontSize: 10,
-                  color: _textMuted,
-                  letterSpacing: 2,
-                ),
+                style: AppTextStyles.sectionLabel.copyWith(color: _textMuted),
               ),
             ),
           ),
@@ -1494,7 +1490,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 12),
             Text(
               'Searching...',
-              style: TextStyle(fontSize: 12, color: _textMuted),
+              style: AppTextStyles.caption.copyWith(color: _textMuted),
             ),
           ],
         ),
@@ -1627,11 +1623,7 @@ class _HomeScreenState extends State<HomeScreen> {
             if (_displayedOcpVersions.isNotEmpty) ...[
               Text(
                 'LATEST OPENSHIFT RELEASES',
-                style: TextStyle(
-                  fontSize: 10,
-                  color: _textMuted,
-                  letterSpacing: 2,
-                ),
+                style: AppTextStyles.sectionLabel.copyWith(color: _textMuted),
               ),
               const SizedBox(height: 12),
               for (int i = 0; i < _displayedOcpVersions.length; i++) ...[
@@ -1731,11 +1723,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Text(
                         'LATEST CVES',
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: _textMuted,
-                          letterSpacing: 2,
-                        ),
+                        style: AppTextStyles.sectionLabel.copyWith(color: _textMuted),
                       ),
                       const SizedBox(width: 6),
                       Icon(
@@ -1769,11 +1757,7 @@ class _HomeScreenState extends State<HomeScreen> {
             if (_latestReleases.isNotEmpty) ...[
               Text(
                 'LATEST RELEASES',
-                style: TextStyle(
-                  fontSize: 10,
-                  color: _textMuted,
-                  letterSpacing: 2,
-                ),
+                style: AppTextStyles.sectionLabel.copyWith(color: _textMuted),
               ),
               const SizedBox(height: 12),
               for (final release in _latestReleases) ...[
@@ -1786,11 +1770,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
             Text(
               "THIS WEEK'S TOP SOURCES",
-              style: TextStyle(
-                fontSize: 10,
-                color: _textMuted,
-                letterSpacing: 2,
-              ),
+              style: AppTextStyles.sectionLabel.copyWith(color: _textMuted),
             ),
             const SizedBox(height: 16),
             if (_stableSourceCounts.isEmpty)
@@ -1798,7 +1778,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.only(top: 8),
                 child: Text(
                   'Loading...',
-                  style: TextStyle(fontSize: 11, color: _textMuted),
+                  style: AppTextStyles.caption.copyWith(color: _textMuted),
                 ),
               )
             else
@@ -1813,17 +1793,13 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 24),
             Text(
               'POPULAR TAGS',
-              style: TextStyle(
-                fontSize: 10,
-                color: _textMuted,
-                letterSpacing: 2,
-              ),
+              style: AppTextStyles.sectionLabel.copyWith(color: _textMuted),
             ),
             const SizedBox(height: 16),
             if (_topTags.isEmpty)
               Text(
                 'Loading...',
-                style: TextStyle(fontSize: 11, color: _textMuted),
+                style: AppTextStyles.caption.copyWith(color: _textMuted),
               )
             else
               Wrap(
@@ -1929,7 +1905,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(width: 4),
               Text(
                 timeago.format(version.updatedAt),
-                style: TextStyle(fontSize: 10, color: _textMuted),
+                style: AppTextStyles.caption.copyWith(color: _textMuted),
               ),
             ],
           ),
@@ -1968,7 +1944,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(width: 4),
                 Text(
                   timeago.format(alert.detectedAt!),
-                  style: TextStyle(fontSize: 10, color: _textMuted),
+                  style: AppTextStyles.caption.copyWith(color: _textMuted),
                 ),
               ],
             ],
@@ -2005,7 +1981,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(width: 4),
               Text(
                 timeago.format(when),
-                style: TextStyle(fontSize: 10, color: _textMuted),
+                style: AppTextStyles.caption.copyWith(color: _textMuted),
               ),
             ],
           ),
@@ -2035,7 +2011,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 Text(
                   '$count posts',
-                  style: TextStyle(fontSize: 11, color: _textMuted),
+                  style: AppTextStyles.caption.copyWith(color: _textMuted),
                 ),
               ],
             ),
@@ -2138,7 +2114,7 @@ class _PollingIndicator extends StatelessWidget {
         const SizedBox(height: 12),
         Text(
           'POLLING SOURCES...',
-          style: TextStyle(fontSize: 11, color: muted, letterSpacing: 2),
+          style: AppTextStyles.sectionLabel.copyWith(color: muted),
         ),
         const SizedBox(height: 20),
       ],

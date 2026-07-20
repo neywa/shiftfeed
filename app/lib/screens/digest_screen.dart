@@ -126,7 +126,7 @@ class _DigestScreenState extends State<DigestScreen> {
             const SizedBox(height: 4),
             Text(
               'Check back after the next scrape run',
-              style: TextStyle(fontSize: 11, color: textMuted),
+              style: AppTextStyles.caption.copyWith(color: textMuted),
             ),
           ],
         ),
@@ -183,7 +183,7 @@ class _DigestScreenState extends State<DigestScreen> {
               const Spacer(),
               Text(
                 timeago.format(digest.generatedAt),
-                style: TextStyle(fontSize: 11, color: textMuted),
+                style: AppTextStyles.caption.copyWith(color: textMuted),
               ),
             ],
           ),
@@ -331,11 +331,7 @@ class _DigestScreenState extends State<DigestScreen> {
         children: [
           Text(
             'TOP STORIES',
-            style: TextStyle(
-              fontSize: 10,
-              color: textMuted,
-              letterSpacing: 2,
-            ),
+            style: AppTextStyles.sectionLabel.copyWith(color: textMuted),
           ),
           const SizedBox(height: 16),
           for (final article in digest.topArticles) ...[

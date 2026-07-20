@@ -562,10 +562,7 @@ class CveRow extends StatelessWidget {
                                   const SizedBox(width: 8),
                                   Text(
                                     timeago.format(published),
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      color: textMuted,
-                                    ),
+                                    style: AppTextStyles.caption.copyWith(color: textMuted),
                                   ),
                                 ],
                               ],
@@ -585,7 +582,7 @@ class CveRow extends StatelessWidget {
                             const SizedBox(height: 6),
                             Text(
                               article.source,
-                              style: TextStyle(fontSize: 10, color: textMuted),
+                              style: AppTextStyles.caption.copyWith(color: textMuted),
                             ),
                           ],
                         ),

@@ -310,7 +310,7 @@ class _AuthSheetState extends State<AuthSheet> {
           Text(
             AuthSheet._kSendingHint,
             textAlign: TextAlign.center,
-            style: TextStyle(color: textMuted, fontSize: 11),
+            style: AppTextStyles.caption.copyWith(color: textMuted),
           ),
         ],
       ),
@@ -367,7 +367,7 @@ class _AuthSheetState extends State<AuthSheet> {
             child: Text(
               _resendInfo!,
               textAlign: TextAlign.center,
-              style: TextStyle(color: textMuted, fontSize: 11),
+              style: AppTextStyles.caption.copyWith(color: textMuted),
             ),
           ),
         TextButton(

@@ -44,7 +44,7 @@ class ErrorState extends StatelessWidget {
             Text(
               body,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 12, color: textMuted),
+              style: AppTextStyles.caption.copyWith(color: textMuted),
             ),
             const SizedBox(height: 16),
             OutlinedButton.icon(

@@ -239,12 +239,7 @@ class _VersionsScreenState extends State<VersionsScreen> {
               children: [
                 Text(
                   'STABLE CHANNEL TRACKER',
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: textMuted,
-                    letterSpacing: 2,
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: AppTextStyles.sectionLabel.copyWith(color: textMuted, fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -258,7 +253,7 @@ class _VersionsScreenState extends State<VersionsScreen> {
                 const SizedBox(height: 4),
                 Text(
                   'Updated hourly from cincinnati-graph-data',
-                  style: TextStyle(fontSize: 11, color: textMuted),
+                  style: AppTextStyles.caption.copyWith(color: textMuted),
                 ),
               ],
             ),
@@ -351,10 +346,7 @@ class _VersionCard extends StatelessWidget {
                           children: [
                             Text(
                               'OpenShift',
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: textMuted,
-                              ),
+                              style: AppTextStyles.caption.copyWith(color: textMuted),
                             ),
                             const SizedBox(width: 6),
                             Text(
@@ -396,10 +388,7 @@ class _VersionCard extends StatelessWidget {
                           children: [
                             Text(
                               'Latest stable: ',
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: textMuted,
-                              ),
+                              style: AppTextStyles.caption.copyWith(color: textMuted),
                             ),
                             Text(
                               version.latestStable,
@@ -412,7 +401,7 @@ class _VersionCard extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           'Updated ${timeago.format(version.updatedAt)}',
-                          style: TextStyle(fontSize: 10, color: textMuted),
+                          style: AppTextStyles.caption.copyWith(color: textMuted),
                         ),
                       ],
                     ),

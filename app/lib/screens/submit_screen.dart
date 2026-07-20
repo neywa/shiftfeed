@@ -235,7 +235,7 @@ class _SubmitScreenState extends State<SubmitScreen> {
         const SizedBox(height: 8),
         Text(
           'Adding a title helps reviewers understand the article faster.',
-          style: TextStyle(fontSize: 11, color: muted),
+          style: AppTextStyles.caption.copyWith(color: muted),
         ),
         if (_errorMessage != null) ...[
           const SizedBox(height: 16),
@@ -315,11 +315,7 @@ class _SubmitScreenState extends State<SubmitScreen> {
               const SizedBox(width: 8),
               Text(
                 'COMMUNITY SUBMISSIONS',
-                style: TextStyle(
-                  fontSize: 10,
-                  color: muted,
-                  letterSpacing: 2,
-                ),
+                style: AppTextStyles.sectionLabel.copyWith(color: muted),
               ),
             ],
           ),
@@ -363,11 +359,7 @@ class _SubmitScreenState extends State<SubmitScreen> {
         children: [
           Text(
             'SUBMISSION GUIDELINES',
-            style: TextStyle(
-              fontSize: 10,
-              color: muted,
-              letterSpacing: 2,
-            ),
+            style: AppTextStyles.sectionLabel.copyWith(color: muted),
           ),
           const SizedBox(height: 12),
           for (final g in guidelines)
