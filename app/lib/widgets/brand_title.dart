@@ -2,11 +2,30 @@ import 'package:flutter/material.dart';
 
 import '../services/entitlement_service.dart';
 import '../theme/app_theme.dart';
-import '../theme/text_metrics.dart';
 
 /// Font size of the wordmark. The vertical [ProBadge] is sized off this so
 /// the two stay in step if the title is ever resized.
 const double _kWordmarkSize = 22;
+
+/// Tightened tracking on the wordmark. Uniform -1.2px reproduces the width
+/// of the Figma design (which used per-glyph kerning Flutter can't express).
+const double _kWordmarkLetterSpacing = -1.2;
+
+/// Gap between the wordmark and the vertical [ProBadge].
+const double _kBadgeGap = 3;
+
+/// The wordmark is set in two halves: "Shift" upright, "Feed" italic — both
+/// Bold (w700, inherited from the base style). The italic half needs IBM
+/// Plex Sans Bold Italic bundled (see pubspec.yaml); without it Flutter
+/// would synthesize a skewed faux-italic.
+const String _kWordmarkUpright = 'Shift';
+const String _kWordmarkItalic = 'Feed';
+
+/// Shrunk PRO badge geometry (from the Figma design): a compact vertical
+/// pill, decoupled from the wordmark line box it used to match.
+const double _kBadgeLongAxis = 21; // reads bottom-to-top; the rotated height
+const double _kBadgeThickness = 9; // the rotated width
+const double _kBadgeRadius = 1;
 
 /// The "ShiftFeed" wordmark shown in the upper-left of every bottom-nav
 /// tab's AppBar, with the [ProBadge] appended when the user is Pro.
@@ -59,25 +78,36 @@ class _BrandTitleState extends State<BrandTitle> {
           // Flexible + ellipsis so the title yields width to the PRO
           // badge on narrow AppBar layouts instead of overflowing.
           Flexible(
-            child: Text(
-              'ShiftFeed',
+            child: Text.rich(
+              const TextSpan(
+                children: [
+                  TextSpan(text: _kWordmarkUpright),
+                  TextSpan(
+                    text: _kWordmarkItalic,
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                ],
+              ),
               overflow: TextOverflow.ellipsis,
               softWrap: false,
               style: TextStyle(
                 color: textPrimaryOf(context),
                 fontSize: _kWordmarkSize,
                 fontWeight: FontWeight.w700,
-                letterSpacing: 1.5,
+                letterSpacing: _kWordmarkLetterSpacing,
               ),
             ),
           ),
           if (_isPro) ...[
             // A vertical tab sits closer to the word than the old pill did.
-            const SizedBox(width: 6),
-            // The wordmark sets no explicit `height`, so its Text box is the
-            // font's natural line box — match it exactly and the badge costs
-            // the title row no extra height.
-            const ProBadge.vertical(height: kFontBox * _kWordmarkSize),
+            const SizedBox(width: _kBadgeGap),
+            // Compact badge, shorter than the wordmark line box; the Row
+            // centre-aligns it, so it costs the title row no extra height.
+            const ProBadge.vertical(
+              height: _kBadgeLongAxis,
+              thickness: _kBadgeThickness,
+              cornerRadius: _kBadgeRadius,
+            ),
           ],
         ],
       ),
@@ -93,30 +123,58 @@ class _BrandTitleState extends State<BrandTitle> {
 /// costs a third of the width the horizontal one did.
 class ProBadge extends StatelessWidget {
   /// Horizontal pill — used beside a Settings section title.
-  const ProBadge({super.key}) : height = null;
+  const ProBadge({super.key})
+      : height = null,
+        thickness = null,
+        cornerRadius = 4;
 
   /// Pill rotated a quarter turn anticlockwise, so it reads bottom-to-top
-  /// with the P at the bottom. [height] is the whole badge: pass the
-  /// neighbouring text's box height and the badge costs its row nothing.
-  const ProBadge.vertical({super.key, required double this.height});
+  /// with the P at the bottom. [height] is the badge's long (rotated) axis.
+  ///
+  /// [thickness] is the short (rotated) axis: pass it to force a compact
+  /// badge whose "PRO" is scaled to fit; leave it null to hug the text (the
+  /// desktop sidebar's larger badge). [cornerRadius] rounds the pill.
+  const ProBadge.vertical({
+    super.key,
+    required double this.height,
+    this.thickness,
+    this.cornerRadius = 3,
+  });
 
   /// Null for the horizontal form, which sizes itself to its text.
   final double? height;
 
+  /// Short-axis size of the vertical badge, or null to hug the text.
+  final double? thickness;
+
+  /// Pill corner radius.
+  final double cornerRadius;
+
   @override
   Widget build(BuildContext context) {
     final h = height;
+    // A forced thickness leaves little room, so the compact badge trims its
+    // vertical padding and lets the FittedBox scale "PRO" to fit.
+    final compact = h != null && thickness != null;
     final pill = Container(
-      // Rotated, the horizontal padding runs along the tight axis: the pill
-      // is laid out to a tight width of `h`, and "PRO" alone wants ~21 of it.
-      padding: EdgeInsets.symmetric(horizontal: h == null ? 6 : 3, vertical: 2),
+      // Rotated, the horizontal padding runs along the tight axis. The compact
+      // badge is small enough that any padding steals visibly from "PRO", so it
+      // is trimmed to a hairline and the label is left to fill the pill.
+      padding: EdgeInsets.symmetric(
+        horizontal: h == null
+            ? 6
+            : compact
+                ? 1
+                : 3,
+        vertical: compact ? 0 : 2,
+      ),
       decoration: BoxDecoration(
         color: kRed,
-        borderRadius: BorderRadius.circular(h == null ? 4 : 3),
+        borderRadius: BorderRadius.circular(cornerRadius),
       ),
-      child: const FittedBox(
-        // A no-op at the natural size; it exists so OS text scaling shrinks
-        // the label instead of overflowing the pill.
+      child: FittedBox(
+        // Scales "PRO" down to fit the pill — both under OS text scaling and
+        // when the badge is given a tight compact size.
         fit: BoxFit.scaleDown,
         child: Text(
           'PRO',
@@ -125,6 +183,12 @@ class ProBadge extends StatelessWidget {
             fontSize: 9,
             fontWeight: FontWeight.w700,
             letterSpacing: 0.8,
+            // Collapse the line box to the glyph height so the FittedBox
+            // isn't forced to shrink "PRO" to fit the font's ascent/descent
+            // leading — "PRO" is caps-only, so this doesn't clip anything.
+            height: compact ? 1.0 : null,
+            leadingDistribution:
+                compact ? TextLeadingDistribution.even : null,
           ),
         ),
       ),
@@ -132,8 +196,10 @@ class ProBadge extends StatelessWidget {
     if (h == null) return pill;
     // quarterTurns counts *clockwise* turns, so 3 is the anticlockwise one
     // that lands the leading glyph at the bottom. RotatedBox swaps its
-    // child's constraints: the SizedBox's height becomes the pill's width.
+    // child's constraints: the SizedBox's height becomes the pill's width,
+    // and (when set) its width becomes the pill's height.
     return SizedBox(
+      width: thickness,
       height: h,
       child: RotatedBox(quarterTurns: 3, child: pill),
     );

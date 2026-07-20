@@ -90,7 +90,9 @@ flutter:
   # Bundled so the app never fetches fonts at runtime (no flash-of-fallback,
   # works offline and on web). Only the weights actually used are shipped.
   # IBM Plex Sans has no ExtraBold upstream — Bold (700) is the heaviest, and
-  # is what the wordmark/app-bar titles use.
+  # is what the wordmark/app-bar titles use. Bold Italic (700 italic) is
+  # bundled for the "Feed" half of the wordmark (see brand_title.dart) — a
+  # true italic, not Flutter's synthetic skew.
   fonts:
     - family: IBM Plex Sans
       fonts:
@@ -100,6 +102,9 @@ flutter:
           weight: 500
         - asset: assets/fonts/IBMPlexSans-Bold.ttf
           weight: 700
+        - asset: assets/fonts/IBMPlexSans-BoldItalic.ttf
+          weight: 700
+          style: italic
     - family: IBM Plex Mono
       fonts:
         - asset: assets/fonts/IBMPlexMono-Regular.ttf
