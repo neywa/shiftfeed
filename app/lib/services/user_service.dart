@@ -66,6 +66,51 @@ class UserService {
     );
   }
 
+  /// Signs in with an email + password pair — an alternate credential path
+  /// into the *same* session the magic link produces.
+  ///
+  /// Added for App Store review (Guideline 2.1(a)): reviewers cannot click a
+  /// magic-link email, so they need a way past the sign-in wall. Real users
+  /// still get the passwordless flow by default.
+  ///
+  /// Unlike the magic link, this produces a session synchronously with no deep
+  /// link, so [handleDeepLink] never runs — we run the same post-auth
+  /// hydration here so a password session is functionally identical.
+  ///
+  /// Throws [AuthException] on bad credentials — callers should display the
+  /// `AuthException.message`, exactly as with [sendMagicLink].
+  Future<void> signInWithPassword(String email, String password) async {
+    await _auth.signInWithPassword(email: email, password: password);
+    final uid = currentUser?.id;
+    if (uid != null) await _hydrateSession(uid);
+  }
+
+  /// Creates an account with an email + password pair. Minimal companion to
+  /// [signInWithPassword], primarily so a demo account can be provisioned
+  /// through the app itself rather than the Supabase dashboard.
+  ///
+  /// If the Supabase project has "Confirm email" enabled, no session is
+  /// returned until the user confirms — hydration is skipped in that case and
+  /// the caller should tell the user to check their inbox. When confirmation
+  /// is off, a session lands immediately and hydration runs.
+  ///
+  /// Returns true if a session is now active (immediate sign-in), false if the
+  /// account was created but awaits email confirmation. Throws [AuthException]
+  /// on failure (weak password, already-registered email, etc.).
+  Future<bool> signUpWithPassword(String email, String password) async {
+    await _auth.signUp(
+      email: email,
+      password: password,
+      emailRedirectTo: kIsWeb
+          ? '${Uri.base.origin}${Uri.base.path}'
+          : _kAuthRedirectUrl,
+    );
+    final uid = currentUser?.id;
+    if (uid == null) return false;
+    await _hydrateSession(uid);
+    return true;
+  }
+
   /// Completes a magic-link sign-in by exchanging the deep-link [uri] for
   /// a session.
   ///
@@ -108,8 +153,14 @@ class UserService {
       return;
     }
 
-    // Best-effort hydration. Each call is independent: failures and
-    // timeouts are logged but never block subsequent calls.
+    await _hydrateSession(uid);
+    debugPrint('[Auth] handleDeepLink complete');
+  }
+
+  /// Best-effort post-auth hydration shared by every sign-in path (magic-link
+  /// deep link and password). Each call is independent: failures and timeouts
+  /// are logged but never block subsequent calls.
+  Future<void> _hydrateSession(String uid) async {
     await _runStage(
       'linkUser',
       () => EntitlementService.instance.linkUser(uid),
@@ -122,7 +173,6 @@ class UserService {
       'registerToken',
       () => DeviceTokenService.instance.registerToken(),
     );
-    debugPrint('[Auth] handleDeepLink complete');
   }
 
   Future<void> _runStage(String name, Future<void> Function() body) async {

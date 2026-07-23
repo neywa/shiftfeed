@@ -18,8 +18,52 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../services/user_service.dart';
 import '../theme/app_theme.dart';
 
+/// The slice of auth behaviour [AuthSheet] depends on. Production uses
+/// [_UserServiceAuthActions] (a thin adapter over [UserService.instance]);
+/// tests inject a fake so the sheet can be pumped without a live Supabase
+/// singleton (mirrors the repo's habit of not testing against it — see
+/// `test/nav_tabs_test.dart`).
+abstract class AuthSheetActions {
+  Stream<AuthState> get authStateChanges;
+  Stream<String> get authErrors;
+  Future<void> sendMagicLink(String email);
+  Future<void> signInWithPassword(String email, String password);
+
+  /// Returns true when a session is active immediately (confirmation off),
+  /// false when the account awaits email confirmation.
+  Future<bool> signUpWithPassword(String email, String password);
+}
+
+/// Default [AuthSheetActions] forwarding to the real [UserService].
+class _UserServiceAuthActions implements AuthSheetActions {
+  const _UserServiceAuthActions();
+
+  @override
+  Stream<AuthState> get authStateChanges =>
+      UserService.instance.authStateChanges;
+
+  @override
+  Stream<String> get authErrors => UserService.instance.authErrors;
+
+  @override
+  Future<void> sendMagicLink(String email) =>
+      UserService.instance.sendMagicLink(email);
+
+  @override
+  Future<void> signInWithPassword(String email, String password) =>
+      UserService.instance.signInWithPassword(email, password);
+
+  @override
+  Future<bool> signUpWithPassword(String email, String password) =>
+      UserService.instance.signUpWithPassword(email, password);
+}
+
 class AuthSheet extends StatefulWidget {
-  const AuthSheet({super.key});
+  const AuthSheet({super.key, AuthSheetActions? actions})
+      : actions = actions ?? const _UserServiceAuthActions();
+
+  /// Injectable auth backend; defaults to the real [UserService] adapter.
+  final AuthSheetActions actions;
 
   // ---- User-visible strings (kept static for easy future l10n) ----
 
@@ -41,15 +85,28 @@ class AuthSheet extends StatefulWidget {
   static const String _kCtaChangeEmail = 'Use a different email';
   static const String _kResendConfirm = 'Link resent!';
 
+  // ---- Password path (secondary, revealed on demand) ----
+
+  static const String _kPasswordLabel = 'Password';
+  static const String _kPasswordEmpty = 'Please enter your password.';
+  static const String _kCtaUsePassword = 'Use password instead';
+  static const String _kCtaUseMagicLink = 'Use a sign-in link instead';
+  static const String _kCtaSignIn = 'Sign in';
+  static const String _kCtaSignUp = 'Create account';
+  static const String _kSignUpConfirm =
+      'Account created. Check your inbox to confirm your email, then sign in.';
+
   /// Opens the sheet and returns true when the user has signed in, false
-  /// if they dismissed it.
-  static Future<bool> show(BuildContext context) async {
+  /// if they dismissed it. [actions] is injectable for tests; production
+  /// callers omit it and get the real [UserService] adapter.
+  static Future<bool> show(BuildContext context,
+      {AuthSheetActions? actions}) async {
     final result = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => const AuthSheet(),
+      builder: (_) => AuthSheet(actions: actions),
     );
     return result ?? false;
   }
@@ -63,10 +120,16 @@ enum _AuthSheetStage { entering, sent }
 class _AuthSheetState extends State<AuthSheet> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
 
   _AuthSheetStage _stage = _AuthSheetStage.entering;
   bool _busy = false;
+
+  /// When true the entering stage shows the password field and its primary
+  /// action becomes sign-in-with-password. Magic link is the default (false).
+  bool _passwordMode = false;
   String? _error;
+  String? _info;
   String? _resendInfo;
   String _sentToEmail = '';
 
@@ -82,7 +145,7 @@ class _AuthSheetState extends State<AuthSheet> {
   @override
   void initState() {
     super.initState();
-    _authSub = UserService.instance.authStateChanges.listen((state) {
+    _authSub = widget.actions.authStateChanges.listen((state) {
       debugPrint('[AuthSheet] auth state changed: ${state.event}');
       if (!mounted || _popped) return;
       if (state.event == AuthChangeEvent.signedIn) {
@@ -92,7 +155,7 @@ class _AuthSheetState extends State<AuthSheet> {
         Navigator.of(context).pop(true);
       }
     });
-    _authErrorSub = UserService.instance.authErrors.listen((message) {
+    _authErrorSub = widget.actions.authErrors.listen((message) {
       debugPrint('[AuthSheet] auth error: $message');
       if (!mounted) return;
       setState(() {
@@ -108,6 +171,7 @@ class _AuthSheetState extends State<AuthSheet> {
     _authSub?.cancel();
     _authErrorSub?.cancel();
     _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
@@ -117,6 +181,11 @@ class _AuthSheetState extends State<AuthSheet> {
     if (!v.contains('@') || !v.contains('.')) {
       return AuthSheet._kEmailInvalid;
     }
+    return null;
+  }
+
+  String? _validatePassword(String? value) {
+    if ((value ?? '').isEmpty) return AuthSheet._kPasswordEmpty;
     return null;
   }
 
@@ -130,7 +199,7 @@ class _AuthSheetState extends State<AuthSheet> {
       _error = null;
     });
     try {
-      await UserService.instance.sendMagicLink(email);
+      await widget.actions.sendMagicLink(email);
       if (!mounted) return;
       setState(() {
         _stage = _AuthSheetStage.sent;
@@ -145,6 +214,70 @@ class _AuthSheetState extends State<AuthSheet> {
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+  /// Signs in with the entered email + password. On success the auth stream
+  /// emits `signedIn` and the [initState] listener pops the sheet — same exit
+  /// path as the magic-link flow, so nothing extra to do here.
+  Future<void> _onPasswordSignIn() async {
+    if (_busy) return;
+    final ok = _formKey.currentState?.validate() ?? false;
+    if (!ok) return;
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+    setState(() {
+      _busy = true;
+      _error = null;
+      _info = null;
+    });
+    try {
+      await widget.actions.signInWithPassword(email, password);
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      setState(() => _error = e.message);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _error = 'Could not sign in: $e');
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  /// Creates an account with the entered email + password. If the project
+  /// auto-confirms, a session lands and the listener pops; otherwise we tell
+  /// the user to confirm their email.
+  Future<void> _onPasswordSignUp() async {
+    if (_busy) return;
+    final ok = _formKey.currentState?.validate() ?? false;
+    if (!ok) return;
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+    setState(() {
+      _busy = true;
+      _error = null;
+      _info = null;
+    });
+    try {
+      final signedIn = await widget.actions.signUpWithPassword(email, password);
+      if (!mounted || signedIn) return;
+      setState(() => _info = AuthSheet._kSignUpConfirm);
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      setState(() => _error = e.message);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _error = 'Could not create account: $e');
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  void _togglePasswordMode() {
+    setState(() {
+      _passwordMode = !_passwordMode;
+      _error = null;
+      _info = null;
+    });
   }
 
   Future<void> _onResend() async {
@@ -252,7 +385,6 @@ class _AuthSheetState extends State<AuthSheet> {
             controller: _emailController,
             keyboardType: TextInputType.emailAddress,
             autofillHints: const [AutofillHints.email],
-            textInputAction: TextInputAction.done,
             autocorrect: false,
             enableSuggestions: false,
             style: TextStyle(color: textPrimary),
@@ -265,8 +397,32 @@ class _AuthSheetState extends State<AuthSheet> {
               ),
             ),
             validator: _validateEmail,
-            onFieldSubmitted: (_) => _onSend(),
+            textInputAction:
+                _passwordMode ? TextInputAction.next : TextInputAction.done,
+            onFieldSubmitted: _passwordMode ? null : (_) => _onSend(),
           ),
+          if (_passwordMode) ...[
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _passwordController,
+              obscureText: true,
+              autofillHints: const [AutofillHints.password],
+              textInputAction: TextInputAction.done,
+              autocorrect: false,
+              enableSuggestions: false,
+              style: TextStyle(color: textPrimary),
+              cursorColor: kRed,
+              decoration: InputDecoration(
+                labelText: AuthSheet._kPasswordLabel,
+                border: const OutlineInputBorder(),
+                focusedBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(color: kRed, width: 1.5),
+                ),
+              ),
+              validator: _validatePassword,
+              onFieldSubmitted: (_) => _onPasswordSignIn(),
+            ),
+          ],
           if (_error != null) ...[
             const SizedBox(height: 8),
             Text(
@@ -277,11 +433,20 @@ class _AuthSheetState extends State<AuthSheet> {
               ),
             ),
           ],
+          if (_info != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              _info!,
+              style: AppTextStyles.caption.copyWith(color: textSecondary),
+            ),
+          ],
           const SizedBox(height: 14),
           SizedBox(
             height: 48,
             child: FilledButton(
-              onPressed: _busy ? null : _onSend,
+              onPressed: _busy
+                  ? null
+                  : (_passwordMode ? _onPasswordSignIn : _onSend),
               style: FilledButton.styleFrom(
                 backgroundColor: kRed,
                 foregroundColor: Colors.white,
@@ -303,14 +468,37 @@ class _AuthSheetState extends State<AuthSheet> {
                         strokeWidth: 2,
                       ),
                     )
-                  : const Text(AuthSheet._kCtaSend),
+                  : Text(_passwordMode
+                      ? AuthSheet._kCtaSignIn
+                      : AuthSheet._kCtaSend),
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            AuthSheet._kSendingHint,
-            textAlign: TextAlign.center,
-            style: AppTextStyles.caption.copyWith(color: textMuted),
+          if (!_passwordMode) ...[
+            const SizedBox(height: 8),
+            Text(
+              AuthSheet._kSendingHint,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.caption.copyWith(color: textMuted),
+            ),
+          ],
+          if (_passwordMode)
+            TextButton(
+              onPressed: _busy ? null : _onPasswordSignUp,
+              child: Text(
+                AuthSheet._kCtaSignUp,
+                style: TextStyle(color: textPrimary),
+              ),
+            ),
+          // Secondary toggle: magic link stays the default; this reveals the
+          // password path (App Review 2.1(a)) or returns to it.
+          TextButton(
+            onPressed: _busy ? null : _togglePasswordMode,
+            child: Text(
+              _passwordMode
+                  ? AuthSheet._kCtaUseMagicLink
+                  : AuthSheet._kCtaUsePassword,
+              style: TextStyle(color: textSecondary),
+            ),
           ),
         ],
       ),
