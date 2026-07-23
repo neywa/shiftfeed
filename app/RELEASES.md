@@ -12,3 +12,4 @@
 | 1.2.10    | 15 | N      | Nimbus Nexus |
 | 1.3.0     | 16 | O      | Orbit Overlay |
 | 1.3.1     | 17 | P      | Pod Pipeline |
+| 1.3.2     | 18 | Q      | Quorum Quickstart |
