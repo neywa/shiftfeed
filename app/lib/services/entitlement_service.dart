@@ -22,7 +22,7 @@ const String kProEntitlementId = 'shiftfed-pro-entitlement';
 /// SharedPreferences key for the debug-only PRO override flag.
 const String _kDevProOverridePref = 'dev_pro_override';
 
-/// Thrown when [Purchases.purchasePackage] is cancelled by the user.
+/// Thrown when [Purchases.purchase] is cancelled by the user.
 ///
 /// Distinct from generic errors so callers can dismiss the paywall silently
 /// rather than show a SnackBar.
@@ -188,13 +188,18 @@ class EntitlementService extends ChangeNotifier {
 
   /// Purchases [package] and returns the resulting [CustomerInfo].
   ///
+  /// `Purchases.purchase` returns a [PurchaseResult] (customer info plus the
+  /// [StoreTransaction]); we unwrap it because no caller needs the
+  /// transaction. Keep that unwrapping here rather than widening the return
+  /// type — the service's job is entitlement state, not receipt plumbing.
+  ///
   /// Throws [UserCancelledPurchaseException] when the user cancels and
   /// [EntitlementException] for any other failure.
   Future<CustomerInfo> purchasePackage(Package package) async {
     try {
-      final info = await Purchases.purchasePackage(package);
+      final result = await Purchases.purchase(PurchaseParams.package(package));
       notifyListeners();
-      return info;
+      return result.customerInfo;
     } catch (e) {
       throw _mapPurchaseError(e);
     }
