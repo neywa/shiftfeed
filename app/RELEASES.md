@@ -14,3 +14,4 @@
 | 1.3.1     | 17 | P      | Pod Pipeline |
 | 1.3.2     | 18 | Q      | Quorum Quickstart |
 | 1.3.3     | 19 | R      | Rolling Restart |
+| 1.3.4     | 20 | S      | Sidecar Sync |
