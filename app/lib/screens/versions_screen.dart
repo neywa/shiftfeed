@@ -71,12 +71,10 @@ class _VersionsScreenState extends State<VersionsScreen> {
     try {
       final all = await _repository.fetchOcpVersions();
       // All post-fetch transformation lives inside the try so any throw here
-      // (an unexpected row shape, a bad minor) routes to the recoverable
+      // (an unexpected row shape, a bad channel version) routes to the recoverable
       // ErrorState rather than falling through to a silent grey blank.
-      final active = all
-          .where((v) => v.minorInt >= kOcpActiveMinorMinimum)
-          .toList()
-        ..sort((a, b) => b.minorInt.compareTo(a.minorInt));
+      final active = all.where((v) => v.isActive).toList()
+        ..sort((a, b) => b.compareChannelTo(a));
 
       // Compute each version's real Red Hat lifecycle phase from today's date,
       // then drop the ones that have reached End of Life. `unknown` (a minor
@@ -86,7 +84,7 @@ class _VersionsScreenState extends State<VersionsScreen> {
       final shown = <OcpVersion>[];
       final phases = <OcpSupportPhase>[];
       for (final v in active) {
-        final phase = ocpPhaseFor(v.minorVersion, now: now);
+        final phase = ocpPhaseFor(v.lifecycle, now: now);
         if (phase == OcpSupportPhase.endOfLife) continue;
         shown.add(v);
         phases.add(phase);
@@ -332,32 +330,33 @@ class _VersionCard extends StatelessWidget {
             horizontal: 6,
             vertical: 2,
           ),
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.15),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
             border: Border.all(
               color: color,
               width: 0.5,
             ),
-            borderRadius: BorderRadius.circular(3),
-          ),
-          child: Text(
-            label,
-            maxLines: 1,
-            softWrap: false,
-            style: TextStyle(
-              fontSize: 9,
-              color: color,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 1,
-            ),
-          ),
-        );
+        borderRadius: BorderRadius.circular(3),
+      ),
+      child: Text(
+        label,
+        maxLines: 1,
+        softWrap: false,
+        style: TextStyle(
+          fontSize: 9,
+          color: color,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 1,
+        ),
+      ),
+    );
 
     // EUS-eligibility tag, stacked under the phase badge. Driven by the
     // release's static EUS eligibility, not its current phase — but suppressed
     // when the phase badge already reads 'EUS' (a version actually *in* the EUS
     // window) so the same chip isn't shown twice.
-    final showEus = ocpIsEus(version.minorVersion) && phase != OcpSupportPhase.eus;
+    final showEus =
+        (version.lifecycle?.isEus ?? false) && phase != OcpSupportPhase.eus;
 
     final badges = Column(
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -392,8 +391,10 @@ class _VersionCard extends StatelessWidget {
                           children: [
                             Text(
                               'OpenShift',
-                              style: AppTextStyles.caption
-                                  .copyWith(color: textMuted, fontSize: 15),
+                              style: AppTextStyles.caption.copyWith(
+                                color: textMuted,
+                                fontSize: 15,
+                              ),
                             ),
                             const SizedBox(width: 6),
                             Text(
@@ -411,8 +412,10 @@ class _VersionCard extends StatelessWidget {
                           children: [
                             Text(
                               'Latest stable: ',
-                              style: AppTextStyles.caption
-                                  .copyWith(color: textMuted, fontSize: 12),
+                              style: AppTextStyles.caption.copyWith(
+                                color: textMuted,
+                                fontSize: 12,
+                              ),
                             ),
                             Text(
                               version.latestStable,
@@ -425,7 +428,9 @@ class _VersionCard extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           'Updated ${timeago.format(version.updatedAt)}',
-                          style: AppTextStyles.caption.copyWith(color: textMuted),
+                          style: AppTextStyles.caption.copyWith(
+                            color: textMuted,
+                          ),
                         ),
                       ],
                     ),
@@ -458,7 +463,7 @@ class _VersionCard extends StatelessWidget {
           onTap: () => launchUrl(
             Uri.parse(
               'https://openshift-release.apps.ci.l2s4.p1'
-              '.openshiftapps.com/releasestream/4-stable'
+              '.openshiftapps.com/releasestream/${version.latestStable[0]}-stable'
               '/release/${version.latestStable}',
             ),
             mode: LaunchMode.externalApplication,

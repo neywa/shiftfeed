@@ -46,7 +46,7 @@ String? _releaseStatusUrl(Article article) {
   final match = _kOcpPatchVersionPattern.firstMatch(haystack);
   if (match == null) return null;
   return 'https://openshift-release.apps.ci.l2s4.p1.openshiftapps.com'
-      '/releasestream/4-stable/release/${match.group(0)}';
+      '/releasestream/${match.group(0)?[0]}-stable/release/${match.group(0)}';
 }
 
 class ArticleDetailScreen extends StatefulWidget {

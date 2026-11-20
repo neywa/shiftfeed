@@ -26,10 +26,19 @@ CINCINNATI_REPO = "openshift/cincinnati-graph-data"
 CHANNELS_PATH = "channels"
 GITHUB_API = "https://api.github.com"
 
-# Only track versions still receiving updates.
-# Versions below this threshold are EOL and ignored.
-# Update this when Red Hat EOLs a version.
-ACTIVE_MINOR_MINIMUM = 14  # 4.14 is the oldest with active EUS support
+# Only track supported major streams. OpenShift 3 is EOL, while all current
+# and future major streams start at 4.
+ACTIVE_MAJOR_MINIMUM = 4
+
+# Within OpenShift 4, versions below this threshold are EOL and ignored.
+# Update this when Red Hat EOLs a 4.x version. Newer major streams are not
+# subject to this cutoff, so a channel such as stable-5.0 is included.
+ACTIVE_4_MINOR_MINIMUM = 14  # 4.14 is the oldest with active EUS support
+
+STABLE_CHANNEL_RE = re.compile(
+    r"^stable-(?P<major>[4-9]\d*)\.(?P<minor>\d+)\.yaml$"
+)
+OCP_RELEASE_RE = re.compile(r"^(?P<major>[4-9]\d*)\.\d+\.\d+$")
 
 
 def _github_headers() -> dict:
@@ -44,19 +53,22 @@ def _github_headers() -> dict:
 
 
 def _list_stable_channels() -> list[str]:
-    """Return stable-4.*.yaml filenames sorted ascending by minor version."""
+    """Return supported stable-channel filenames sorted by major and minor."""
     url = f"{GITHUB_API}/repos/{CINCINNATI_REPO}/contents/{CHANNELS_PATH}"
     try:
         response = httpx.get(url, headers=_github_headers(), timeout=10)
         response.raise_for_status()
         files = response.json()
-        stable_files = [
-            f["name"]
-            for f in files
-            if re.match(r"^stable-4\.\d+\.yaml$", f["name"])
-        ]
+        stable_files = []
+        for file in files:
+            match = STABLE_CHANNEL_RE.fullmatch(file["name"])
+            if match and int(match.group("major")) >= ACTIVE_MAJOR_MINIMUM:
+                stable_files.append(file["name"])
         stable_files.sort(
-            key=lambda x: int(re.search(r"stable-4\.(\d+)\.yaml", x).group(1))
+            key=lambda x: tuple(
+                int(value)
+                for value in STABLE_CHANNEL_RE.fullmatch(x).group("major", "minor")
+            )
         )
         return stable_files
     except Exception as e:
@@ -65,7 +77,7 @@ def _list_stable_channels() -> list[str]:
 
 
 def _fetch_channel_versions(filename: str) -> list[str]:
-    """Fetch a stable-4.x.yaml file and return its list of version strings."""
+    """Fetch a stable channel file and return supported release versions."""
     url = (
         f"{GITHUB_API}/repos/{CINCINNATI_REPO}/contents/"
         f"{CHANNELS_PATH}/{filename}"
@@ -87,7 +99,10 @@ def _fetch_channel_versions(filename: str) -> list[str]:
         else:
             versions = []
         versions = [
-            v for v in versions if re.match(r"^4\.\d+\.\d+$", v.strip())
+            v
+            for v in versions
+            if (match := OCP_RELEASE_RE.fullmatch(v.strip()))
+            and int(match.group("major")) >= ACTIVE_MAJOR_MINIMUM
         ]
         return versions
     except Exception as e:
@@ -157,13 +172,17 @@ def fetch_ocp_version_updates(
     new_articles: list[Article] = []
 
     for filename in stable_files:
-        match = re.search(r"stable-(4\.\d+)\.yaml", filename)
+        match = STABLE_CHANNEL_RE.fullmatch(filename)
         if not match:
             continue
-        minor = match.group(1)
+        major = int(match.group("major"))
+        minor_int = int(match.group("minor"))
+        minor = f"{major}.{minor_int}"
 
-        minor_int = int(minor.split(".")[1])
-        if minor_int < ACTIVE_MINOR_MINIMUM:
+        if major < ACTIVE_MAJOR_MINIMUM or (
+            major == ACTIVE_MAJOR_MINIMUM
+            and minor_int < ACTIVE_4_MINOR_MINIMUM
+        ):
             continue
 
         versions = _fetch_channel_versions(filename)
