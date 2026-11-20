@@ -249,7 +249,7 @@ class ArticleRepository {
     try {
       // No server-side ORDER BY — `minor_version` is a TEXT column so
       // lex sort puts '4.9' before '4.18'. Both call sites (versions
-      // screen, home sidebar) re-sort numerically by `minorInt` anyway.
+      // screen, home sidebar) re-sort numerically by major and minor anyway.
       final response = await _client.from('ocp_versions').select();
       // Tolerant per-row parse: one malformed row is skipped, not fatal.
       return OcpVersion.parseList(response as List);
@@ -323,9 +323,9 @@ class ArticleRepository {
     };
     final lower = tag.toLowerCase();
     if (lower.startsWith('cve-')) return true;
-    // Filter every per-minor OCP version tag (`ocp-4.14`, `ocp-4.22`, …)
+    // Filter every per-minor OCP version tag (`ocp-4.14`, `ocp-5.0`, …)
     // — they're emitted on every OCP article and would dominate Top Tags.
-    if (lower.startsWith('ocp-4.')) return true;
+    if (RegExp(r'^ocp-[4-9]\d*\.').hasMatch(lower)) return true;
     return noise.contains(lower);
   }
 

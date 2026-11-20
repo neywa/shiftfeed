@@ -2,8 +2,8 @@
 //
 // These pin the behavior the Versions screen relies on to avoid the
 // intermittent "No version data available" blank: a malformed `minor_version`
-// must not throw (it's sentinel-excluded by the >= kOcpActiveMinorMinimum
-// filter), and one bad row must not discard the whole list.
+// must not throw (it's sentinel-excluded by the active-channel filter), and one
+// bad row must not discard the whole list.
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shiftfeed/models/ocp_version.dart';
 
@@ -37,25 +37,42 @@ void main() {
     });
   });
 
-  group('OcpVersion.minorInt', () {
-    test('extracts the numeric minor from a normal version', () {
+  group('OcpVersion channel parsing', () {
+    test('extracts numeric major and minor values', () {
+      expect(OcpVersion.fromJson(_row(minor: '4.18')).majorInt, 4);
       expect(OcpVersion.fromJson(_row(minor: '4.18')).minorInt, 18);
       expect(OcpVersion.fromJson(_row(minor: '4.9')).minorInt, 9);
+      expect(OcpVersion.fromJson(_row(minor: '5.0')).majorInt, 5);
+      expect(OcpVersion.fromJson(_row(minor: '5.0')).minorInt, 0);
       expect(OcpVersion.fromJson(_row(minor: '4.21')).minorInt, 21);
     });
 
-    test('returns -1 for a version without a dot', () {
+    test('returns -1 parts for a version without a dot', () {
+      expect(OcpVersion.fromJson(_row(minor: '4')).majorInt, -1);
       expect(OcpVersion.fromJson(_row(minor: '4')).minorInt, -1);
     });
 
-    test('returns -1 for a non-numeric minor', () {
+    test('returns -1 parts for a non-numeric channel', () {
+      expect(OcpVersion.fromJson(_row(minor: '4.x')).majorInt, 4);
       expect(OcpVersion.fromJson(_row(minor: '4.x')).minorInt, -1);
     });
 
-    test('sentinel is excluded by the active-minor filter', () {
-      // The screen filters with `minorInt >= kOcpActiveMinorMinimum`; a
-      // malformed row must fall below the threshold rather than throw.
-      expect(-1 >= kOcpActiveMinorMinimum, isFalse);
+    test('keeps 4.14+, 5.0, and future majors active', () {
+      expect(OcpVersion.fromJson(_row(minor: '4.13')).isActive, isFalse);
+      expect(OcpVersion.fromJson(_row(minor: '4.14')).isActive, isTrue);
+      expect(OcpVersion.fromJson(_row(minor: '5.0')).isActive, isTrue);
+      expect(OcpVersion.fromJson(_row(minor: '6.0')).isActive, isTrue);
+      expect(OcpVersion.fromJson(_row(minor: '3.11')).isActive, isFalse);
+      expect(OcpVersion.fromJson(_row(minor: 'bad')).isActive, isFalse);
+    });
+
+    test('compares channels by major, then minor', () {
+      final fourTwenty = OcpVersion.fromJson(_row(minor: '4.20'));
+      final fiveZero = OcpVersion.fromJson(_row(minor: '5.0'));
+      final fiveOne = OcpVersion.fromJson(_row(minor: '5.1'));
+
+      expect(fiveZero.compareChannelTo(fourTwenty), greaterThan(0));
+      expect(fiveOne.compareChannelTo(fiveZero), greaterThan(0));
     });
   });
 

@@ -367,9 +367,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<OcpVersion> get _displayedOcpVersions {
     final active = _ocpVersions
-        .where((v) => v.minorInt >= kOcpActiveMinorMinimum)
+        .where((v) => v.isActive)
         .toList()
-      ..sort((a, b) => b.minorInt.compareTo(a.minorInt));
+      ..sort((a, b) => b.compareChannelTo(a));
     return active.take(4).toList();
   }
 

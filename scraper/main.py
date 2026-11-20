@@ -18,6 +18,7 @@ from scraper.sources.cve_severity import (
 )
 from scraper.sources.cve_tagger import enrich_with_cve_tags
 from scraper.sources.github_releases import fetch_github_releases
+from scraper.sources.ocp_lifecycles import fetch_ocp_lifecycles
 from scraper.sources.ocp_versions import fetch_ocp_version_updates
 from scraper.sources.operator_lifecycles import fetch_operator_lifecycles
 from scraper.sources.rss import fetch_all_rss
@@ -244,6 +245,9 @@ def main(dry_run_push: bool = False) -> None:
     ]
     if is_first_run:
         print("OCP versions: seeded table, no articles generated")
+
+    lifecycle_count = fetch_ocp_lifecycles(client)
+    print(f"OCP lifecycles: synchronized {lifecycle_count} versions")
 
     try:
         result = (
